@@ -45,11 +45,11 @@ function handle = open(obj, addr, vend, bus)
 	% first check that the variables passed are ok
 	if(~ischar(vend))
 		% check if the vendor passed is a character array
-		error('Vendor id should be a character array');
+		error('Vendor id should be a character array (addr: %s)', num2str(addr));
 	end
 	if(~isnumeric(bus))
 		% make sure bus is a number
-		error('Bus should be a number');
+		error('Bus should be a number (addr: %s)', num2str(addr));
 	end
 	if(~isnumeric(addr))
 		% make sure address is a number
@@ -71,8 +71,9 @@ function handle = open(obj, addr, vend, bus)
 
 	% flush input and output buffers, this is important on certain devices
 	% such as SR830
-	flushinput(devicehandle); %software buffers
-	flushoutput(devicehandle);
+	flushinput(instr); %software buffers
+	flushoutput(instr);
+	clrdevice(instr); % hardware buffers
 
 	% print a confirmation message if the option is chosen
 	if( verb == 1 )
@@ -83,7 +84,7 @@ function handle = open(obj, addr, vend, bus)
 	identity = query(instr, '*IDN?');
 
 	if(~isempty(strfind(identity, 'Stanford_Research_Systems,SR830')))
-		handle = SR830;
+		handle = drivers/SR830;
 		handle.instr = instr;
 	end
 
