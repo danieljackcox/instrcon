@@ -73,7 +73,7 @@ function handle = open(obj, addr, vend, bus)
 	% such as SR830
 	flushinput(devicehandle); %software buffers
 	flushoutput(devicehandle);
-	
+
 	% print a confirmation message if the option is chosen
 	if( verb == 1 )
 		fprintf(1, 'Device opened at %s (GPIB)', num2str(ADDR));
