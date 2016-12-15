@@ -58,7 +58,7 @@ function handle = open(obj, addr, vend, bus)
 
 	if( ~strcmpi(vend, 'ni')||~strcmpi(vend, 'agilent')||~strcmpi(vend, 'ics')||~strcmpi(vend, 'mcc') )
 		% make sure the vendor is of a type recognised by matlab
-		error('Unrecognised vendor type');
+		error('Unrecognised vendor type (addr: %s)', num2str(addr));
 	end
 
 	% create the gpib object and then open it
