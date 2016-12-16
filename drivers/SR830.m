@@ -109,7 +109,7 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                     error('Provided reference trigger must be an integer between 0 and 2');
                 end
                 
-                if( ~(isequal(trigtype, 0) || isequal(trigtype, 1) || isequal(trigtype, 2)) )
+                if( ~ismember(trigtype, 0:2) )
                     error('Input must be 0, 1, or 2');
                 end
                 
@@ -178,7 +178,7 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                     error('Input Configuration must be a number');
                 end
                 
-                if( ~(isequal(inputconfig, 0) || isequal(inputconfig, 1) || isequal(inputconfig, 2) || isequal(inputconfig, 3)) )
+                if( ~ismember(inputconfig, 0:3) )
                     error('Input must be 0, 1, 2, or 3');
                 end
                 
@@ -204,12 +204,81 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                     error('Input Shield Grounding must be a number');
                 end
                 
-                if( ~(isequal(shieldground, 0) || isequal(shieldground, 1)) )
+                if( ~ismember(shieldground, [0 1]) )
                     error('Input must be 0 or 1');
                 end
                 
                 
                 fprintf(obj.instr, 'IGND %d', shieldground);
+                
+            end
+            
+        end
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % notchfilter: sets or reads the input line notch filter status %
+        % no filters (0), 1x line freq (1), 2x line freq (2) or both (3)%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = notchfilter(obj, notchfilter)
+            if( nargin == 1 || isempty(notchfilter) )
+                fprintf(obj.instr, 'ILIN?');
+                output = fscanf(obj.instr, '%d');
+            else
+                
+                if( ~isnumeric(notchfilter))
+                    error('Notch Filter must be a number');
+                end
+                
+                if( ~ismember(notchfilter , 0:3) )
+                    error('Input must be between 0 and 3');
+                end
+                
+                
+                fprintf(obj.instr, 'ILIN %d', notchfilter);
+                
+            end
+            
+        end
+        
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % sensitivity: sets or reads the sensitivity. The input or return %
+        % is an integer that corresponds to a sensitivity listed below    %
+        % 0       2 nV/fA             13          50 ?V/pA                %
+        % 1       5 nV/fA             14          100 ?V/pA               %
+        % 2       10 nV/fA            15          200 ?V/pA               %
+        % 3       20 nV/fA            16          500 ?V/pA               %
+        % 4       50 nV/fA            17          1 mV/nA                 %
+        % 5       100 nV/fA           18          2 mV/nA                 %
+        % 6       200 nV/fA           19          5 mV/nA                 %
+        % 7       500 nV/fA           20          10 mV/nA                %
+        % 8       1 ?V/pA             21          20 mV/nA                %
+        % 9       2 ?V/pA             22          50 mV/nA                %
+        % 10      5 ?V/pA             23          100 mV/nA               %
+        % 11      10 ?V/pA            24          200 mV/nA               %
+        % 12      20 ?V/pA            25          500 mV/nA               %
+        %                             26          1 V/?A                  %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = sensitivity(obj, sensitivity)
+            if( nargin == 1 || isempty(sensitivity) )
+                fprintf(obj.instr, 'SENS?');
+                output = fscanf(obj.instr, '%d');
+            else
+                
+                if( ~isnumeric(sensitivity))
+                    error('Sensitivity must be a number');
+                end
+                
+                if( ~ismember(sensitivity, 0:26) )
+                    error('Input must be an integer between 0 and 26');
+                end
+                
+                
+                fprintf(obj.instr, 'SENS %d', sensitivity);
                 
             end
             
