@@ -319,8 +319,37 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
         end
 
 
-        function output = iden(obj)
-            output = query(obj.instr, '*IDN?');
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % reserve: sets or reads the reserve value, high (0), normal (1) %
+        % or low noise (2)                                               %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = reserve(obj, reserve)
+
+            % if empty or nonexistent then read and return the value
+            if( nargin == 1 || isempty(reserve) )
+                fprintf(obj.instr, 'RMOD?');
+                output = fscanf(obj.instr, '%d');
+            else
+
+                % check if number, then check if in correct range
+                if( ~isnumeric(reserve) )
+                    error('Reserve must be a number');
+                end
+
+                if( ~ismember(reserve , 0:2) )
+                    error('Input must be between 0 and 2');
+                end
+
+                % set the value
+                fprintf(obj.instr, 'RMOD %d', reserve);
+
+            end
+
         end
+
+
+
+
     end
 end
