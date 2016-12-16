@@ -1,4 +1,4 @@
-# instrcon
+# instrcon (UNFINISHED)
 Libraries/classes for Matlab instrument control and measurement. Provided with example measurement scripts.
 
 Measurement devices are represented by device driver files, which are Matlab objects that expose common functions (such as setvoltage, getvoltage, etc.). The specific code needed to change voltage on a device is held within these driver files.
