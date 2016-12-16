@@ -1,4 +1,30 @@
-% stanford research systems SRS-830 lock-in amplifier instrument control driver
+% SR830.m
+
+%------------------------------------------------------------------------------%
+% Stanford Research Systems SR830 Lock-in Amplifier driver file
+% This file is a matlab thisect that represents the SR830. It provides standard
+% methods that interface with the device so the specific code required for          % communicating with the device over GPIB is not needed.
+%
+% Methods:
+% setvoltage: set or read dc voltage
+% readvoltage: reads voltage from aux input
+% ref: set or read internal or external reference
+% freq: set or read frequency
+% reftrig: sine or TTL reference input
+% harmonic: set or read harmonic
+% excitation: set or read AC excitation voltage
+% inputconfig: set or read the input configuration
+% shieldgrounding: set or read shield grounding configuration
+% notchfilter: set or read the notch filter configuration
+% sensitivity: set or read the sensitivity
+% reserve: set or read reserve
+% tc: set or read time constant
+% lpfilterslope: set or read low pass filter slope
+% syncfilter: set or read synchronous filter status
+% readoutput: reads X, Y, R, phase components from the input
+
+
+%------------------------------------------------------------------------------%
 
 classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of handle
 
@@ -6,8 +32,6 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
     %declare some basic properties (variables) for use later
     % UNFINISHED
     properties
-        ADDR	%gpib address
-        CHAN	%DC output or measurement channel
         instr
         V
     end
@@ -21,12 +45,13 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
         end
 
 
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % voltage: sets or reads a DC voltage on one of the   %
-        % auxilliary (output) channels                        %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % setvoltage: sets or reads a DC voltage on one of the              %
+        % auxilliary (output) channels                                      %
+        % IMPORTANT: setvoltage can return the *set* voltage value, it does %       % not measure any voltage                                           %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = voltage(obj, V, channel)
+        function output = setvoltage(this, V, channel)
 
             % check that the channel variable exists first
             % if it exists, check if it is a number
@@ -47,8 +72,8 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
             if(nargin == 1 || ~exist('V', 'var') || isempty(V))
-                fprintf(obj.instr, sprintf('AUXV? %d', channel));
-                output = fscanf(obj.instr, '%f');
+                fprintf(this.instr, sprintf('AUXV? %d', channel));
+                output = fscanf(this.instr, '%f');
             else
 
                 % otherwise set the voltage
@@ -56,7 +81,37 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                     error('Voltage must be a number');
                 end
 
-                fprintf(obj.instr, sprintf('AUX V %d, %f', channel, V));
+                fprintf(this.instr, sprintf('AUX V %d, %f', channel, V));
+
+            end
+        end
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % readvoltage: reads the DC voltage on the aux input %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = readvoltage(this, channel)
+
+            % check that the channel variable exists first
+            % if it exists, check if it is a number
+            % if not then assign default value 1
+            if(exist('channel', 'var'))
+                if(~isnumeric(channel))
+                    error('Channel must be an integer number');
+                end
+            else
+                channel = 1;
+            end
+
+            % make sure that the channel is a number between 1 and 4
+            if( ~ismember(channel, 1:4) )
+                error('Channel number must be between 1 and 4');
+            end
+
+                % read the voltage and output
+                fprintf(this.instr, sprintf('OAUX? %d', channel));
+                output = fscanf(this.instr, '%f');
 
             end
         end
@@ -67,10 +122,10 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
         % ref: sets the device to use internal or external    %
         % frequency reference or queries to get the ref       %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function output = ref(obj, ref)
+        function output = ref(this, ref)
             if( nargin == 1 || isempty(ref) )
-                fprintf(obj.instr, 'FMOD?');
-                output = fscanf(obj.instr, '%d');
+                fprintf(this.instr, 'FMOD?');
+                output = fscanf(this.instr, '%d');
             else
 
                 if( ~isnumeric(ref))
@@ -78,7 +133,7 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                 end
 
                 % passes all error checking, then execute
-                fprintf(obj.instr, 'FMOD %d', ref);
+                fprintf(this.instr, 'FMOD %d', ref);
 
             end
 
@@ -88,20 +143,20 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
         % freq: sets or reads internal frequency              %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = freq(obj, freq)
+        function output = freq(this, freq)
 
             % if nothing or empty variable is passed then read the value
             % and return it
             if( nargin == 1 || isempty(freq) )
-                fprintf(obj.instr, 'FREQ?');
-                output = fscanf(obj.instr, '%f');
+                fprintf(this.instr, 'FREQ?');
+                output = fscanf(this.instr, '%f');
             else
                 % otherwise do basic sanity checking and then set the frequency
                 if( ~isnumeric(freq))
                     error('Provided frequency must be a real number');
                 end
 
-                fprintf(obj.instr, 'FREQ %f', freq);
+                fprintf(this.instr, 'FREQ %f', freq);
 
             end
 
@@ -113,12 +168,12 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
         % setting                                                         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = reftrig(obj, trigtype)
+        function output = reftrig(this, trigtype)
 
             %if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(trigtype) )
-                fprintf(obj.instr, 'RSLP?');
-                output = fscanf(obj.instr, '%d');
+                fprintf(this.instr, 'RSLP?');
+                output = fscanf(this.instr, '%d');
             else
                 % otherwise we set the value
 
@@ -131,7 +186,7 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                     error('Input must be 0, 1, or 2');
                 end
 
-                fprintf(obj.instr, 'RSLP %d', trigtype);
+                fprintf(this.instr, 'RSLP %d', trigtype);
 
             end
 
@@ -142,11 +197,11 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
         % harmonic: sets or returns the measurement harmonic           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = harmonic(obj, harmonic)
+        function output = harmonic(this, harmonic)
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(harmonic) )
-                fprintf(obj.instr, 'HARM?');
-                output = fscanf(obj.instr, '%d');
+                fprintf(this.instr, 'HARM?');
+                output = fscanf(this.instr, '%d');
             else
                 % otherwise check if passed value is a number then set it
                 if( ~isnumeric(harmonic))
@@ -154,7 +209,7 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                 end
 
 
-                fprintf(obj.instr, 'HARM %d', harmonic);
+                fprintf(this.instr, 'HARM %d', harmonic);
 
             end
 
@@ -164,12 +219,12 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
         % excitation: sets or returns the AC output sine wave voltage (in RMS) %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = excitation(obj, excitation)
+        function output = excitation(this, excitation)
 
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(excitation) )
-                fprintf(obj.instr, 'SLVL?');
-                output = fscanf(obj.instr, '%f');
+                fprintf(this.instr, 'SLVL?');
+                output = fscanf(this.instr, '%f');
             else
                 % check if passed value is a number
                 if( ~isnumeric(excitation))
@@ -177,7 +232,7 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                 end
 
                 %set the excitation
-                fprintf(obj.instr, 'SLVL %f', excitation);
+                fprintf(this.instr, 'SLVL %f', excitation);
 
             end
 
@@ -189,12 +244,12 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
         % between 0 (A), 1 (A-B), 2 (I 1MOhm), 3 (100 MOhm)                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = inputconfig(obj, inputconfig)
+        function output = inputconfig(this, inputconfig)
 
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(inputconfig) )
-                fprintf(obj.instr, 'ISRC?');
-                output = fscanf(obj.instr, '%d');
+                fprintf(this.instr, 'ISRC?');
+                output = fscanf(this.instr, '%d');
             else
 
                 % check if passed value is a number, and then check if it is
@@ -208,7 +263,7 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                 end
 
                 % set the value
-                fprintf(obj.instr, 'ISRC %d', inputconfig);
+                fprintf(this.instr, 'ISRC %d', inputconfig);
 
             end
 
@@ -219,12 +274,12 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
         % floating (0) or grounded (1)                                 %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = shieldgrounding(obj, shieldground)
+        function output = shieldgrounding(this, shieldground)
 
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(shieldground) )
-                fprintf(obj.instr, 'IGND?');
-                output = fscanf(obj.instr, '%d');
+                fprintf(this.instr, 'IGND?');
+                output = fscanf(this.instr, '%d');
             else
 
                 % check if number, then check if in correct range
@@ -237,7 +292,7 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                 end
 
                 % set the value
-                fprintf(obj.instr, 'IGND %d', shieldground);
+                fprintf(this.instr, 'IGND %d', shieldground);
 
             end
 
@@ -249,12 +304,12 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
         % no filters (0), 1x line freq (1), 2x line freq (2) or both (3)%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = notchfilter(obj, notchfilter)
+        function output = notchfilter(this, notchfilter)
 
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(notchfilter) )
-                fprintf(obj.instr, 'ILIN?');
-                output = fscanf(obj.instr, '%d');
+                fprintf(this.instr, 'ILIN?');
+                output = fscanf(this.instr, '%d');
             else
 
                 % check if number, then check if in correct range
@@ -267,7 +322,7 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                 end
 
                 % set the value
-                fprintf(obj.instr, 'ILIN %d', notchfilter);
+                fprintf(this.instr, 'ILIN %d', notchfilter);
 
             end
 
@@ -294,12 +349,12 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
         %                             26          1 V/?A                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = sensitivity(obj, sensitivity)
+        function output = sensitivity(this, sensitivity)
 
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(sensitivity) )
-                fprintf(obj.instr, 'SENS?');
-                output = fscanf(obj.instr, '%d');
+                fprintf(this.instr, 'SENS?');
+                output = fscanf(this.instr, '%d');
             else
 
                 % check if number, then check range is correct
@@ -312,7 +367,7 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                 end
 
                 % set the value
-                fprintf(obj.instr, 'SENS %d', sensitivity);
+                fprintf(this.instr, 'SENS %d', sensitivity);
 
             end
 
@@ -324,12 +379,12 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
         % or low noise (2)                                               %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = reserve(obj, reserve)
+        function output = reserve(this, reserve)
 
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(reserve) )
-                fprintf(obj.instr, 'RMOD?');
-                output = fscanf(obj.instr, '%d');
+                fprintf(this.instr, 'RMOD?');
+                output = fscanf(this.instr, '%d');
             else
 
                 % check if number, then check if in correct range
@@ -342,7 +397,7 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
                 end
 
                 % set the value
-                fprintf(obj.instr, 'RMOD %d', reserve);
+                fprintf(this.instr, 'RMOD %d', reserve);
 
             end
 
@@ -350,6 +405,149 @@ classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of
 
 
 
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % tc: sets or reads the time constant. The input or return        %
+        % is an integer that corresponds to a time constant listed below  %
+        % tip: during measurement the settling time is at least 5 times   %
+        % the set TC                                                      %
+        % 0       10 μs             10          1 s                       %
+        % 1       30 μs             11          3 s                       %
+        % 2       100 μs            12          10 s                      %
+        % 3       300 μs            13          30 s                      %
+        % 4       1 ms              14          100 s                     %
+        % 5       3 ms              15          300 s                     %
+        % 6       10 ms             16          1 ks                      %
+        % 7       30 ms             17          3 ks                      %
+        % 8       100 ms            18          10 ks                     %
+        % 9       300 ms            19          30 ks                     %
+        %                                                                 %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = tc(this, tc)
+
+            % if empty or nonexistent then read and return the value
+            if( nargin == 1 || isempty(tc) )
+                fprintf(this.instr, 'OFLT?');
+                output = fscanf(this.instr, '%d');
+            else
+
+                % check if number, then check range is correct
+                if( ~isnumeric(tc))
+                    error('Time Constant must be a number');
+                end
+
+                if( ~ismember(tc, 0:19) )
+                    error('Input must be an integer between 0 and 19');
+                end
+
+                % set the value
+                fprintf(this.instr, 'OFLT %d', tc);
+
+            end
+
+        end
+
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % lpfilterslope: sets or reads the low-pass filter slope,        %
+        % 6 dB/oct (0), 12 dB/oct (1), 18 dB/oct (2), 24 dB/oct (3)      %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = lpfilterslope(this, lpfilterslope)
+
+            % if empty or nonexistent then read and return the value
+            if( nargin == 1 || isempty(lpfilterslope) )
+                fprintf(this.instr, 'OFSL?');
+                output = fscanf(this.instr, '%d');
+            else
+
+                % check if number, then check if in correct range
+                if( ~isnumeric(lpfilterslope) )
+                    error('Filter slope must be a number');
+                end
+
+                if( ~ismember(lpfilterslope , 0:3) )
+                    error('Input must be between 0 and 3');
+                end
+
+                % set the value
+                fprintf(this.instr, 'OFSL %d', lpfilterslope);
+
+            end
+
+        end
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % syncfilter: sets or reads the synchronous filter status           %
+        % OFF (0) or ON (1), only operates below excitation frequecy 200 Hz %
+        % worth keeping on                                                  %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = syncfilter(this, syncfilter)
+
+            % if empty or nonexistent then read and return the value
+            if( nargin == 1 || isempty(syncfilter) )
+                fprintf(this.instr, 'SYNC?');
+                output = fscanf(this.instr, '%d');
+            else
+
+                % check if number, then check if in correct range
+                if( ~isnumeric(syncfilter) )
+                    error('Sync filter status must be a number');
+                end
+
+                if( ~ismember(syncfilter , 0:1) )
+                    error('Input must be 0 or 1');
+                end
+
+                % set the value
+                fprintf(this.instr, 'SYNC %d', syncfilter);
+
+            end
+
+        end
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % readoutput: returns the AC input values (X, Y, R, phase)          %
+        % note: the values for X, Y and R, phase are recorded approx 10 uS  %
+        % apart. This should only be important at ultra-short time constants%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function [X, Y, R, phase] = readoutput(this)
+
+                % dont need to do anything except ask the device for the
+                % values
+                fprintf(this.instr, 'SNAP? 1,2,3,4');
+                tmp_output = scanstr(this.instr, ',', '%f');
+
+                % assign tmp_output to proper variables just for readability
+                X       = tmp_output(1);
+                Y       = tmp_output(2);
+                R       = tmp_output(3);
+                phase   = tmp_output(4);
+
+            end
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % rst: sends GPIB *RST command (i.e. resets the device)             %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function rst(this)
+            fprintf(this.instr, '*RST');
+        end
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % idn: gets GPIB identity                                           %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = idn(this)
+            fprintf(this.instr, 'IDN?');
+            output = fscanf(this.instr, '%s');
+        end
 
     end
 end
