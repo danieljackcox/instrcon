@@ -3,7 +3,8 @@
 %------------------------------------------------------------------------------%
 % Stanford Research Systems SR830 Lock-in Amplifier driver file
 % This file is a matlab thisect that represents the SR830. It provides standard
-% methods that interface with the device so the specific code required for          % communicating with the device over GPIB is not needed.
+% methods that interface with the device so the specific code required for
+% communicating with the device over GPIB is not needed.
 %
 % Methods:
 % setvoltage: set or read dc voltage
@@ -26,7 +27,7 @@
 
 %------------------------------------------------------------------------------%
 
-classdef SR830 < handle	%generate new class for SRS830 and make it a subclass of handle
+classdef SR830 < common	%generate new class for SRS830 and make it a subclass of handle
 
 
     %declare some basic properties (variables) for use later

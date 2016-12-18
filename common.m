@@ -15,7 +15,9 @@ classdef common < handle
     methods
         % constructor object
         function obj = common
-            addpath('drivers'); % make sure matlab can see the contents
+            addpath('drivers');
+            addpath('functions');
+            % make sure matlab can see the contents
             % of the drivers folder
             obj;
         end
@@ -111,6 +113,10 @@ classdef common < handle
             end
 
 
+        end
+
+        function output = testvolt(this)
+            output = this.readvoltage;
         end
 
     end
