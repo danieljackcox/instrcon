@@ -44,8 +44,8 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         function obj = SR830
             %nothing
         end
-        
-        
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % setvoltage: sets or reads a DC voltage on one of the              %
         % auxilliary (output) channels                                      %
