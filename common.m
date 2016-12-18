@@ -116,7 +116,7 @@ classdef common < handle
         end
 
         function output = testvolt(this)
-            output = this.readvoltage;
+            output = this.setvoltage;
         end
 
     end
