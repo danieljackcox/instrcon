@@ -107,9 +107,13 @@ classdef common < handle
             identity = query(instr, '*IDN?');
 
 			% UNFINISHED, only supports SR830
-            if(~isempty(strfind(identity, 'Stanford_Research_Systems,SR830')))
+            if( ~isempty(strfind(identity, 'Stanford_Research_Systems,SR830')) )
                 handle = SR830;
                 handle.instr = instr;
+                
+            elseif( ~isempty(strfind(identity, 'HEWLETT-PACKARD,34401A')) )
+                handle = HP34401A;
+                handle.instr = instr; 
             end
 
 

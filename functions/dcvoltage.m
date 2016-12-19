@@ -4,18 +4,18 @@ function dcvoltage(obj, voltage, channel, imm, stepsize, speed)
         error('No arguments passed');
     end
 
-    if( ~exists(obj) || isempty(obj) )
+    if( ~exist('obj', 'var') || isempty(obj) )
         error('A device object must be passed');
     end
 
-    if( ~exists(imm) || isempty(imm) )
+    if( ~exist('imm', 'var') || isempty(imm) )
         if( ~ismember(imm, 0:1) )
             error('imm must be 0 or 1');
         end
         imm = 0;
     end
 
-    if( ~exists(channel) || isempty(channel) )
+    if( ~exist('channel', 'var') || isempty(channel) )
         if( ~isnumeric(channel) )
             error('Channel must be a number');
         end
@@ -29,14 +29,14 @@ function dcvoltage(obj, voltage, channel, imm, stepsize, speed)
 %        range_change = 0;
 %    end
 
-    if( ~exists(stepsize) || isempty(stepsize) )
+    if( ~exist('stepsize', 'var') || isempty(stepsize) )
         if( ~isnumeric(stepsize) )
             error('Step size must be a number');
         end
         stepsize = 50e-3;
     end
 
-    if( ~exists(speed) || isempty(speed) )
+    if( ~exist('speed', 'var') || isempty(speed) )
         if( ~isnumeric(speed) )
             error('Speed must be a number');
         end
