@@ -3,9 +3,12 @@
 %------------------------------------------------------------------------------%
 % HP/Agilent 34401A multimeter driver file
 % This file is a matlab object that represents the 34401A. It provides standard
-% methods that interface with the device so the specific code required for          % communicating with the device over GPIB is not needed.
+% methods that interface with the device so the specific code required for
+% communicating with the device over GPIB is not needed.
 %
 % Methods:
+% configure: sets the device in the measurement mode requested
+
 % setvoltage: set or read dc voltage
 % readvoltage: reads voltage from aux input
 % ref: set or read internal or external reference
@@ -26,36 +29,36 @@
 
 %------------------------------------------------------------------------------%
 
-classdef HP34401A < handle	%generate new class for SRS830 and make it a subclass of handle
-    
-    
+classdef HP34401A < common	%generate new class for HP34401A and make it a subclass of common
+
+
     %declare some basic properties (variables) for use later
     % UNFINISHED
     properties
         instr
     end
-    
-    
+
+
     methods
-        
+
         %constructor (i.e. creator class, called by default)
         function obj = HP34401A
             %nothing
         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % configure: reads or sets the measurement type                     %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function output = configure(this, type, range, resolution)
-            
+
             % if no arguments provided then return the current config
             if( nargin == 1 )
                 fprintf(this.instr, 'CONF?');
                 output = fscanf(this.instr, '%s');
-                
+
             else
                 switch type
-                    
+
                     % if type is dcvolt then configure for DC voltage measurement
                     case 'dcvolt'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
@@ -63,7 +66,7 @@ classdef HP34401A < handle	%generate new class for SRS830 and make it a subclass
                         else
                             fprintf(this.instr, 'CONF:VOLT:DC');
                         end
-                        
+
                         % if type is acvolt then configure for AC voltage measurement
                     case 'acvolt'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
@@ -133,25 +136,42 @@ classdef HP34401A < handle	%generate new class for SRS830 and make it a subclass
                 end
             end
         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % trigger: Triggers the dvm to start a measurement                  %
         % this is done seperately from the reading because measurements     %
         % can take several seconds, completely freezing the matlab main     %
         % thread                                                            %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function trigger(this)
             fprintf(this.instr, 'INIT;FETC?');
         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % readoutput: Reads the output of the device after a trigger event  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function output = readoutput(this)
             output = fscanf(this.instr, '%f');
         end
-        
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % readoutput: Reads the output of the device after a trigger event  %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = detband(this, detband)
+
+            if( ~exist('detband', 'var') || isempty(detband) )
+                fprintf(this.instr, 'DET:BAND?');
+                output = fscanf(this.instr, '%f');
+            else
+                if( ~ismember(detband, [3, 20, 200]) )
+                    error('Detection band can only be 3 Hz, 20 Hz, or 200 Hz');
+                end
+                fprintf(this.instr, 'DET:BAND %u', detband);
+        end
+
     end
 end

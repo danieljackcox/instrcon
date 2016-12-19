@@ -1,6 +1,4 @@
-function dcvoltage(obj, voltage, channel, imm, stepsize, speed)
-
-    if( nargin == 0 )
+if( nargin == 0 )
         error('No arguments passed');
     end
 
@@ -64,4 +62,3 @@ function dcvoltage(obj, voltage, channel, imm, stepsize, speed)
 
         end
     end
-end
