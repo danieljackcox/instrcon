@@ -69,7 +69,6 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
             if( ~ismember(channel, 1:4) )
                 error('Channel number must be between 1 and 4');
             end
-            
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
             if(nargin == 1 || ~exist('V', 'var') || isempty(V))
