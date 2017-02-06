@@ -7,22 +7,10 @@
 % communicating with the device over GPIB is not needed.
 %
 % Methods:
-% setvoltage: set or read dc voltage
-% readvoltage: reads voltage from aux input
-% ref: set or read internal or external reference
-% freq: set or read frequency
-% reftrig: sine or TTL reference input
-% harmonic: set or read harmonic
-% excitation: set or read AC excitation voltage
-% inputconfig: set or read the input configuration
-% shieldgrounding: set or read shield grounding configuration
-% notchfilter: set or read the notch filter configuration
-% sensitivity: set or read the sensitivity
-% reserve: set or read reserve
-% tc: set or read time constant
-% lpfilterslope: set or read low pass filter slope
-% syncfilter: set or read synchronous filter status
-% readoutput: reads X, Y, R, phase components from the input
+% configure: configure the function generator to output the desired signal type
+% setvoltage: sets the DC offset voltage
+% freq: sets wave frequency for current configured type
+% excitation: sets wave amplitude (RMS) for current configured type
 
 
 %------------------------------------------------------------------------------%

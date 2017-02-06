@@ -2,27 +2,14 @@
 
 %------------------------------------------------------------------------------%
 % Keithley Sourcemeter 2400 driver file
-% This file is a matlab thisect that represents the 2400. It provides standard
+% This file is a matlab object that represents the 2400. It provides standard
 % methods that interface with the device so the specific code required for
 % communicating with the device over GPIB is not needed.
 %
 % Methods:
-% setvoltage: set or read dc voltage
-% readvoltage: reads voltage from aux input
-% ref: set or read internal or external reference
-% freq: set or read frequency
-% reftrig: sine or TTL reference input
-% harmonic: set or read harmonic
-% excitation: set or read AC excitation voltage
-% inputconfig: set or read the input configuration
-% shieldgrounding: set or read shield grounding configuration
-% notchfilter: set or read the notch filter configuration
-% sensitivity: set or read the sensitivity
-% reserve: set or read reserve
-% tc: set or read time constant
-% lpfilterslope: set or read low pass filter slope
-% syncfilter: set or read synchronous filter status
-% readoutput: reads X, Y, R, phase components from the input
+% configure: set or read dc voltage
+% setvoltage: sets DC voltage or reads current set voltage
+% readoutput: depending on how the device is configured, reads voltage, current, resistance
 
 
 %------------------------------------------------------------------------------%
@@ -104,7 +91,7 @@ classdef K2400 < common	%generate new class for SRS830 and make it a subclass of
         
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % readoutput: sends a read command and then reads the output of    %
-        % the device                                                       %
+        % the device, in this case V, I and R                              %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function [voltage, current, resistance] = readoutput(this)

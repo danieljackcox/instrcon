@@ -8,23 +8,11 @@
 %
 % Methods:
 % configure: sets the device in the measurement mode requested
-
-% setvoltage: set or read dc voltage
-% readvoltage: reads voltage from aux input
-% ref: set or read internal or external reference
-% freq: set or read frequency
-% reftrig: sine or TTL reference input
-% harmonic: set or read harmonic
-% excitation: set or read AC excitation voltage
-% inputconfig: set or read the input configuration
-% shieldgrounding: set or read shield grounding configuration
-% notchfilter: set or read the notch filter configuration
-% sensitivity: set or read the sensitivity
-% reserve: set or read reserve
-% tc: set or read time constant
-% lpfilterslope: set or read low pass filter slope
-% syncfilter: set or read synchronous filter status
-% readoutput: reads X, Y, R, phase components from the input
+% trigger: triggers the device to measure, seperated from readoutput functionality
+% because this can take some time
+% readoutput: reads the configured output after a trigger event
+% detband: changes the detection band filter (3, 20, 200 Hz)
+% integrationtime: changes the integration time for measurement (unfinished)
 
 
 %------------------------------------------------------------------------------%
@@ -197,3 +185,5 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
             
         end
     end
+    
+end
