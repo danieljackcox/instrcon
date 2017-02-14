@@ -127,7 +127,7 @@ classdef K2400 < common	%generate new class for SRS830 and make it a subclass of
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = idn(this)
-            fprintf(this.instr, 'IDN?');
+            fprintf(this.instr, '*IDN?');
             output = fscanf(this.instr, '%s');
         end
         

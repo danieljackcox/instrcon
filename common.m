@@ -123,6 +123,10 @@ classdef common < handle
                 handle = K2400;
                 handle.instr = instr;
                 
+                elseif( ~isempty(strfind(identity, 'KEITHLEY INSTRUMENTS INC.,MODEL 2450')) )
+                handle = K2450;
+                handle.instr = instr;
+                
             end
         end
         
