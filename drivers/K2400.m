@@ -28,8 +28,10 @@ classdef K2400 < common	%generate new class for SRS830 and make it a subclass of
     methods
         
         %constructor (i.e. creator class, called by default)
-        function obj = K2400
-            %nothing
+        function obj = K2400(instr)
+            %a gpib object is passed when creating the object, so make it
+            %part of the object here
+            obj.instr = instr;
         end
         
         

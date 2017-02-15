@@ -7,9 +7,8 @@ classdef common < handle
     
     properties
         verb = 0; % verbosity, off by default
-        addr; % address of device
-        vend; % board vendor, by default 'ni'
-        bus; % bus number, by default 0
+        drivers;
+        idns;
     end
     
     methods
@@ -19,7 +18,11 @@ classdef common < handle
             addpath('functions');
             % make sure matlab can see the contents
             % of the drivers folder
-            obj;
+            
+            %import the identities and drivers supported
+            load('drivers/identities.mat');
+            obj.drivers = drivers;
+            obj.idns = idns;
         end
         
     end
@@ -29,7 +32,7 @@ classdef common < handle
         % open function, will open gpib device, identify it and return correct
         % device driver object
         % vend and bus are optional arguments
-        function handle = open(obj, addr, vend, bus)
+        function handle = open(this, addr, vend, bus)
             
             % if no address is given then show an error
             if(~exist('addr', 'var'))
@@ -80,7 +83,7 @@ classdef common < handle
             %%%
             % GPIB object creation and opening
             %%%
-            
+
             
             % create a gpib object with the passed variables (or defaults)
             % and assign it to a temporary variable so we can open it
@@ -99,35 +102,30 @@ classdef common < handle
             clrdevice(instr); % hardware buffers
             
             % print a confirmation message if the option is chosen
-            if( obj.verb == 1 )
+            if( this.verb == 1 )
                 fprintf(1, 'Device opened at %s (GPIB)', num2str(ADDR));
             end
             
             %query device for its identity
             identity = query(instr, '*IDN?');
-            
-            % UNFINISHED, only supports SR830
-            if( ~isempty(strfind(identity, 'Stanford_Research_Systems,SR830')) )
-                handle = SR830;
-                handle.instr = instr;
-                
-            elseif( ~isempty(strfind(identity, 'HEWLETT-PACKARD,34401A')) )
-                handle = HP34401A;
-                handle.instr = instr;
-                
-            elseif( ~isempty(strfind(identity, 'HEWLETT-PACKARD,33120A')) )
-                handle = HP33120A;
-                handle.instr = instr;
-                
-            elseif( ~isempty(strfind(identity, 'KEITHLEY INSTRUMENTS INC.,MODEL 2400')) )
-                handle = K2400;
-                handle.instr = instr;
-                
-                elseif( ~isempty(strfind(identity, 'KEITHLEY INSTRUMENTS INC.,MODEL 2450')) )
-                handle = K2450;
-                handle.instr = instr;
-                
+            %match to a driver object
+            matches = zeros(size(this.idns));
+            for i=1:length(this.idns)
+                matches(i) = ~isempty(strfind(identity, this.idns{i}));
             end
+            
+            drivernumber = find(matches);
+            
+            %call that object
+            handle = this.drivers{drivernumber}(instr);
+            
+            
+            for i=1:length(this.idns)
+                strfind(identity, this.idns{i})
+            end
+            
+            
+            
         end
         
         

@@ -1,5 +1,5 @@
 % SR830.m
-
+%
 %------------------------------------------------------------------------------%
 % Stanford Research Systems SR830 Lock-in Amplifier driver file
 % This file is a matlab thisect that represents the SR830. It provides standard
@@ -9,7 +9,8 @@
 % Methods:
 % setvoltage: set or read dc voltage
 % readvoltage: reads voltage from aux input
-% ref: set or read internal or external reference
+% freqref: set or read internal or external reference
+% phase: sets or reads phase shift
 % freq: set or read frequency
 % reftrig: sine or TTL reference input
 % harmonic: set or read harmonic
@@ -33,23 +34,37 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
     %declare some basic properties (variables) for use later
     % UNFINISHED
     properties
-        instr
-        V
+        instr;
+        setting;
     end
     
     
     methods
         
         %constructor (i.e. creator class, called by default)
-        function obj = SR830
-            %nothing
+        function obj = SR830(instr)
+            %a gpib object is passed when creating the object, so make it
+            %part of the object here
+            obj.instr = instr;
+            
+            %set instrument into known state
+            if noreset exists then
+                dont reset
+            else
+                do reset
+            end
+            
+            %now record the initial settings
+            record;
+            
         end
-
-
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % setvoltage: sets or reads a DC voltage on one of the              %
         % auxilliary (output) channels                                      %
-        % IMPORTANT: setvoltage can return the *set* voltage value, it does %       % not measure any voltage                                           %
+        % IMPORTANT: setvoltage can return the *set* voltage value, it does %
+        % not measure any voltage                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = setvoltage(this, V, channel)
@@ -139,24 +154,47 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
             
         end
         
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % freq: sets or reads internal frequency              %
+        % freqref: sets the device to use internal or external    %
+        % frequency reference or queries to get the ref       %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function output = freqref(this, ref)
+            if( nargin == 1 || isempty(ref) )
+                fprintf(this.instr, 'FMOD?');
+                output = fscanf(this.instr, '%d');
+            else
+                
+                if( ~isnumeric(ref))
+                    error('Provided reference must be an integer or logical');
+                end
+                
+                % passes all error checking, then execute
+                fprintf(this.instr, 'FMOD %d', ref);
+                
+            end
+            
+        end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % phase: sets or reads phase shift                    %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = freq(this, freq)
+        function output = phase(this, phase)
             
             % if nothing or empty variable is passed then read the value
             % and return it
-            if( nargin == 1 || isempty(freq) )
-                fprintf(this.instr, 'FREQ?');
+            if( nargin == 1 || isempty(phase) )
+                fprintf(this.instr, 'PHAS?');
                 output = fscanf(this.instr, '%f');
             else
                 % otherwise do basic sanity checking and then set the frequency
-                if( ~isnumeric(freq))
-                    error('Provided frequency must be a real number');
+                if( ~isnumeric(phase))
+                    error('Provided phase must be a real number');
                 end
                 
-                fprintf(this.instr, 'FREQ %f', freq);
+                fprintf(this.instr, 'PHAS %f', phase);
                 
             end
             
@@ -511,6 +549,36 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % inputcoupling: sets or reads the input coupling                   %
+        % AC (0) or DC (1)                                                  %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = inputcoupling(this, inputcoupling)
+            
+            % if empty or nonexistent then read and return the value
+            if( nargin == 1 || isempty(inputcoupling) )
+                fprintf(this.instr, 'ICPL?');
+                output = fscanf(this.instr, '%d');
+            else
+                
+                % check if number, then check if in correct range
+                if( ~isnumeric(inputcoupling) )
+                    error('Input coupling must be a number');
+                end
+                
+                if( ~ismember(inputcoupling , 0:1) )
+                    error('Input must be 0 or 1');
+                end
+                
+                % set the value
+                fprintf(this.instr, 'ICPL %d', syncfilter);
+                
+            end
+            
+        end
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % readoutput: returns the AC input values (X, Y, R, phase)          %
         % note: the values for X, Y and R, phase are recorded approx 10 uS  %
         % apart. This should only be important at ultra-short time constants%
@@ -528,6 +596,56 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
             Y       = tmp_output(2);
             R       = tmp_output(3);
             phase   = tmp_output(4);
+            
+        end
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getsettings: executes other functions in this file and returns    %
+        % a formatted list of the current device settings                   %
+        % n.b. this function does not directly return values but rather     %
+        % sets the object properties!                                       %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function getsettings(this)
+            %get the settings
+            phaseoffset = this.phase;
+            inputground = this.shieldgrounding;
+            harmonic = this.harmonic;
+            inputconfiguration = this.inputconfig;
+            inputcoupling = this.inputcoupling;
+            notchfilter = this.notchfilter;
+            reserve = this.reserve;
+            tc = this.tc;
+            filterslope = this.lpfilterslope;
+            syncfilter = this.syncfilter;
+            
+            %make a human-readable list of settings
+            inputconfig_text = {'A','A-B','I (10MOhm)','I (100MOhm)'};
+            inputground_text = {'float','ground'};
+            inputcoupling_text = {'AC','DC'};
+            notchfilter_text = {'none','50Hz','100Hz','50+100Hz'};
+            reserve_text = {'high','normal','low noise'};
+            timeconstant_text = {'10us','30us','100us','300us','1ms','3ms','10ms','30ms','100ms','300ms','1s','3s','10s','30s','100s','300s','1ks','3ks','10ks','30ks'};
+            filterslope_text = {'6dB/oct','12dB/oct','18dB/oct','24dB/oct'};
+            syncfilter_text = {'off','on'};
+            
+            %commit the changes
+            
+            this.setphaseoffset = phaseoffset;
+            this.setinputground = inputground_text{inputground + 1};
+            this.setharmonic = harmonic;
+            this.setinputconfig = inputconfig_text{inputconfiguration+1};
+            this.setnotchfilter = notchfilter_text{notchfilter+1};
+            this.setreserve = reserve_text{reserve+1};
+            this.settc = timeconstant_text{tc+1};
+            this.setfilterslope = filterslope_text{filterslope+1};
+            this.setsyncfilter = syncfilter_text{syncfilter+1};
+            this.setinputcoupling = inputcoupling_text{inputcoupling+1};
+            
+            
+            
+            
             
         end
         

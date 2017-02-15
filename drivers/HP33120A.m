@@ -29,8 +29,10 @@ classdef HP33120A < common	%generate new class for SRS830 and make it a subclass
     methods
         
         %constructor (i.e. creator class, called by default)
-        function obj = HP33120A
-            %nothing
+        function obj = HP33120A(instr)
+            %a gpib object is passed when creating the object, so make it
+            %part of the object here
+            obj.instr = instr;
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

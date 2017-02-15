@@ -28,8 +28,15 @@ classdef K2450 < common	%generate new class for K2450 and make it a subclass of 
     methods
 
         %constructor (i.e. creator class, called by default)
-        function obj = K2450
-            %nothing
+        function obj = K2450(instr)
+            obj.instr = instr;
+            fprintf(obj.instr, '*RST');
+            fprintf(obj.instr, 'SOUR:FUNC VOLT');
+            fprintf(obj.instr, 'SENS:FUNC "CURR"');
+            fprintf(obj.instr, 'SOUR:VOLT:READ:BACK ON');
+            fprintf(obj.instr, 'SOUR:VOLT 0');
+            fprintf(obj.instr, 'OUTP ON');
+            
         end
 
 
@@ -81,6 +88,7 @@ classdef K2450 < common	%generate new class for K2450 and make it a subclass of 
                 end
 
                 fprintf(this.instr, sprintf('SOUR:VOLT %f', V));
+                fprintf(this.instr, 'TRAC:TRIG');
 
             end
         end
@@ -92,14 +100,11 @@ classdef K2450 < common	%generate new class for K2450 and make it a subclass of 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function output = readoutput(this)
-            fprintf(this.instr, ':READ?');
+            fprintf(this.instr, 'READ?');
             output = fscanf(this.instr, '%f');
 
 
         end
-
-
-
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
