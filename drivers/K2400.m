@@ -1,5 +1,5 @@
 % K2400.m
-
+%
 %------------------------------------------------------------------------------%
 % Keithley Sourcemeter 2400 driver file
 % This file is a matlab object that represents the 2400. It provides standard

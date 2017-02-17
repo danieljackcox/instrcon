@@ -1,5 +1,5 @@
 % HP33120A.m
-
+%
 %------------------------------------------------------------------------------%
 % HP/Agilent/keysight 33120A function generator driver file
 % This file is a matlab thisect that represents the 33120A. It provides standard

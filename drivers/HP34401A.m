@@ -1,5 +1,5 @@
 % HP34401A.m
-
+%
 %------------------------------------------------------------------------------%
 % HP/Agilent 34401A multimeter driver file
 % This file is a matlab object that represents the 34401A. It provides standard

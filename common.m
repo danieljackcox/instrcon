@@ -20,9 +20,7 @@ classdef common < handle
             % of the drivers folder
             
             %import the identities and drivers supported
-            load('drivers/identities.mat');
-            obj.drivers = drivers;
-            obj.idns = idns;
+            run('drivers/identities.m');
         end
         
     end
@@ -103,11 +101,12 @@ classdef common < handle
             
             % print a confirmation message if the option is chosen
             if( this.verb == 1 )
-                fprintf(1, 'Device opened at %s (GPIB)', num2str(ADDR));
+                fprintf(1, 'Device opened at %s (GPIB)', num2str(addr));
             end
             
             %query device for its identity
             identity = query(instr, '*IDN?');
+            
             %match to a driver object
             matches = zeros(size(this.idns));
             for i=1:length(this.idns)
@@ -116,16 +115,13 @@ classdef common < handle
             
             drivernumber = find(matches);
             
-            %call that object
-            handle = this.drivers{drivernumber}(instr);
-            
-            
-            for i=1:length(this.idns)
-                strfind(identity, this.idns{i})
+            if(isempty(drivernumber))
+                error('No match found for device\n IDN: %s', identity);
             end
             
-            
-            
+            %call that object and return the correct handle
+            handle = this.drivers{drivernumber}(instr);
+
         end
         
         

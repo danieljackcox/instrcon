@@ -35,27 +35,44 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
     % UNFINISHED
     properties
         instr;
-        setting;
+        phaseoffset;
+        inputground;
+        harmonic;
+        inputconfig;
+        notchfilter;
+        reserve;
+        tc;
+        filterslope;
+        syncfilter;
+        inputcoupling;
     end
     
     
     methods
         
         %constructor (i.e. creator class, called by default)
-        function obj = SR830(instr)
+        function obj = SR830(instr, noreset)
             %a gpib object is passed when creating the object, so make it
             %part of the object here
             obj.instr = instr;
             
-            %set instrument into known state
-            if noreset exists then
-                dont reset
+            if(exist('noreset', 'var'))
+                if(~isnumeric(noreset))
+                    error('Noreset must be an integer\n Device SR830 at GPIB %d', obj.instr.PrimaryAddress);
+                end
             else
-                do reset
+                noreset = 0;
             end
             
-            %now record the initial settings
-            record;
+            if(noreset == 1)
+                %do absolutely nothing
+            else
+                fprintf(obj.instr, '*RST');
+            end
+            
+            
+            
+            obj.getsettings;
             
         end
         
@@ -67,14 +84,14 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         % not measure any voltage                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = setvoltage(this, V, channel)
+        function setvoltage(this, V, channel)
             
             % check that the channel variable exists first
             % if it exists, check if it is a number
             % if not then assign default value 1
             if(exist('channel', 'var'))
                 if(~isnumeric(channel))
-                    error('Channel must be an integer number');
+                    error('Channel must be an integer number\n Device SR830 "%s" at %d', inputname(1), this.instr.PrimaryAddress);
                 end
             else
                 channel = 1;
@@ -82,24 +99,54 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
             
             % make sure that the channel is a number between 1 and 4
             if( ~ismember(channel, 1:4) )
-                error('Channel number must be between 1 and 4');
+                error('Channel number must be between 1 and 4\n Device SR830 "%s" at %d', inputname(1), this.instr.PrimaryAddress);
             end
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
             if(nargin == 1 || ~exist('V', 'var') || isempty(V))
-                fprintf(this.instr, sprintf('AUXV? %d', channel));
-                output = fscanf(this.instr, '%f');
+                error('No voltage passed');
+                
             else
                 
                 % otherwise set the voltage
                 if(~isnumeric(V))
-                    error('Voltage must be a number');
+                    error('Voltage must be a number\n Device SR830 "%s" at %d', inputname(1), this.instr.PrimaryAddress);
                 end
                 
                 fprintf(this.instr, sprintf('AUX V %d, %f', channel, V));
                 
             end
         end
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getvoltage: reads the current set voltage on the specified        %
+        % AUX out channel                                                   %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getvoltage(this, channel)
+            
+            % check that the channel variable exists first
+            % if it exists, check if it is a number
+            % if not then assign default value 1
+            if(exist('channel', 'var'))
+                if(~isnumeric(channel))
+                    error('Channel must be an integer number\n Device SR830 "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                end
+            else
+                channel = 1;
+            end
+            
+            % make sure that the channel is a number between 1 and 4
+            if( ~ismember(channel, 1:4) )
+                error('Channel number must be between 1 and 4\n Device SR830 "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+            end
+            
+            %if we got this far then everything should be fine
+            fprintf(this.instr, sprintf('AUXV? %d', channel));
+            output = fscanf(this.instr, '%f');
+        end
+        
         
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,64 +177,47 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
             
         end
         
-        
+               
         
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % ref: sets the device to use internal or external    %
+        % setfreqref: sets the device to use internal or external    %
         % frequency reference or queries to get the ref       %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function output = ref(this, ref)
-            if( nargin == 1 || isempty(ref) )
-                fprintf(this.instr, 'FMOD?');
-                output = fscanf(this.instr, '%d');
-            else
-                
+        function setfreqref(this, ref)
+           
                 if( ~isnumeric(ref))
                     error('Provided reference must be an integer or logical');
                 end
                 
                 % passes all error checking, then execute
                 fprintf(this.instr, 'FMOD %d', ref);
-                
-            end
-            
+
         end
         
         
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % freqref: sets the device to use internal or external    %
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getfreqref: sets the device to use internal or external    %
         % frequency reference or queries to get the ref       %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function output = freqref(this, ref)
-            if( nargin == 1 || isempty(ref) )
+        function output = getfreqref(this)
+        
                 fprintf(this.instr, 'FMOD?');
                 output = fscanf(this.instr, '%d');
-            else
-                
-                if( ~isnumeric(ref))
-                    error('Provided reference must be an integer or logical');
-                end
-                
-                % passes all error checking, then execute
-                fprintf(this.instr, 'FMOD %d', ref);
-                
-            end
-            
+   
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % phase: sets or reads phase shift                    %
+        % setphase: sets phase shift                    %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = phase(this, phase)
+        function setphase(this, phase)
             
             % if nothing or empty variable is passed then read the value
             % and return it
             if( nargin == 1 || isempty(phase) )
-                fprintf(this.instr, 'PHAS?');
-                output = fscanf(this.instr, '%f');
+                error('No phase provided');
             else
                 % otherwise do basic sanity checking and then set the frequency
                 if( ~isnumeric(phase))
@@ -200,18 +230,32 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
             
         end
         
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getphase: sets or reads phase shift                    %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getphase(this)
+            
+           
+                fprintf(this.instr, 'PHAS?');
+                output = fscanf(this.instr, '%f');
+            
+        end
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % reftrig: sets the reference trigger to sine zero crossing       %
+        % setreftrig: sets the reference trigger to sine zero crossing       %
         % , TTL rising edge or TTL falling edge, also queries for current %
         % setting                                                         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = reftrig(this, trigtype)
+        function setreftrig(this, trigtype)
             
-            %if empty or nonexistent then read and return the value
+            %if empty or nonexistent then return an error
             if( nargin == 1 || isempty(trigtype) )
-                fprintf(this.instr, 'RSLP?');
-                output = fscanf(this.instr, '%d');
+                error('No Reference Type provided');
             else
                 % otherwise we set the value
                 
@@ -231,15 +275,31 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         end
         
         
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getreftrig: sets the reference trigger to sine zero crossing       %
+        % , TTL rising edge or TTL falling edge, also queries for current %
+        % setting                                                         %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getreftrig(this)
+            
+          
+                fprintf(this.instr, 'RSLP?');
+                output = fscanf(this.instr, '%d');
+
+        end
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % harmonic: sets or returns the measurement harmonic           %
+        % setharmonic: sets the measurement harmonic           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = harmonic(this, harmonic)
+        function setharmonic(this, harmonic)
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(harmonic) )
-                fprintf(this.instr, 'HARM?');
-                output = fscanf(this.instr, '%d');
+                error('No harmonic provided');
             else
                 % otherwise check if passed value is a number then set it
                 if( ~isnumeric(harmonic))
@@ -253,16 +313,29 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
             
         end
         
+        
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getharmonic: returns the measurement harmonic           %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getharmonic(this)
+            
+                fprintf(this.instr, 'HARM?');
+                output = fscanf(this.instr, '%d');
+                
+        end
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % excitation: sets or returns the AC output sine wave voltage (in RMS) %
+        % setexcitation: sets the AC output sine wave voltage (in RMS) %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = excitation(this, excitation)
+        function setexcitation(this, excitation)
             
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(excitation) )
-                fprintf(this.instr, 'SLVL?');
-                output = fscanf(this.instr, '%f');
+                error('No excitation provided');
             else
                 % check if passed value is a number
                 if( ~isnumeric(excitation))
@@ -277,17 +350,29 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         end
         
         
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getexcitation: returns the AC output sine wave voltage (in RMS) %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getexcitation(this)
+            
+            
+                fprintf(this.instr, 'SLVL?');
+                output = fscanf(this.instr, '%f');
+            
+        end
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % inputconfig: sets or reads the device input configuration, choose  %
+        % setinputconfig: sets the device input configuration, choose  %
         % between 0 (A), 1 (A-B), 2 (I 1MOhm), 3 (100 MOhm)                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = inputconfig(this, inputconfig)
+        function setinputconfig(this, inputconfig)
             
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(inputconfig) )
-                fprintf(this.instr, 'ISRC?');
-                output = fscanf(this.instr, '%d');
+                error('No input config provided');
             else
                 
                 % check if passed value is a number, and then check if it is
@@ -307,17 +392,32 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
             
         end
         
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getinputconfig: reads the device input configuration, choose  %
+        % between 0 (A), 1 (A-B), 2 (I 1MOhm), 3 (100 MOhm)                  %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getinputconfig(this)
+            
+          
+                fprintf(this.instr, 'ISRC?');
+                output = fscanf(this.instr, '%d');
+         
+        end
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % shieldgrounding: Sets or reads the input shield to be        %
+        % setshieldgrounding: Sets the input shield to be        %
         % floating (0) or grounded (1)                                 %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = shieldgrounding(this, shieldground)
+        function setshieldgrounding(this, shieldground)
             
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(shieldground) )
-                fprintf(this.instr, 'IGND?');
-                output = fscanf(this.instr, '%d');
+                error('No ground shield configuration provided');
             else
                 
                 % check if number, then check if in correct range
@@ -337,17 +437,31 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         end
         
         
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getshieldgrounding: reads the input shield to be        %
+        % floating (0) or grounded (1)                                 %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getshieldgrounding(this)
+            
+                fprintf(this.instr, 'IGND?');
+                output = fscanf(this.instr, '%d');
+           
+        end
+        
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % notchfilter: sets or reads the input line notch filter status %
+        % setnotchfilter: sets the input line notch filter status %
         % no filters (0), 1x line freq (1), 2x line freq (2) or both (3)%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = notchfilter(this, notchfilter)
+        function setnotchfilter(this, notchfilter)
             
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(notchfilter) )
-                fprintf(this.instr, 'ILIN?');
-                output = fscanf(this.instr, '%d');
+                error('no notch filter provided');
             else
                 
                 % check if number, then check if in correct range
@@ -368,8 +482,23 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         
         
         
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getnotchfilter: reads the input line notch filter status %
+        % no filters (0), 1x line freq (1), 2x line freq (2) or both (3)%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getnotchfilter(this)
+            
+
+                fprintf(this.instr, 'ILIN?');
+                output = fscanf(this.instr, '%d');
+     
+        end
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % sensitivity: sets or reads the sensitivity. The input or return %
+        % setsensitivity: sets the sensitivity. The input or return %
         % is an integer that corresponds to a sensitivity listed below    %
         % 0       2 nV/fA             13          50 ?V/pA                %
         % 1       5 nV/fA             14          100 ?V/pA               %
@@ -387,12 +516,11 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         %                             26          1 V/?A                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = sensitivity(this, sensitivity)
+        function setsensitivity(this, sensitivity)
             
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(sensitivity) )
-                fprintf(this.instr, 'SENS?');
-                output = fscanf(this.instr, '%d');
+                error('no sensitivity provided');
             else
                 
                 % check if number, then check range is correct
@@ -412,17 +540,47 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         end
         
         
+        
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getsensitivity: reads the sensitivity. The input or return %
+        % is an integer that corresponds to a sensitivity listed below    %
+        % 0       2 nV/fA             13          50 ?V/pA                %
+        % 1       5 nV/fA             14          100 ?V/pA               %
+        % 2       10 nV/fA            15          200 ?V/pA               %
+        % 3       20 nV/fA            16          500 ?V/pA               %
+        % 4       50 nV/fA            17          1 mV/nA                 %
+        % 5       100 nV/fA           18          2 mV/nA                 %
+        % 6       200 nV/fA           19          5 mV/nA                 %
+        % 7       500 nV/fA           20          10 mV/nA                %
+        % 8       1 ?V/pA             21          20 mV/nA                %
+        % 9       2 ?V/pA             22          50 mV/nA                %
+        % 10      5 ?V/pA             23          100 mV/nA               %
+        % 11      10 ?V/pA            24          200 mV/nA               %
+        % 12      20 ?V/pA            25          500 mV/nA               %
+        %                             26          1 V/?A                  %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getsensitivity(this)
+            
+
+                fprintf(this.instr, 'SENS?');
+                output = fscanf(this.instr, '%d');
+ 
+        end
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % reserve: sets or reads the reserve value, high (0), normal (1) %
+        % setreserve: sets the reserve value, high (0), normal (1) %
         % or low noise (2)                                               %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = reserve(this, reserve)
+        function setreserve(this, reserve)
             
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(reserve) )
-                fprintf(this.instr, 'RMOD?');
-                output = fscanf(this.instr, '%d');
+                error('no reserve provided');
             else
                 
                 % check if number, then check if in correct range
@@ -443,8 +601,24 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         
         
         
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getreserve: reads the reserve value, high (0), normal (1) %
+        % or low noise (2)                                               %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getreserve(this)
+            
+
+                fprintf(this.instr, 'RMOD?');
+                output = fscanf(this.instr, '%d');
+
+        end
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % tc: sets or reads the time constant. The input or return        %
+        % settc: sets the time constant. The input or return        %
         % is an integer that corresponds to a time constant listed below  %
         % tip: during measurement the settling time is at least 5 times   %
         % the set TC                                                      %
@@ -461,12 +635,11 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         %                                                                 %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = tc(this, tc)
+        function settc(this, tc)
             
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(tc) )
-                fprintf(this.instr, 'OFLT?');
-                output = fscanf(this.instr, '%d');
+                error('no tc provided');
             else
                 
                 % check if number, then check range is correct
@@ -487,17 +660,45 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         
         
         
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % gettc: reads the time constant. The input or return        %
+        % is an integer that corresponds to a time constant listed below  %
+        % tip: during measurement the settling time is at least 5 times   %
+        % the set TC                                                      %
+        % 0       10 μs             10          1 s                       %
+        % 1       30 μs             11          3 s                       %
+        % 2       100 μs            12          10 s                      %
+        % 3       300 μs            13          30 s                      %
+        % 4       1 ms              14          100 s                     %
+        % 5       3 ms              15          300 s                     %
+        % 6       10 ms             16          1 ks                      %
+        % 7       30 ms             17          3 ks                      %
+        % 8       100 ms            18          10 ks                     %
+        % 9       300 ms            19          30 ks                     %
+        %                                                                 %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = gettc(this)
+            
+
+                fprintf(this.instr, 'OFLT?');
+                output = fscanf(this.instr, '%d');
+
+        end
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % lpfilterslope: sets or reads the low-pass filter slope,        %
+        % setlpfilterslope: sets the low-pass filter slope,        %
         % 6 dB/oct (0), 12 dB/oct (1), 18 dB/oct (2), 24 dB/oct (3)      %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = lpfilterslope(this, lpfilterslope)
+        function setlpfilterslope(this, lpfilterslope)
             
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(lpfilterslope) )
-                fprintf(this.instr, 'OFSL?');
-                output = fscanf(this.instr, '%d');
+                error('no filter slope provided');
             else
                 
                 % check if number, then check if in correct range
@@ -517,18 +718,33 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         end
         
         
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getlpfilterslope: reads the low-pass filter slope,        %
+        % 6 dB/oct (0), 12 dB/oct (1), 18 dB/oct (2), 24 dB/oct (3)      %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getlpfilterslope(this)
+            
+
+                fprintf(this.instr, 'OFSL?');
+                output = fscanf(this.instr, '%d');
+            
+        end
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % syncfilter: sets or reads the synchronous filter status           %
+        % setsyncfilter: sets the synchronous filter status           %
         % OFF (0) or ON (1), only operates below excitation frequecy 200 Hz %
         % worth keeping on                                                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = syncfilter(this, syncfilter)
+        function setsyncfilter(this, syncfilter)
             
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(syncfilter) )
-                fprintf(this.instr, 'SYNC?');
-                output = fscanf(this.instr, '%d');
+                error('no sync filter provided');
             else
                 
                 % check if number, then check if in correct range
@@ -548,17 +764,34 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         end
         
         
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % inputcoupling: sets or reads the input coupling                   %
+        % getsyncfilter: reads the synchronous filter status           %
+        % OFF (0) or ON (1), only operates below excitation frequecy 200 Hz %
+        % worth keeping on                                                  %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getsyncfilter(this)
+            
+         
+                fprintf(this.instr, 'SYNC?');
+                output = fscanf(this.instr, '%d');
+ 
+            
+        end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % setinputcoupling: sets the input coupling                   %
         % AC (0) or DC (1)                                                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        function output = inputcoupling(this, inputcoupling)
+        function setinputcoupling(this, inputcoupling)
             
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(inputcoupling) )
-                fprintf(this.instr, 'ICPL?');
-                output = fscanf(this.instr, '%d');
+                error('no input coupling provided');
             else
                 
                 % check if number, then check if in correct range
@@ -571,10 +804,26 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
                 end
                 
                 % set the value
-                fprintf(this.instr, 'ICPL %d', syncfilter);
+                fprintf(this.instr, 'ICPL %d', inputcoupling);
                 
             end
             
+        end
+        
+        
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getinputcoupling: reads the input coupling                   %
+        % AC (0) or DC (1)                                                  %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        function output = getinputcoupling(this)
+            
+
+                fprintf(this.instr, 'ICPL?');
+                output = fscanf(this.instr, '%d');
+   
         end
         
         
@@ -609,16 +858,16 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
         
         function getsettings(this)
             %get the settings
-            phaseoffset = this.phase;
-            inputground = this.shieldgrounding;
-            harmonic = this.harmonic;
-            inputconfiguration = this.inputconfig;
-            inputcoupling = this.inputcoupling;
-            notchfilter = this.notchfilter;
-            reserve = this.reserve;
-            tc = this.tc;
-            filterslope = this.lpfilterslope;
-            syncfilter = this.syncfilter;
+            phaseoffset = this.getphase;
+            inputground = this.getshieldgrounding;
+            harmonic = this.getharmonic;
+            inputconfiguration = this.getinputconfig;
+            inputcoupling = this.getinputcoupling;
+            notchfilter = this.getnotchfilter;
+            reserve = this.getreserve;
+            tc = this.gettc;
+            filterslope = this.getlpfilterslope;
+            syncfilter = this.getsyncfilter;
             
             %make a human-readable list of settings
             inputconfig_text = {'A','A-B','I (10MOhm)','I (100MOhm)'};
@@ -632,16 +881,16 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
             
             %commit the changes
             
-            this.setphaseoffset = phaseoffset;
-            this.setinputground = inputground_text{inputground + 1};
-            this.setharmonic = harmonic;
-            this.setinputconfig = inputconfig_text{inputconfiguration+1};
-            this.setnotchfilter = notchfilter_text{notchfilter+1};
-            this.setreserve = reserve_text{reserve+1};
-            this.settc = timeconstant_text{tc+1};
-            this.setfilterslope = filterslope_text{filterslope+1};
-            this.setsyncfilter = syncfilter_text{syncfilter+1};
-            this.setinputcoupling = inputcoupling_text{inputcoupling+1};
+            this.phaseoffset = phaseoffset;
+            this.inputground = inputground_text{inputground + 1};
+            this.harmonic = harmonic;
+            this.inputconfig = inputconfig_text{inputconfiguration+1};
+            this.notchfilter = notchfilter_text{notchfilter+1};
+            this.reserve = reserve_text{reserve+1};
+            this.tc = timeconstant_text{tc+1};
+            this.filterslope = filterslope_text{filterslope+1};
+            this.syncfilter = syncfilter_text{syncfilter+1};
+            this.inputcoupling = inputcoupling_text{inputcoupling+1};
             
             
             
