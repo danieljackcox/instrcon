@@ -93,23 +93,20 @@ classdef HP33120A < common	%generate new class for SRS830 and make it a subclass
 
                 fprintf(this.instr, 'CONF?');
                 output = fscanf(this.instr, '%s');
-    
+
         end
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setvoltage: sets or reads a DC voltage                            %
-        % IMPORTANT: setvoltage can return the *set* voltage value, it does %
-        % not measure any voltage                                           %
+        % setvoltage: sets a DC voltage                            %                                        %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = setvoltage(this, V, ~)
+        function setvoltage(this, V, ~)
 
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
             if(nargin == 1 || ~exist('V', 'var') || isempty(V))
-                fprintf(this.instr, 'VOLT:OFFS?');
-                output = fscanf(this.instr, '%f');
+                error('No voltage provided');
             else
 
                 % otherwise set the voltage
@@ -123,17 +120,32 @@ classdef HP33120A < common	%generate new class for SRS830 and make it a subclass
         end
 
 
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getvoltage: reads a DC voltage                            %
+        % IMPORTANT: getvoltage returns the *set* voltage value, it does %
+        % not measure any voltage                                           %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = getvoltage(this)
+
+
+                fprintf(this.instr, 'VOLT:OFFS?');
+                output = fscanf(this.instr, '%f');
+
+        end
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % freq: sets or reads internal frequency              %
+        % setfreq: sets internal frequency              %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = freq(this, freq)
+        function setfreq(this, freq)
 
             % if nothing or empty variable is passed then read the value
             % and return it
             if( nargin == 1 || isempty(freq) )
-                fprintf(this.instr, 'FREQ?');
-                output = fscanf(this.instr, '%f');
+                error('No frequency provided');
             else
                 % otherwise do basic sanity checking and then set the frequency
                 if( ~isnumeric(freq))
@@ -147,16 +159,31 @@ classdef HP33120A < common	%generate new class for SRS830 and make it a subclass
         end
 
 
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getfreq: reads internal frequency              %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = getfreq(this)
+
+
+                fprintf(this.instr, 'FREQ?');
+                output = fscanf(this.instr, '%f');
+
+
+        end
+
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % excitation: sets or returns the AC output sine wave voltage (in RMS) %
+        % setxcitation: sets the AC output sine wave voltage (in RMS) %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = excitation(this, excitation)
+        function setexcitation(this, excitation)
 
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(excitation) )
-                fprintf(this.instr, 'VOLT?');
-                output = fscanf(this.instr, '%f');
+                error('No excitation provided');
             else
                 % check if passed value is a number
                 if( ~isnumeric(excitation))
@@ -167,6 +194,21 @@ classdef HP33120A < common	%generate new class for SRS830 and make it a subclass
                 fprintf(this.instr, 'VOLT %f', excitation);
 
             end
+
+        end
+
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getexcitation: returns the AC output sine wave voltage (in RMS) %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = getexcitation(this)
+
+
+                fprintf(this.instr, 'VOLT?');
+                output = fscanf(this.instr, '%f');
+
 
         end
 

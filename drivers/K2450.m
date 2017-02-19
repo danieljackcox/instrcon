@@ -36,19 +36,18 @@ classdef K2450 < common	%generate new class for K2450 and make it a subclass of 
             fprintf(obj.instr, 'SOUR:VOLT:READ:BACK ON');
             fprintf(obj.instr, 'SOUR:VOLT 0');
             fprintf(obj.instr, 'OUTP ON');
-            
+
         end
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % configure: reads or sets the measurement type                     %
+        % setconf: sets the measurement type                     %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function output = configure(this, type)
+        function setconf(this, type)
 
             % if no arguments provided then return the current config
             if( nargin == 1 )
-                fprintf(this.instr, 'SOUR:FUNC?');
-                output = fscanf(this.instr, '%s');
+                error('No arguments provided');
 
             else
                 switch type
@@ -67,19 +66,31 @@ classdef K2450 < common	%generate new class for K2450 and make it a subclass of 
 
         end
 
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setvoltage: sets or reads a DC voltage                            %
-        % IMPORTANT: setvoltage can return the *set* voltage value, it does %
-        % not measure any voltage                                           %
+        % getconf: reads the measurement type                     %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function output = getconf(this)
+
+                fprintf(this.instr, 'SOUR:FUNC?');
+                output = fscanf(this.instr, '%s');
+
+
+        end
+
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % setvoltage: sets a DC voltage                            %                                         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = setvoltage(this, V, ~)
+        function getvoltage(this, V, ~)
 
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
             if(nargin == 1 || ~exist('V', 'var') || isempty(V))
-                fprintf(this.instr, 'SOUR:VOLT?');
-                output = fscanf(this.instr, '%f');
+                error('No arguments provided');
             else
 
                 % otherwise set the voltage
@@ -92,6 +103,24 @@ classdef K2450 < common	%generate new class for K2450 and make it a subclass of 
 
             end
         end
+
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getvoltage: reads a DC voltage                            %
+        % IMPORTANT: getvoltage can return the *set* voltage value, it does %
+        % not measure any voltage                                           %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = getvoltage(this)
+
+
+                fprintf(this.instr, 'SOUR:VOLT?');
+                output = fscanf(this.instr, '%f');
+        
+        end
+
+
 
 
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

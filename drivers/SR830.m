@@ -6,29 +6,52 @@
 % methods that interface with the device so the specific code required for
 % communicating with the device over GPIB is not needed.
 %
-% Methods:
-% setvoltage: set or read dc voltage
+%
+% Properties are variables that are part of this pseudo-device and represent
+% real-world setting and values such as the current voltage
+%
+% Methods are functions used to access the abilities of the device
+% for example setting a voltage or reading in a resistance value
+% current methods (functions) are listed below:
+%
+% setvoltage: sets dc voltage on AUX output
+% getvoltage: reads current set dc voltage on AUX output
 % readvoltage: reads voltage from aux input
-% freqref: set or read internal or external reference
-% phase: sets or reads phase shift
-% freq: set or read frequency
-% reftrig: sine or TTL reference input
-% harmonic: set or read harmonic
-% excitation: set or read AC excitation voltage
-% inputconfig: set or read the input configuration
-% shieldgrounding: set or read shield grounding configuration
-% notchfilter: set or read the notch filter configuration
-% sensitivity: set or read the sensitivity
-% reserve: set or read reserve
-% tc: set or read time constant
-% lpfilterslope: set or read low pass filter slope
-% syncfilter: set or read synchronous filter status
+% setfreqref: sets internal or external reference
+% getfreqref: reads current set reference type
+% setphase: sets phase shift
+% getphase: reads phase shift
+% setfreq: set AC excitation frequency
+% getfreq: reads AC excitation frequency
+% setreftrig: sets whether to use sine or TTL reference trigger
+% getreftrig: reads reference trigger type
+% setharmonic: set measurement harmonic
+% getharmonic: read measurement harmonic
+% setexcitation: set AC excitation voltage
+% getexcitation: read current set AC excitation voltage
+% setinputconfig: set the input configuration (A, A-B, I, etc.)
+% getinputconfig: read the input configuration
+% setshieldgrounding: set shield grounding configuration
+% getshieldgrounding: read shield grounding configuration
+% setnotchfilter: set the notch filter configuration
+% getnotchfilter: read the notch filter configuration
+% setsensitivity: set the sensitivity
+% getsensitivity: read the sensitivity
+% setreserve: set reserve
+% getreserve: read reserve
+% settc: set time constant
+% gettc: read time constant
+% setlpfilterslope: set low pass filter slope
+% getlpfilterslope: read low pass filter slope
+% setsyncfilter: set synchronous filter status
+% getsyncfilter: read synchronous filter status
 % readoutput: reads X, Y, R, phase components from the input
 
 
 %------------------------------------------------------------------------------%
 
-classdef SR830 < common	%generate new class for SRS830 and make it a subclass of handle
+classdef SR830 < common	%generate new class for SR830 and make it a subclass
+% of common
 
 
     %declare some basic properties (variables) for use later
@@ -67,7 +90,7 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
             if(noreset == 1)
                 %do absolutely nothing
             else
-                fprintf(obj.instr, '*RST');
+                %fprintf(obj.instr, '*RST');
             end
 
 
@@ -174,6 +197,34 @@ classdef SR830 < common	%generate new class for SRS830 and make it a subclass of
             % read the voltage and output
             fprintf(this.instr, sprintf('OAUX? %d', channel));
             output = fscanf(this.instr, '%f');
+
+        end
+
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % setfreq: sets the output AC frequency     %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function setfreq(this, freq)
+
+                if( ~isnumeric(freq))
+                    error('Provided frequency!!');
+                end
+
+                % passes all error checking, then execute
+                fprintf(this.instr, 'FREQ %f', freq);
+
+        end
+
+
+
+         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getfreq: gets the output AC frequency (set value)     %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function output = getfreq(this)
+
+                fprintf(this.instr, 'FREQ?');
+                output = fscanf(this.instr, '%f');
 
         end
 

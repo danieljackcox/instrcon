@@ -18,37 +18,36 @@
 %------------------------------------------------------------------------------%
 
 classdef HP34401A < common	%generate new class for HP34401A and make it a subclass of common
-    
-    
+
+
     %declare some basic properties (variables) for use later
     % UNFINISHED
     properties
         instr
     end
-    
-    
+
+
     methods
-        
+
         %constructor (i.e. creator class, called by default)
         function obj = HP34401A(instr)
             %a gpib object is passed when creating the object, so make it
             %part of the object here
             obj.instr = instr;
         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % configure: reads or sets the measurement type                     %
+        % setconf: sets the measurement type                     %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function output = configure(this, type, range, resolution)
-            
+        function setconf(this, type, range, resolution)
+
             % if no arguments provided then return the current config
             if( nargin == 1 )
-                fprintf(this.instr, 'CONF?');
-                output = fscanf(this.instr, '%s');
-                
+                error('No arugments provided');
+
             else
                 switch type
-                    
+
                     % if type is dcvolt then configure for DC voltage measurement
                     case 'dcvolt'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
@@ -56,7 +55,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
                         else
                             fprintf(this.instr, 'CONF:VOLT:DC');
                         end
-                        
+
                         % if type is acvolt then configure for AC voltage measurement
                     case 'acvolt'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
@@ -126,69 +125,100 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
                 end
             end
         end
-        
+
+
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getconf: reads the measurement type                     %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function output = getconf(this)
+
+
+                fprintf(this.instr, 'CONF?');
+                output = fscanf(this.instr, '%s');
+
+        end
+
+
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % trigger: Triggers the dvm to start a measurement                  %
         % this is done seperately from the reading because measurements     %
         % can take several seconds, completely freezing the matlab main     %
         % thread                                                            %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function trigger(this)
             fprintf(this.instr, 'INIT;FETC?');
         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % readoutput: Reads the output of the device after a trigger event  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function output = readoutput(this)
             output = fscanf(this.instr, '%f');
         end
-        
-        
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % readoutput: Reads the output of the device after a trigger event  %
+        % setdetband: sets the detection bandwidth  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        function output = detband(this, detband)
-            
+
+        function setdetband(this, detband)
+
             if( ~exist('detband', 'var') || isempty(detband) )
-                fprintf(this.instr, 'DET:BAND?');
-                output = fscanf(this.instr, '%f');
+                error('No arguments provided');
             else
                 if( ~ismember(detband, [3, 20, 200]) )
                     error('Detection band can only be 3 Hz, 20 Hz, or 200 Hz');
                 end
                 fprintf(this.instr, 'DET:BAND %u', detband);
             end
-            
+
         end
-        
-        
+
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % integrationtime: reads or sets the integration time for the       %
+        % getdetband: sets the detection bandwidth  %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = getdetband(this)
+
+
+                fprintf(this.instr, 'DET:BAND?');
+                output = fscanf(this.instr, '%f');
+
+
+        end
+
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % setintegrationtime: sets the integration time for the       %
         % current configuration                                             %
         % nplc is the measurement integration time in number of power line  %
         % cycles                                                            %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        function output = integrationtime(this, time)
-            
+
+        function setintegrationtime(this, time)
+
             %in order to set NPLC properly we need to know the current
             %measurement function
             fprintf(this.instr, 'FUNC?');
-            
+
             %function is returned in quotes so strip those away
             functiontype = strsplit(fscanf(this.instr, '%s'), '"');
             functiontype = functiontype{2};
-            
-            
+
+
             if( ~exist('time', 'var') || isempty(time) )
-                fprintf(this.instr, sprintf('%s:NPLC?', functiontype));
-                output = fscanf(this.instr, '%f');
+                error('No arguments provided');
             else
-                
+
                 if(isnumeric(time))
                     fprintf(this.instr, sprintf('%s:NPLC %f', functiontype, time));
                 else
@@ -210,8 +240,38 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
                     end
                 end
             end
-            
+
         end
+
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getintegrationtime: reads or sets the integration time for the       %
+        % current configuration                                             %
+        % nplc is the measurement integration time in number of power line  %
+        % cycles                                                            %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        function output = getintegrationtime(this)
+
+            %in order to set NPLC properly we need to know the current
+            %measurement function
+            fprintf(this.instr, 'FUNC?');
+
+            %function is returned in quotes so strip those away
+            functiontype = strsplit(fscanf(this.instr, '%s'), '"');
+            functiontype = functiontype{2};
+
+
+
+                fprintf(this.instr, sprintf('%s:NPLC?', functiontype));
+                output = fscanf(this.instr, '%f');
+
+
+        end
+
+
+
     end
-    
+
 end
