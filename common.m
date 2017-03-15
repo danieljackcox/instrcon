@@ -30,7 +30,7 @@ classdef common < handle
         % open function, will open gpib device, identify it and return correct
         % device driver object
         % vend and bus are optional arguments
-        function handle = open(this, addr, vend, bus)
+        function handle = open(this, addr, type, vend, bus)
             
             % if no address is given then show an error
             if(~exist('addr', 'var'))
@@ -65,7 +65,8 @@ classdef common < handle
                 error('Bus should be a number (addr: %s)', num2str(addr));
             end
             
-            % make sure address is a number
+            % make sure address is a number if it is a gpib address
+            
             if(~isnumeric(addr))
                 error('Address should be a number');
             end
