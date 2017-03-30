@@ -48,25 +48,20 @@ classdef common < handle
             
             %array preallocation always good when using for loops
             typematch = zeros(length(nargin)-2);
-            vendormatch = zeros(length(nargin)-2);
-            busmatch = zeros(length(nargin)-2);
-            
-            
+           
+
             %this for loop is required because 'ismember' doesn't work with
             %mixed cell arrays (that we might have)
             for i=1:nargin-2
                 
                 if(ischar(varargin{i}))
-                    typematch(i) = find(ismember(varargin, allowedtypes));
-                    vendormatch(i) = find(ismember(varargin, 'vendor'));
-                    busmatch(i) = find(ismember(varargin, 'bus'));
+                    typematch(i) = ismember(varargin{i}, allowedtypes);
                 end
                 
             end
             
-            typeidx = find(typematch);
-            vendoridx = find(vendormatch);
-            busidx = find(busmatch);
+            vendoridx = find(strcmpi('vendor', varargin));
+            busidx = find(strcmpi('bus', varargin));
             
             
             %if no vendor given then default to ni
@@ -78,6 +73,9 @@ classdef common < handle
                 if(~ismember(varargin{vendoridx+1}, allowedvendors))
                     error('Vendor type not supported');
                 end
+                
+                %otherwise everything ok
+                vend = varargin{vendoridx+1};
             end
             
             
@@ -89,13 +87,20 @@ classdef common < handle
                 bus = varargin{busidx+1};
             end
             
-            
+            %if no connection type given then throw an error
+            if(~any(typematch))
+                error('Connection type not recognised');
+            end
+            if(length(typematch) > 1)
+                error('Multiple connection types given');
+            end
+
             
             % now generate the instrument object depending on the type
             % given
-            switch varargin{typeidx+1}
+            switch varargin{typematch}
                 case 'gpib'
-                    instr = visa(vend, sprintf('GPIB::%d::%d::INSTR', addr, bus));
+                    instr = visa(vend, sprintf('GPIB0::%d::%d::INSTR', addr, bus));
                 case 'serial'
                     instr = visa(vend, sprintf('ASRL%d::INSTR', addr));
                 case 'tcpip'
