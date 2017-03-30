@@ -30,52 +30,75 @@ classdef common < handle
         % open function, will open gpib device, identify it and return correct
         % device driver object
         % vend and bus are optional arguments
-        function handle = open(this, addr, type, vend, bus)
+        function handle = open(this, varargin)
             
-            % if no address is given then show an error
-            if(~exist('addr', 'var'))
-                error('Address must be given');
+            if(isempty(varargin))
+                % if varargin is empty then someone just called the open
+                % command with no inputs at all, throw an error
+                error('No input provided');
             end
             
             
-            % if no board is given then set a default here
-            if(~exist('vend', 'var'))
-                vend = 'ni';
+            % someone must provide the connection type when they open the
+            % device, so search the input arguments and compare to our
+            % allowed (supported) types
+            
+            allowedtypes = {'gpib', 'serial', 'tcpip', 'usb'};
+            typematches = zeros(length(nargin)-1);
+            
+            for i=1:nargin-1
+                
+                if(ischar(varargin{i}))
+                    typematches(i) = find(ismember(varargin, allowedtypes));
+                end
             end
             
+            typeidx = find(typematches);
             
-            % is no bus is given then set default here
-            if(~exist('bus', 'var'))
-                bus = 0;
-            end
-            
-            
-            %%%
-            % now do some sanity checks on variables that have been passed
-            %%%
-            
-            
-            % check if the vendor passed is a character array
-            if(~ischar(vend))
-                error('Vendor id should be a character array (addr: %s)', num2str(addr));
-            end
-            
-            % make sure bus is a number
-            if(~isnumeric(bus))
-                error('Bus should be a number (addr: %s)', num2str(addr));
-            end
-            
-            % make sure address is a number if it is a gpib address
-            
-            if(~isnumeric(addr))
-                error('Address should be a number');
-            end
-            
-            % matlab only supports four vendor types, so we make sure that
-            % the type passed is one of those
-            if( ~(strcmpi(vend, 'ni')||strcmpi(vend, 'agilent')||strcmpi(vend, 'ics')||strcmpi(vend, 'mcc')) )
-                error('Unrecognised vendor type (addr: %s)', num2str(addr));
-            end
+%             % if no address is given then show an error
+%             if(~exist('addr', 'var'))
+%                 error('Address must be given');
+%             end
+%             
+%             
+%             % if no board is given then set a default here
+%             if(~exist('vend', 'var'))
+%                 vend = 'ni';
+%             end
+%             
+%             
+%             % is no bus is given then set default here
+%             if(~exist('bus', 'var'))
+%                 bus = 0;
+%             end
+%             
+%             
+%             %%%
+%             % now do some sanity checks on variables that have been passed
+%             %%%
+%             
+%             
+%             % check if the vendor passed is a character array
+%             if(~ischar(vend))
+%                 error('Vendor id should be a character array (addr: %s)', num2str(addr));
+%             end
+%             
+%             % make sure bus is a number
+%             if(~isnumeric(bus))
+%                 error('Bus should be a number (addr: %s)', num2str(addr));
+%             end
+%             
+%             % make sure address is a number if it is a gpib address
+%             
+%             if(~isnumeric(addr))
+%                 error('Address should be a number');
+%             end
+%             
+%             % matlab only supports four vendor types, so we make sure that
+%             % the type passed is one of those
+%             if( ~(strcmpi(vend, 'ni')||strcmpi(vend, 'agilent')||strcmpi(vend, 'ics')||strcmpi(vend, 'mcc')) )
+%                 error('Unrecognised vendor type (addr: %s)', num2str(addr));
+%             end
             
             
             
