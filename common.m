@@ -30,7 +30,7 @@ classdef common < handle
         % open function, will open gpib device, identify it and return correct
         % device driver object
         % vend and bus are optional arguments
-        function handle = open(this, varargin)
+        function handle = open(this, addr, varargin)
             
             if(isempty(varargin))
                 % if varargin is empty then someone just called the open
@@ -43,76 +43,74 @@ classdef common < handle
             % device, so search the input arguments and compare to our
             % allowed (supported) types
             
-            allowedtypes = {'gpib', 'serial', 'tcpip', 'usb'};
-            typematches = zeros(length(nargin)-1);
+            allowedtypes = {'gpib', 'serial', 'tcpip', 'usb', 'visa'};
+            allowedvendors = {'agilent', 'ni', 'tek'};
             
-            for i=1:nargin-1
+            %array preallocation always good when using for loops
+            typematch = zeros(length(nargin)-2);
+            vendormatch = zeros(length(nargin)-2);
+            busmatch = zeros(length(nargin)-2);
+            
+            
+            %this for loop is required because 'ismember' doesn't work with
+            %mixed cell arrays (that we might have)
+            for i=1:nargin-2
                 
                 if(ischar(varargin{i}))
-                    typematches(i) = find(ismember(varargin, allowedtypes));
+                    typematch(i) = find(ismember(varargin, allowedtypes));
+                    vendormatch(i) = find(ismember(varargin, 'vendor'));
+                    busmatch(i) = find(ismember(varargin, 'bus'));
+                end
+                
+            end
+            
+            typeidx = find(typematch);
+            vendoridx = find(vendormatch);
+            busidx = find(busmatch);
+            
+            
+            %if no vendor given then default to ni
+            if(~any(vendoridx))
+                vend = 'ni';
+            else
+                
+                %if a vendor is not supported then throw an error
+                if(~ismember(varargin{vendoridx+1}, allowedvendors))
+                    error('Vendor type not supported');
                 end
             end
             
-            typeidx = find(typematches);
             
-%             % if no address is given then show an error
-%             if(~exist('addr', 'var'))
-%                 error('Address must be given');
-%             end
-%             
-%             
-%             % if no board is given then set a default here
-%             if(~exist('vend', 'var'))
-%                 vend = 'ni';
-%             end
-%             
-%             
-%             % is no bus is given then set default here
-%             if(~exist('bus', 'var'))
-%                 bus = 0;
-%             end
-%             
-%             
-%             %%%
-%             % now do some sanity checks on variables that have been passed
-%             %%%
-%             
-%             
-%             % check if the vendor passed is a character array
-%             if(~ischar(vend))
-%                 error('Vendor id should be a character array (addr: %s)', num2str(addr));
-%             end
-%             
-%             % make sure bus is a number
-%             if(~isnumeric(bus))
-%                 error('Bus should be a number (addr: %s)', num2str(addr));
-%             end
-%             
-%             % make sure address is a number if it is a gpib address
-%             
-%             if(~isnumeric(addr))
-%                 error('Address should be a number');
-%             end
-%             
-%             % matlab only supports four vendor types, so we make sure that
-%             % the type passed is one of those
-%             if( ~(strcmpi(vend, 'ni')||strcmpi(vend, 'agilent')||strcmpi(vend, 'ics')||strcmpi(vend, 'mcc')) )
-%                 error('Unrecognised vendor type (addr: %s)', num2str(addr));
-%             end
+            
+            %if no bus is given then default to 0 (gpib only)
+            if(~any(busidx))
+                bus = 0;
+            else
+                bus = varargin{busidx+1};
+            end
             
             
             
-            %%%
-            % GPIB object creation and opening
-            %%%
-
+            % now generate the instrument object depending on the type
+            % given
+            switch varargin{typeidx+1}
+                case 'gpib'
+                    instr = visa(vend, sprintf('GPIB::%d::%d::INSTR', addr, bus));
+                case 'serial'
+                    instr = visa(vend, sprintf('ASRL%d::INSTR', addr));
+                case 'tcpip'
+                    instr = visa(vend, sprintf('TCPIP::%s::INSTR', addr));
+                case 'visa'
+                    instr = visa(vend, addr);
+                otherwise
+                    error('Connection type not supported');
+            end
             
-            % create a gpib object with the passed variables (or defaults)
-            % and assign it to a temporary variable so we can open it
+            
             try
-                instr = visa(vend, sprintf('GPIB0::%d::%d::INSTR', addr, bus));
                 fopen(instr);
             catch
+                % CHANGE THIS ERROR
                 error('Cannot open GPIB device at address %s', num2str(addr));
             end
             
@@ -145,16 +143,16 @@ classdef common < handle
             
             %call that object and return the correct handle
             handle = this.drivers{drivernumber}(instr);
-
+            
         end
         
         
-    
-    function dcvoltage(obj, voltage, channel, imm, stepsize, speed)
-        run('functions/dcvoltage.m');
+        
+        function dcvoltage(obj, voltage, channel, imm, stepsize, speed)
+            run('functions/dcvoltage.m');
+        end
+        
+        
     end
     
-    
-end
-
 end
