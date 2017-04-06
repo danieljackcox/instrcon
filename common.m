@@ -32,10 +32,14 @@ classdef common < handle
         % vend and bus are optional arguments
         function handle = open(this, addr, varargin)
             
+            if(~any(addr))
+                error('No address provided');
+            end
+            
             if(isempty(varargin))
                 % if varargin is empty then someone just called the open
                 % command with no inputs at all, throw an error
-                error('No input provided');
+                error('No connection type provided (must be gpib, tcpip, visa, etc.) for address %s', addr);
             end
             
             
@@ -48,8 +52,8 @@ classdef common < handle
             
             %array preallocation always good when using for loops
             typematch = zeros(length(nargin)-2);
-           
-
+            
+            
             %this for loop is required because 'ismember' doesn't work with
             %mixed cell arrays (that we might have)
             for i=1:nargin-2
@@ -71,7 +75,7 @@ classdef common < handle
                 
                 %if a vendor is not supported then throw an error
                 if(~ismember(varargin{vendoridx+1}, allowedvendors))
-                    error('Vendor type not supported');
+                    error('Vendor type not supported address %s', addr);
                 end
                 
                 %otherwise everything ok
@@ -89,12 +93,12 @@ classdef common < handle
             
             %if no connection type given then throw an error
             if(~any(typematch))
-                error('Connection type not recognised');
+                error('Connection type not recognised address %s', addr);
             end
             if(length(typematch) > 1)
-                error('Multiple connection types given');
+                error('Multiple connection types given address %s', addr);
             end
-
+            
             
             % now generate the instrument object depending on the type
             % given
@@ -108,7 +112,7 @@ classdef common < handle
                 case 'visa'
                     instr = visa(vend, addr);
                 otherwise
-                    error('Connection type not supported');
+                    error('Connection type not supported address %s', addr);
             end
             
             
@@ -143,11 +147,14 @@ classdef common < handle
             drivernumber = find(matches);
             
             if(isempty(drivernumber))
-                error('No match found for device\n IDN: %s', identity);
+                warning('No match found for device\n IDN: %s\nAddress: %s', identity, addr);
+                handle = instr;
+            else
+                
+                %call that object and return the correct handle
+                handle = this.drivers{drivernumber}(instr);
+                
             end
-            
-            %call that object and return the correct handle
-            handle = this.drivers{drivernumber}(instr);
             
         end
         

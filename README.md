@@ -15,8 +15,7 @@ A common bootstrap object provides functions that are required to 'bootstrap' th
 * Keithley 2450 Sourcemeter
 
 # TODO
-* Finish connection interface, add USB and ethernet options
-* Add teema USB power supply to drivers
+* Add tenma USB power supply to drivers
 * Write first prototype script
 
 # Contents
