@@ -75,10 +75,8 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setvoltage: sets or reads a DC voltage on one of the              %
+        % setvoltage: sets a DC voltage on one of the                       %
         % auxilliary (output) channels                                      %
-        % IMPORTANT: setvoltage can return the *set* voltage value, it does %
-        % not measure any voltage                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function setvoltage(this, V, channel)
@@ -99,7 +97,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
                 error('Channel number must be between 1 and 4\n Device SR830 "%s" at %d', inputname(1), this.instr.PrimaryAddress);
             end
             % if voltage is empty or doesn't exist then we want to return
-            % the voltage value
+            % an error
             if(nargin == 1 || ~exist('V', 'var') || isempty(V))
                 error('No voltage passed');
 
@@ -119,6 +117,8 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % getvoltage: reads the current set voltage on the specified        %
         % AUX out channel                                                   %
+        % IMPORTANT: getvoltage can return the *set* voltage value, it does %
+        % not measure any voltage                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function output = getvoltage(this, channel)
@@ -222,9 +222,8 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
 
 
-         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getfreqref: sets the device to use internal or external    %
-        % frequency reference or queries to get the ref       %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getfreqref: reads current set reference type        %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function output = getfreqref(this)
 
@@ -239,8 +238,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
         function setphase(this, phase)
 
-            % if nothing or empty variable is passed then read the value
-            % and return it
+            % if nothing or empty variable is passed then return an error
             if( nargin == 1 || isempty(phase) )
                 error('No phase provided');
             else
@@ -257,7 +255,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getphase: sets or reads phase shift                    %
+        % getphase: reads phase shift                         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function output = getphase(this)
@@ -271,9 +269,8 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setreftrig: sets the reference trigger to sine zero crossing       %
-        % , TTL rising edge or TTL falling edge, also queries for current %
-        % setting                                                         %
+        % setreftrig: sets the reference trigger to sine zero crossing,   %
+        % TTL rising edge or TTL falling edge                             %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function setreftrig(this, trigtype)
@@ -303,9 +300,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getreftrig: sets the reference trigger to sine zero crossing       %
-        % , TTL rising edge or TTL falling edge, also queries for current %
-        % setting                                                         %
+        % getreftrig: reads the reference trigger setting                 %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function output = getreftrig(this)
@@ -322,7 +317,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function setharmonic(this, harmonic)
-            % if empty or nonexistent then read and return the value
+            % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(harmonic) )
                 error('No harmonic provided');
             else
@@ -358,7 +353,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
         function setexcitation(this, excitation)
 
-            % if empty or nonexistent then read and return the value
+            % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(excitation) )
                 error('No excitation provided');
             else
@@ -395,7 +390,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
         function setinputconfig(this, inputconfig)
 
-            % if empty or nonexistent then read and return the value
+            % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(inputconfig) )
                 error('No input config provided');
             else
@@ -440,7 +435,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
         function setshieldgrounding(this, shieldground)
 
-            % if empty or nonexistent then read and return the value
+            % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(shieldground) )
                 error('No ground shield configuration provided');
             else
@@ -484,7 +479,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
         function setnotchfilter(this, notchfilter)
 
-            % if empty or nonexistent then read and return the value
+            % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(notchfilter) )
                 error('no notch filter provided');
             else
@@ -523,7 +518,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setsensitivity: sets the sensitivity. The input or return %
+        % setsensitivity: sets the sensitivity. The input                 %
         % is an integer that corresponds to a sensitivity listed below    %
         % 0       2 nV/fA             13          50 ?V/pA                %
         % 1       5 nV/fA             14          100 ?V/pA               %
@@ -543,7 +538,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
         function setsensitivity(this, sensitivity)
 
-            % if empty or nonexistent then read and return the value
+            % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(sensitivity) )
                 error('no sensitivity provided');
             else
@@ -569,7 +564,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getsensitivity: reads the sensitivity. The input or return %
+        % getsensitivity: reads the sensitivity. The return               %
         % is an integer that corresponds to a sensitivity listed below    %
         % 0       2 nV/fA             13          50 ?V/pA                %
         % 1       5 nV/fA             14          100 ?V/pA               %
@@ -603,7 +598,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
         function setreserve(this, reserve)
 
-            % if empty or nonexistent then read and return the value
+            % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(reserve) )
                 error('no reserve provided');
             else
@@ -643,7 +638,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % settc: sets the time constant. The input or return        %
+        % settc: sets the time constant. The input                        %
         % is an integer that corresponds to a time constant listed below  %
         % tip: during measurement the settling time is at least 5 times   %
         % the set TC                                                      %
@@ -662,7 +657,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
         function settc(this, tc)
 
-            % if empty or nonexistent then read and return the value
+            % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(tc) )
                 error('no tc provided');
             else
@@ -687,7 +682,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % gettc: reads the time constant. The input or return        %
+        % gettc: reads the time constant. The return                      %
         % is an integer that corresponds to a time constant listed below  %
         % tip: during measurement the settling time is at least 5 times   %
         % the set TC                                                      %
@@ -721,7 +716,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
         function setlpfilterslope(this, lpfilterslope)
 
-            % if empty or nonexistent then read and return the value
+            % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(lpfilterslope) )
                 error('no filter slope provided');
             else
@@ -767,7 +762,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
         function setsyncfilter(this, syncfilter)
 
-            % if empty or nonexistent then read and return the value
+            % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(syncfilter) )
                 error('no sync filter provided');
             else
@@ -814,7 +809,7 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
 
         function setinputcoupling(this, inputcoupling)
 
-            % if empty or nonexistent then read and return the value
+            % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(inputcoupling) )
                 error('no input coupling provided');
             else

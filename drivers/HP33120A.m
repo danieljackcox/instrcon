@@ -36,7 +36,7 @@ classdef HP33120A < common	%generate new class for SRS830 and make it a subclass
         end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setconf: sets the output function type.                         %
+        % setconf: sets the output function type.                           %
         % Choose from sine, square, triangle, ramp, noise, dc               %
         % arbitrary waveforms not implemented
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,9 +83,7 @@ classdef HP33120A < common	%generate new class for SRS830 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getconf: sets the output function type.                         %
-        % Choose from sine, square, triangle, ramp, noise, dc               %
-        % arbitrary waveforms not implemented
+        % getconf: reads the output function type.                          %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function output = getconf(this)
@@ -98,7 +96,7 @@ classdef HP33120A < common	%generate new class for SRS830 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setvoltage: sets a DC voltage                            %                                        %
+        % setvoltage: sets a DC voltage                                     %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function setvoltage(this, V, ~)
@@ -122,8 +120,8 @@ classdef HP33120A < common	%generate new class for SRS830 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getvoltage: reads a DC voltage                            %
-        % IMPORTANT: getvoltage returns the *set* voltage value, it does %
+        % getvoltage: reads a DC voltage                                    %
+        % IMPORTANT: getvoltage returns the *set* voltage value, it does    %
         % not measure any voltage                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -200,7 +198,7 @@ classdef HP33120A < common	%generate new class for SRS830 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getexcitation: returns the AC output sine wave voltage (in RMS) %
+        % getexcitation: returns the AC output sine wave voltage (in RMS)      %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function output = getexcitation(this)

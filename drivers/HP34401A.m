@@ -164,7 +164,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setdetband: sets the detection bandwidth  %
+        % setdetband: sets the detection bandwidth                          %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function setdetband(this, detband)
@@ -183,7 +183,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getdetband: sets the detection bandwidth  %
+        % getdetband: reads the detection bandwidth                         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function output = getdetband(this)
@@ -198,7 +198,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setintegrationtime: sets the integration time for the       %
+        % setintegrationtime: sets the integration time for the             %
         % current configuration                                             %
         % nplc is the measurement integration time in number of power line  %
         % cycles                                                            %
@@ -246,7 +246,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getintegrationtime: reads or sets the integration time for the       %
+        % getintegrationtime: reads or sets the integration time for the    %
         % current configuration                                             %
         % nplc is the measurement integration time in number of power line  %
         % cycles                                                            %
@@ -263,10 +263,8 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
             functiontype = functiontype{2};
 
 
-
-                fprintf(this.instr, sprintf('%s:NPLC?', functiontype));
-                output = fscanf(this.instr, '%f');
-
+            fprintf(this.instr, sprintf('%s:NPLC?', functiontype));
+            output = fscanf(this.instr, '%f');
 
         end
 
