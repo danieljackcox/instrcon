@@ -1,11 +1,10 @@
 # instrcon (UNFINISHED)
 Libraries/classes for Matlab instrument control and measurement. Provided with example measurement scripts.
 
-Measurement devices are represented by device driver files, which are Matlab objects that expose common functions (such as setvoltage, readvoltage, etc.). The specific code needed to change (in this example) voltage on a device is held within these driver files.
+Measurement devices are represented by device driver files, which are Matlab objects that expose common functions (such as setoutputvoltage, setinputvoltage, etc.). The specific code needed to change (in this example) voltage on a device is held within these driver files.
 
 Higher level functions use these driver files to implement more complex operations used in measurement (i.e. safe voltage ramping, frequency sweeps, etc.).
 
-A common bootstrap object provides functions that are required to 'bootstrap' the system and read settings, for example storing the location of temperature logs or opening devices and passing the correct driver object on.
 
 # Supported devices
 * Standard Research Systems SR830 Lock-in Amplifier
@@ -29,7 +28,7 @@ Files are organised into subdirectories depending on their type. There are three
 'Driver' files are matlab objects that represent physical measurement devices and are organised into the `/drivers`
 folder. All instrument drivers should be named after the model of the device, e.g. `SR830.m`.  
 
-High-level functions that operate on devices to perform a more complicated set of actions then can done with single SCPI functions live in the `/functions` folder. They are not actually functions or objects but rather scripts that are then run in the main bootstrap superclass object. An example of a function is a voltage sweeper that uses `getvoltage`/`setvoltage` functions exposed by the driver to safely sweep voltages.  
+High-level functions that operate on devices to perform a more complicated set of actions then can done with single SCPI functions live in the `/functions` folder. They are not actually functions or objects but rather scripts that are then run in the virtual hardware class (`virthardware.m`). An example of a function is a voltage sweeper that uses `getoutputvoltage`/`setoutputvoltage` functions exposed by the driver to safely sweep voltages.  
 
 Full measurement scripts are in the `/scripts` folder.
 
@@ -42,7 +41,7 @@ Driver files contain the actual SCPI commands sent to the device under use, they
 
 A short example of a driver is below, this implements setting the AC excitation amplitude for an SR830 lock-in amplifier.
 
-	classdef SR830 < common
+	classdef SR830 < virthardware
 	
 	    methods
 
@@ -73,9 +72,9 @@ A short example of a driver is below, this implements setting the AC excitation 
 	
 There are several important parts here, first is the object class definition  
 
-	classdef SR830 < common
+	classdef SR830 < virthardware
 
-This tells matlab that we want to create a new class called SR830 (the model of the device) and that it should inherit the `common` class which allows SR830 to access all functions held in the `common` class. The filename must be the same as the class name.  
+This tells matlab that we want to create a new class called SR830 (the model of the device) and that it should inherit the `virthardware` class which allows SR830 to access all functions held in the `virthardware` class, these are higher-level functions such as voltage sweep. The filename must be the same as the class name.  
 
 Next is the `methods` declaration which simply tells matlab we will define our functions here.
 

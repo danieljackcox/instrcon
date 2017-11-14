@@ -46,7 +46,7 @@ if( nargin == 0 )
     end
     
     
-    current_voltage = obj.getvoltage(channel);
+    current_voltage = obj.getoutputvoltage(channel);
     
     
     if( current_voltage == voltage )
@@ -54,11 +54,11 @@ if( nargin == 0 )
     else
         
         if( imm == 1)
-            obj.setvoltage(voltage, channel);
+            obj.setoutputvoltage(voltage, channel);
         else
             rampvoltage = linspace(current_voltage, voltage, round(abs(diff([current_voltage voltage]))/stepsize)+1);
             for i=1:length(rampvoltage)
-                obj.setvoltage(rampvoltage(i), channel);
+                obj.setoutputvoltage(rampvoltage(i), channel);
                 java.lang.Thread.sleep(1000*speed);
             end
             

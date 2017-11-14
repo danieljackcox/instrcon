@@ -7,10 +7,13 @@
 % communicating with the device over GPIB is not needed.
 %
 % Methods:
-% configure: configure the function generator to output the desired signal type
-% setvoltage: sets the DC offset voltage
+% setconf: configure the function generator to output the desired signal type
+% getconf: returns the current configuration of the generator
+% setoutputvoltage: sets the DC offset voltage
+% getoutputvoltage: returns the currently set DC offset voltage
 % freq: sets wave frequency for current configured type
-% excitation: sets wave amplitude (RMS) for current configured type
+% setexcitation: sets wave amplitude (RMS) for current configured type
+% getexcitation: gets wave amplitude (RMS) for current configured type
 
 
 %------------------------------------------------------------------------------%
@@ -96,10 +99,10 @@ classdef HP33120A < common	%generate new class for SRS830 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setvoltage: sets a DC voltage                                     %
+        % setoutputvoltage: sets a DC voltage                               %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setvoltage(this, V, ~)
+        function setoutputvoltage(this, V, ~)
 
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
@@ -120,12 +123,12 @@ classdef HP33120A < common	%generate new class for SRS830 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getvoltage: reads a DC voltage                                    %
+        % getoutputvoltage: reads a DC voltage                              %
         % IMPORTANT: getvoltage returns the *set* voltage value, it does    %
         % not measure any voltage                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getvoltage(this)
+        function output = getoutputvoltage(this)
 
 
                 fprintf(this.instr, 'VOLT:OFFS?');

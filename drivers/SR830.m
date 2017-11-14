@@ -14,9 +14,9 @@
 % for example setting a voltage or reading in a resistance value
 % current methods (functions) are listed below:
 %
-% setvoltage: sets dc voltage on AUX output
-% getvoltage: reads current set dc voltage on AUX output
-% readvoltage: reads voltage from aux input
+% setoutputvoltage: sets dc voltage on AUX output
+% getoutputvoltage: reads current set dc voltage on AUX output
+% getinputvoltage: reads voltage from aux input
 % setfreqref: sets internal or external reference
 % getfreqref: reads current set reference type
 % setphase: sets phase shift
@@ -50,7 +50,7 @@
 
 %------------------------------------------------------------------------------%
 
-classdef SR830 < common	%generate new class for SR830 and make it a subclass
+classdef SR830 < virthardware	%generate new class for SR830 and make it a subclass
 % of common
 
 
@@ -101,13 +101,13 @@ classdef SR830 < common	%generate new class for SR830 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setvoltage: sets or reads a DC voltage on one of the              %
+        % setoutputvoltage: sets or reads a DC voltage on one of the        %
         % auxilliary (output) channels                                      %
-        % IMPORTANT: setvoltage can return the *set* voltage value, it does %
-        % not measure any voltage                                           %
+        % IMPORTANT: setoutputvoltage can return the *set*                  %
+        % voltage value, it does not measure any voltage                    %                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setvoltage(this, V, channel)
+        function setoutputvoltage(this, V, channel)
 
             % check that the channel variable exists first
             % if it exists, check if it is a number
@@ -143,11 +143,11 @@ classdef SR830 < common	%generate new class for SR830 and make it a subclass
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getvoltage: reads the current set voltage on the specified        %
+        % getoutputvoltage: reads the current set voltage on the specified  %
         % AUX out channel                                                   %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getvoltage(this, channel)
+        function output = getoutputvoltage(this, channel)
 
             % check that the channel variable exists first
             % if it exists, check if it is a number
@@ -172,11 +172,11 @@ classdef SR830 < common	%generate new class for SR830 and make it a subclass
 
 
 
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % readvoltage: reads the DC voltage on the aux input %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getinputvoltage: reads the DC voltage on the aux input %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = readvoltage(this, channel)
+        function output = getinputvoltage(this, channel)
 
             % check that the channel variable exists first
             % if it exists, check if it is a number
@@ -669,10 +669,10 @@ classdef SR830 < common	%generate new class for SR830 and make it a subclass
         % is an integer that corresponds to a time constant listed below  %
         % tip: during measurement the settling time is at least 5 times   %
         % the set TC                                                      %
-        % 0       10 μs             10          1 s                       %
-        % 1       30 μs             11          3 s                       %
-        % 2       100 μs            12          10 s                      %
-        % 3       300 μs            13          30 s                      %
+        % 0       10 ??s             10          1 s                       %
+        % 1       30 ??s             11          3 s                       %
+        % 2       100 ??s            12          10 s                      %
+        % 3       300 ??s            13          30 s                      %
         % 4       1 ms              14          100 s                     %
         % 5       3 ms              15          300 s                     %
         % 6       10 ms             16          1 ks                      %
@@ -713,10 +713,10 @@ classdef SR830 < common	%generate new class for SR830 and make it a subclass
         % is an integer that corresponds to a time constant listed below  %
         % tip: during measurement the settling time is at least 5 times   %
         % the set TC                                                      %
-        % 0       10 μs             10          1 s                       %
-        % 1       30 μs             11          3 s                       %
-        % 2       100 μs            12          10 s                      %
-        % 3       300 μs            13          30 s                      %
+        % 0       10 ??s             10          1 s                       %
+        % 1       30 ??s             11          3 s                       %
+        % 2       100 ??s            12          10 s                      %
+        % 3       300 ??s            13          30 s                      %
         % 4       1 ms              14          100 s                     %
         % 5       3 ms              15          300 s                     %
         % 6       10 ms             16          1 ks                      %
