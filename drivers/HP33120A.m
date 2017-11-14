@@ -18,7 +18,8 @@
 
 %------------------------------------------------------------------------------%
 
-classdef HP33120A < common	%generate new class for SRS830 and make it a subclass of handle
+classdef HP33120A < voltagesource	%generate new class for SRS830 and
+    % make it a subclass of voltagesource
 
 
     %declare some basic properties (variables) for use later

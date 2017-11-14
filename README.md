@@ -19,6 +19,7 @@ Higher level functions use these driver files to implement more complex operatio
 * Improve error handling
 * Write test scripts to test small parts of the system
 * finish the opendevice function
+* update K2400 and K2450 files to work
 
 # Contents
 [Organisation](#Organisation)

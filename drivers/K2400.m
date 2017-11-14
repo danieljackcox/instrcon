@@ -8,13 +8,13 @@
 %
 % Methods:
 % configure: set or read dc voltage
-% setvoltage: sets DC voltage or reads current set voltage
+% setoutputvoltage: sets DC voltage or reads current set voltage
 % readoutput: depending on how the device is configured, reads voltage, current, resistance
 
 
 %------------------------------------------------------------------------------%
 
-classdef K2400 < common	%generate new class for SRS830 and make it a subclass of handle
+classdef K2400 < voltagesource	%generate new class for SRS830 and make it a subclass of handle
 
 
     %declare some basic properties (variables) for use later
@@ -80,10 +80,10 @@ classdef K2400 < common	%generate new class for SRS830 and make it a subclass of
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setvoltage: sets a DC voltage                            %                                          %
+        % setoutputvoltage: sets a DC voltage                            %                                          %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setvoltage(this, V, ~)
+        function setoutputvoltage(this, V, ~)
 
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
@@ -105,7 +105,7 @@ classdef K2400 < common	%generate new class for SRS830 and make it a subclass of
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % getvoltage: reads a DC voltage                            %
-        % IMPORTANT: setvoltage can return the *set* voltage value, it does %
+        % IMPORTANT: setoutputvoltage can return the *set* voltage value, it does %
         % not measure any voltage                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

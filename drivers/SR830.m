@@ -50,8 +50,8 @@
 
 %------------------------------------------------------------------------------%
 
-classdef SR830 < virthardware	%generate new class for SR830 and make it a subclass
-% of common
+classdef SR830 < voltagesource	%generate new class for SR830 and make it a subclass
+% of voltagesource
 
 
     %declare some basic properties (variables) for use later
