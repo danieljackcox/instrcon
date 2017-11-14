@@ -16,6 +16,9 @@ Higher level functions use these driver files to implement more complex operatio
 # TODO
 * Add tenma USB power supply to drivers
 * Write first prototype script
+* Improve error handling
+* Write test scripts to test small parts of the system
+* finish the opendevice function
 
 # Contents
 [Organisation](#Organisation)
