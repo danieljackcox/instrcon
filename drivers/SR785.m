@@ -1,4 +1,22 @@
 % SR785.m
+%     Created 2017 Daniel Cox
+%     Part of instrcon
+
+%     instrcon is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+% 
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+% 
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
 %
 %------------------------------------------------------------------------------%
 % Stanford Research Systems SR785 Low frequency spectrum analyser driver file
@@ -642,10 +660,10 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
         % is an integer that corresponds to a time constant listed below  %
         % tip: during measurement the settling time is at least 5 times   %
         % the set TC                                                      %
-        % 0       10 μs             10          1 s                       %
-        % 1       30 μs             11          3 s                       %
-        % 2       100 μs            12          10 s                      %
-        % 3       300 μs            13          30 s                      %
+        % 0       10 ??s             10          1 s                       %
+        % 1       30 ??s             11          3 s                       %
+        % 2       100 ??s            12          10 s                      %
+        % 3       300 ??s            13          30 s                      %
         % 4       1 ms              14          100 s                     %
         % 5       3 ms              15          300 s                     %
         % 6       10 ms             16          1 ks                      %
@@ -686,10 +704,10 @@ classdef SR785 < common	%generate new class for SR785 and make it a subclass
         % is an integer that corresponds to a time constant listed below  %
         % tip: during measurement the settling time is at least 5 times   %
         % the set TC                                                      %
-        % 0       10 μs             10          1 s                       %
-        % 1       30 μs             11          3 s                       %
-        % 2       100 μs            12          10 s                      %
-        % 3       300 μs            13          30 s                      %
+        % 0       10 ??s             10          1 s                       %
+        % 1       30 ??s             11          3 s                       %
+        % 2       100 ??s            12          10 s                      %
+        % 3       300 ??s            13          30 s                      %
         % 4       1 ms              14          100 s                     %
         % 5       3 ms              15          300 s                     %
         % 6       10 ms             16          1 ks                      %
