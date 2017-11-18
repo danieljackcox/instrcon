@@ -14,9 +14,9 @@
 % 
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
+%
+%
+%
 %
 %------------------------------------------------------------------------------%
 % HP/Agilent/keysight 33120A function generator driver file
@@ -134,7 +134,7 @@ classdef HP33120A < voltagesource	%generate new class for SRS830 and
                     error('Voltage must be a number');
                 end
 
-                fprintf(this.instr, sprintf('VOLT:OFFS %f', V));
+                fprintf(this.instr, 'VOLT:OFFS %f', V);
 
             end
         end
@@ -147,7 +147,7 @@ classdef HP33120A < voltagesource	%generate new class for SRS830 and
         % not measure any voltage                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getoutputvoltage(this)
+        function output = getoutputvoltage(this, ~)
 
 
                 fprintf(this.instr, 'VOLT:OFFS?');
@@ -160,7 +160,7 @@ classdef HP33120A < voltagesource	%generate new class for SRS830 and
         % setfreq: sets internal frequency              %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setfreq(this, freq)
+        function setfreq(this, freq, ~)
 
             % if nothing or empty variable is passed then read the value
             % and return it
@@ -184,7 +184,7 @@ classdef HP33120A < voltagesource	%generate new class for SRS830 and
         % getfreq: reads internal frequency              %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getfreq(this)
+        function output = getfreq(this, ~)
 
 
                 fprintf(this.instr, 'FREQ?');
@@ -199,7 +199,7 @@ classdef HP33120A < voltagesource	%generate new class for SRS830 and
         % setxcitation: sets the AC output sine wave voltage (in RMS) %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setexcitation(this, excitation)
+        function setexcitation(this, excitation, ~)
 
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(excitation) )
@@ -223,7 +223,7 @@ classdef HP33120A < voltagesource	%generate new class for SRS830 and
         % getexcitation: returns the AC output sine wave voltage (in RMS)      %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getexcitation(this)
+        function output = getexcitation(this, ~)
 
 
                 fprintf(this.instr, 'VOLT?');

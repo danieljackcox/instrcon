@@ -14,11 +14,9 @@
 %
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
-
-
+%
+%
+%
 % this file contains high level functions used with voltage sources and
 % defines the minimum functions a voltage source driver should expose
 
@@ -58,7 +56,8 @@ classdef voltagesource < handle
     methods
         
         
-        
+        %n.b. change this to allow inputs like
+        % rampvoltage(5, 'imm', 'stepsize', 0)
         function rampvoltage(obj, voltage, channel, imm, stepsize, speed)
             % RAMPVOLTAGE
             % RAMPVOLTAGE(obj, voltage, channel, imm, stepsize, speed)

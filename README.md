@@ -8,18 +8,24 @@ Higher level functions use these driver files to implement more complex operatio
 
 # Supported devices
 * Standard Research Systems SR830 Lock-in Amplifier
-* HP/Agilent/Keysight 33120A 15 MHz Function/arbitrary Waveform Generator
+* HP/Agilent/Keysight 33120A 15 MHz Function/Arbitrary Waveform Generator
 * HP/Agilent/Keysight 34401A Digital multimeter
 * Keithley 2400 Sourcemeter
 * Keithley 2450 Sourcemeter
+* Agilent 33522A 30 MHz Function/Arbitrary Waveform Generator
 
 # TODO
-* Add tenma USB power supply to drivers
 * Write first prototype script
 * Improve error handling
 * Write test scripts to test small parts of the system
-* finish the opendevice function
-* update K2400 and K2450 files to work
+* Finish the opendevice function (perhaps add some automation for choosing vendor)
+* Update K2400 and K2450 files to work
+* Check that A33522A actually works
+* Update main documentation (this)
+* Standardise comments in code, etc.
+* Check for any left over 'n.b.' comments in code and fix issues
+* Consider implementing slava logging
+
 
 # Contents
 [Organisation](#Organisation)
@@ -32,7 +38,7 @@ Files are organised into subdirectories depending on their type. There are three
 'Driver' files are matlab objects that represent physical measurement devices and are organised into the `/drivers`
 folder. All instrument drivers should be named after the model of the device, e.g. `SR830.m`.  
 
-High-level functions that operate on devices to perform a more complicated set of actions then can done with single SCPI functions live in the `/functions` folder. They are not actually functions or objects but rather scripts that are then run in the virtual hardware class (`virthardware.m`). An example of a function is a voltage sweeper that uses `getoutputvoltage`/`setoutputvoltage` functions exposed by the driver to safely sweep voltages.  
+High-level functions that operate on devices to perform a more complicated set of actions then can done with single SCPI functions live in the `/functions` folder. Each type of instrument (e.g. a voltage source) has a corresponding virtual hardware object that implements the higher level functions (e.g. a voltage sweepeer) and defines the minimum set of methods (functions) an instrument driver should implement. The virtual hardware object for a voltage source is located in `voltagesource.m`. An example of a function is a voltage sweeper that uses `getoutputvoltage`/`setoutputvoltage` functions exposed by the driver to safely sweep voltages.  
 
 Full measurement scripts are in the `/scripts` folder.
 
@@ -45,7 +51,7 @@ Driver files contain the actual SCPI commands sent to the device under use, they
 
 A short example of a driver is below, this implements setting the AC excitation amplitude for an SR830 lock-in amplifier.
 
-	classdef SR830 < virthardware
+	classdef SR830 < voltagesource
 	
 	    methods
 
@@ -76,9 +82,9 @@ A short example of a driver is below, this implements setting the AC excitation 
 	
 There are several important parts here, first is the object class definition  
 
-	classdef SR830 < virthardware
+	classdef SR830 < voltagesource
 
-This tells matlab that we want to create a new class called SR830 (the model of the device) and that it should inherit the `virthardware` class which allows SR830 to access all functions held in the `virthardware` class, these are higher-level functions such as voltage sweep. The filename must be the same as the class name.  
+This tells matlab that we want to create a new class called SR830 (the model of the device) and that it should inherit the `voltagesource` class which allows SR830 to access all functions held in the `voltagesource` class, these are higher-level functions such as voltage sweep. The filename must be the same as the class name.  
 
 Next is the `methods` declaration which simply tells matlab we will define our functions here.
 

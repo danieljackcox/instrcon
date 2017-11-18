@@ -14,9 +14,9 @@
 % 
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
+%
+%
+%
 %
 %------------------------------------------------------------------------------%
 % Stanford Research Systems SR830 Lock-in Amplifier driver file
@@ -63,7 +63,7 @@
 % getlpfilterslope: read low pass filter slope
 % setsyncfilter: set synchronous filter status
 % getsyncfilter: read synchronous filter status
-% readoutput: reads X, Y, R, phase components from the input
+% getmeas: reads X, Y, R, phase components from the input
 
 
 %------------------------------------------------------------------------------%
@@ -154,7 +154,7 @@ classdef SR830 < voltagesource	%generate new class for SR830 and make it a subcl
                     error('Voltage must be a number\n Device SR830 "%s" at %d', inputname(1), this.instr.PrimaryAddress);
                 end
 
-                fprintf(this.instr, sprintf('AUX V %d, %f', channel, V));
+                fprintf(this.instr, 'AUX V %d, %f', channel, V);
 
             end
         end
@@ -184,7 +184,7 @@ classdef SR830 < voltagesource	%generate new class for SR830 and make it a subcl
             end
 
             %if we got this far then everything should be fine
-            fprintf(this.instr, sprintf('AUXV? %d', channel));
+            fprintf(this.instr, 'AUXV? %d', channel);
             output = fscanf(this.instr, '%f');
         end
 
@@ -213,7 +213,7 @@ classdef SR830 < voltagesource	%generate new class for SR830 and make it a subcl
             end
 
             % read the voltage and output
-            fprintf(this.instr, sprintf('OAUX? %d', channel));
+            fprintf(this.instr, 'OAUX? %d', channel);
             output = fscanf(this.instr, '%f');
 
         end
@@ -893,12 +893,12 @@ classdef SR830 < voltagesource	%generate new class for SR830 and make it a subcl
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % readoutput: returns the AC input values (X, Y, R, phase)          %
+        % getmeas: returns the AC input values (X, Y, R, phase)          %
         % note: the values for X, Y and R, phase are recorded approx 10 uS  %
         % apart. This should only be important at ultra-short time constants%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function [X, Y, R, phase] = readoutput(this)
+        function [X, Y, R, phase] = getmeas(this)
 
             % dont need to do anything except ask the device for the
             % values

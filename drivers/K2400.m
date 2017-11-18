@@ -14,9 +14,9 @@
 % 
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
+%
+%
+%
 %
 %------------------------------------------------------------------------------%
 % Keithley Sourcemeter 2400 driver file
@@ -27,7 +27,7 @@
 % Methods:
 % configure: set or read dc voltage
 % setoutputvoltage: sets DC voltage or reads current set voltage
-% readoutput: depending on how the device is configured, reads voltage, current, resistance
+% getmeas: depending on how the device is configured, reads voltage, current, resistance
 
 
 %------------------------------------------------------------------------------%
@@ -138,11 +138,11 @@ classdef K2400 < voltagesource	%generate new class for SRS830 and make it a subc
 
 
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % readoutput: sends a read command and then reads the output of    %
+        % getmeas: sends a read command and then reads the output of    %
         % the device, in this case V, I and R                              %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function [voltage, current, resistance] = readoutput(this)
+        function [voltage, current, resistance] = getmeas(this)
             fprintf(this.instr, ':READ?');
 
             tmp_output = scanstr(this.instr, ',', '%f');

@@ -14,11 +14,11 @@
 % 
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
 %
-% This file contains the identities (GPIB *IDN command) of supported
+%
+%
+%
+% This file contains the identities (SCPI *IDN command) of supported
 % devices in the variable obj.idns and the corresponding driver functions
 % in the obj.drivers variable.
 % 
@@ -26,9 +26,11 @@
 % does not contain device serial numbers and the like and then add the name
 % of the driver object in the same order as is listed in the idns variable.
 
-obj.idns = {'Stanford_Research_Systems,SR830'; 'HEWLETT-PACKARD,34401A'; ...
+idns = {'Stanford_Research_Systems,SR830'; 'HEWLETT-PACKARD,34401A'; ...
     'HEWLETT-PACKARD,33120A'; 'KEITHLEY INSTRUMENTS INC.,MODEL 2400'; ...
-    'KEITHLEY INSTRUMENTS INC.,MODEL 2450'; 'Stanford_Research_Systems,SR785'};
+    'KEITHLEY INSTRUMENTS INC.,MODEL 2450'; 'Stanford_Research_Systems,SR785'; ...
+    'Agilent Technologies,33210A'; 'Agilent Technologies,33522A'};
 
 
-obj.drivers = {@SR830, @HP34401A, @HP33120A, @K2400, @K2450, @SR785};
+drivers = {@SR830, @HP34401A, @HP33120A, @K2400, @K2450, @SR785, ...
+    @HP33120A, @A33522A};

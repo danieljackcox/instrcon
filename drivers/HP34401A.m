@@ -14,9 +14,9 @@
 % 
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
+%
+%
+%
 %
 %------------------------------------------------------------------------------%
 % HP/Agilent 34401A multimeter driver file
@@ -26,9 +26,9 @@
 %
 % Methods:
 % configure: sets the device in the measurement mode requested
-% trigger: triggers the device to measure, seperated from readoutput functionality
+% trigger: triggers the device to measure, seperated from getmeas functionality
 % because this can take some time
-% readoutput: reads the configured output after a trigger event
+% getmeas: reads the configured output after a trigger event
 % detband: changes the detection band filter (3, 20, 200 Hz)
 % integrationtime: changes the integration time for measurement (unfinished)
 
@@ -65,11 +65,13 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
 
             else
                 switch type
+                    
+                    %n.b. check if these still work...
 
                     % if type is dcvolt then configure for DC voltage measurement
                     case 'dcvolt'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
-                            fprintf(this.instr, sprintf('CONF:VOLT:DC', '%f', '%f', range, resolution));
+                            fprintf(this.instr, 'CONF:VOLT:DC', '%f', '%f', range, resolution);
                         else
                             fprintf(this.instr, 'CONF:VOLT:DC');
                         end
@@ -77,7 +79,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
                         % if type is acvolt then configure for AC voltage measurement
                     case 'acvolt'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
-                            fprintf(this.instr, sprintf('CONF:VOLT:AC', '%f', '%f', range, resolution));
+                            fprintf(this.instr, 'CONF:VOLT:AC', '%f', '%f', range, resolution);
                         else
                             fprintf(this.instr, 'CONF:VOLT:AC');
                         end
@@ -91,49 +93,49 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
                         % if type is accurr then configure for AC voltage measurement
                     case 'accurr'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
-                            fprintf(this.instr, sprintf('CONF:CURR:AC', '%f', '%f', range, resolution));
+                            fprintf(this.instr, 'CONF:CURR:AC', '%f', '%f', range, resolution);
                         else
                             fprintf(this.instr, 'CONF:CURR:AC');
                         end
                         % if type is res then configure for resistance measurement
                     case 'res'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
-                            fprintf(this.instr, sprintf('CONF:RES', '%f', '%f', range, resolution));
+                            fprintf(this.instr, 'CONF:RES', '%f', '%f', range, resolution);
                         else
                             fprintf(this.instr, 'CONF:RES');
                         end
                         % if type is 4res then configure for 4-probe resistance measurement
                     case '4res'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
-                            fprintf(this.instr, sprintf('CONF:FRES', '%f', '%f', range, resolution));
+                            fprintf(this.instr, 'CONF:FRES', '%f', '%f', range, resolution);
                         else
                             fprintf(this.instr, 'CONF:FRES');
                         end
                         % if type is freq then configure for frequency measurement
                     case 'freq'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
-                            fprintf(this.instr, sprintf('CONF:FREQ', '%f', '%f', range, resolution));
+                            fprintf(this.instr, 'CONF:FREQ', '%f', '%f', range, resolution);
                         else
                             fprintf(this.instr, 'CONF:FREQ');
                         end
                         % if type is per then configure for period measurement
                     case 'per'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
-                            fprintf(this.instr, sprintf('CONF:PER', '%f', '%f', range, resolution));
+                            fprintf(this.instr, 'CONF:PER', '%f', '%f', range, resolution);
                         else
                             fprintf(this.instr, 'CONF:PER');
                         end
                         % if type is cont then configure for continuity measurement
                     case 'cont'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
-                            fprintf(this.instr, sprintf('CONF:CONT', '%f', '%f', range, resolution));
+                            fprintf(this.instr, 'CONF:CONT', '%f', '%f', range, resolution);
                         else
                             fprintf(this.instr, 'CONF:CONT');
                         end
                         % if type is diode then configure for diode measurement
                     case 'diode'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
-                            fprintf(this.instr, sprintf('CONF:DIOD', '%f', '%f', range, resolution));
+                            fprintf(this.instr, 'CONF:DIOD', '%f', '%f', range, resolution);
                         else
                             fprintf(this.instr, 'CONF:DIOD');
                         end
@@ -173,10 +175,10 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
         end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % readoutput: Reads the output of the device after a trigger event  %
+        % getmeas: Reads the output of the device after a trigger event  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = readoutput(this)
+        function output = getmeas(this)
             output = fscanf(this.instr, '%f');
         end
 
@@ -238,7 +240,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
             else
 
                 if(isnumeric(time))
-                    fprintf(this.instr, sprintf('%s:NPLC %f', functiontype, time));
+                    fprintf(this.instr, '%s:NPLC %f', functiontype, time);
                 else
                     switch time
                         case 'fast4'
@@ -281,7 +283,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
             functiontype = functiontype{2};
 
 
-            fprintf(this.instr, sprintf('%s:NPLC?', functiontype));
+            fprintf(this.instr, '%s:NPLC?', functiontype);
             output = fscanf(this.instr, '%f');
 
         end

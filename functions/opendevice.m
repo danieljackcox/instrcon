@@ -14,21 +14,21 @@
 % 
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
+%
+%
+%
 % open function, will open gpib device, identify it and return correct
 % device driver object
 % vend and bus are optional arguments
 function handle = opendevice(addr, varargin)
 
-addpath('drivers');
-addpath('functions');
+addpath('../drivers');
+addpath('../functions');
 % make sure matlab can see the contents
 % of the drivers folder
 
 %import the identities and drivers supported
-run('drivers/identities.m');
+run('identities.m');
 
 
 
@@ -51,18 +51,19 @@ allowedtypes = {'gpib', 'serial', 'tcpip', 'usb', 'visa'};
 allowedvendors = {'agilent', 'ni', 'tek'};
 
 %array preallocation always good when using for loops
-typematch = zeros(length(nargin)-2);
+typematch = zeros(nargin-1);
 
 
 %this for loop is required because 'ismember' doesn't work with
 %mixed cell arrays (that we might have)
-for i=1:nargin-2
+for i=1:nargin-1
     
     if(ischar(varargin{i}))
         typematch(i) = ismember(varargin{i}, allowedtypes);
     end
     
 end
+
 
 vendoridx = find(strcmpi('vendor', varargin));
 busidx = find(strcmpi('bus', varargin));
@@ -104,17 +105,18 @@ end
 % given
 switch varargin{typematch}
     case 'gpib'
-        instr = visa(vend, sprintf('GPIB0::%d::%d::INSTR', addr, bus));
+        instr = visa(vend, sprintf('GPIB0::%d::INSTR', addr));
     case 'serial'
         instr = visa(vend, sprintf('ASRL%d::INSTR', addr));
     case 'tcpip'
         instr = visa(vend, sprintf('TCPIP::%s::INSTR', addr));
+    case 'usb'
+        instr = visa(vend, sprintf('USB::%s::INSTR', addr));
     case 'visa'
         instr = visa(vend, addr);
     otherwise
         error('Connection type not supported address %s', addr);
 end
-
 
 try
     fopen(instr);
@@ -130,18 +132,21 @@ flushinput(instr); %software buffers
 flushoutput(instr);
 clrdevice(instr); % hardware buffers
 
-% print a confirmation message if the option is chosen
-if( this.verb == 1 )
-    fprintf(1, 'Device opened at %s (GPIB)', num2str(addr));
-end
+
+%n.b. fix this to correct for getting rid of common.m
+% % print a confirmation message if the option is chosen
+% if( this.verb == 1 )
+%     fprintf(1, 'Device opened at %s', num2str(addr));
+% end
+
 
 %query device for its identity
 identity = query(instr, '*IDN?');
 
 %match to a driver object
-matches = zeros(size(this.idns));
-for i=1:length(this.idns)
-    matches(i) = ~isempty(strfind(identity, this.idns{i}));
+matches = zeros(size(idns));
+for i=1:length(idns)
+    matches(i) = ~isempty(strfind(identity, idns{i}));
 end
 
 drivernumber = find(matches);
@@ -152,7 +157,7 @@ if(isempty(drivernumber))
 else
     
     %call that object and return the correct handle
-    handle = this.drivers{drivernumber}(instr);
+    handle = drivers{drivernumber}(instr);
     
 end
 
