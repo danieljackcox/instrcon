@@ -32,7 +32,7 @@
 
 %------------------------------------------------------------------------------%
 
-classdef K2450 < common	%generate new class for K2450 and make it a subclass of handle
+classdef K2450 < voltagesource	%generate new class for K2450 and make it a subclass of handle
 
 
     %declare some basic properties (variables) for use later
@@ -116,7 +116,7 @@ classdef K2450 < common	%generate new class for K2450 and make it a subclass of 
                     error('Voltage must be a number');
                 end
 
-                fprintf(this.instr, sprintf('SOUR:VOLT %f', V));
+                fprintf(this.instr, 'SOUR:VOLT %f', V);
                 fprintf(this.instr, 'TRAC:TRIG');
 
             end

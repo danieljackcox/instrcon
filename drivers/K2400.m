@@ -32,7 +32,7 @@
 
 %------------------------------------------------------------------------------%
 
-classdef K2400 < voltagesource	%generate new class for SRS830 and make it a subclass of handle
+classdef K2400 < voltagesource	%generate new class for K2400 and make it a subclass of handle
 
 
     %declare some basic properties (variables) for use later
@@ -114,7 +114,7 @@ classdef K2400 < voltagesource	%generate new class for SRS830 and make it a subc
                     error('Voltage must be a number');
                 end
 
-                fprintf(this.instr, sprintf(':SOUR:VOLT %f', V));
+                fprintf(this.instr, ':SOUR:VOLT %f', V);
 
             end
         end

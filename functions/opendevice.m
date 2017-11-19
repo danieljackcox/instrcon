@@ -67,6 +67,9 @@ end
 
 vendoridx = find(strcmpi('vendor', varargin));
 busidx = find(strcmpi('bus', varargin));
+driveridx = find(strcmpi('driver', varargin)); %n.b. implement this later
+% driver option should specify driver, useful for testing and instuments that
+% dont have IDN functions
 
 
 %if no vendor given then default to ni

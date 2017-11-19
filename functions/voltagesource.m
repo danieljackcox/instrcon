@@ -40,7 +40,6 @@ classdef voltagesource < handle
             
         end
         
-        
     end
     
     methods (Abstract)
@@ -48,19 +47,14 @@ classdef voltagesource < handle
         getoutputvoltage(this)
         setoutputvoltage(this)
         
-        
-        
-        
     end
     
     methods
         
-        
-        %n.b. change this to allow inputs like
-        % rampvoltage(5, 'imm', 'stepsize', 0)
-        function rampvoltage(obj, voltage, channel, imm, stepsize, speed)
+        function rampvoltage(obj, voltage, varargin)
             % RAMPVOLTAGE
-            % RAMPVOLTAGE(obj, voltage, channel, imm, stepsize, speed)
+            % RAMPVOLTAGE(obj, voltage)
+            % RAMPVOLTAGE(obj, voltage, 'channel', ChannelValue, 'stepsize', StepSizeValue, 'steptime', StepTimeValue, 'imm')
             if( nargin == 0 )
                 error('No arguments passed');
             end
@@ -69,13 +63,6 @@ classdef voltagesource < handle
                 error('A device object must be passed');
             end
             
-            if( ~exist('imm', 'var') || isempty(imm) )
-                imm = 0;
-            end
-            
-            if( ~ismember(imm, 0:1) )
-                error('imm must be 0 or 1');
-            end
             
             if( ~exist('channel', 'var') || isempty(channel) )
                 channel = 1;
@@ -92,31 +79,71 @@ classdef voltagesource < handle
             %        range_change = 0;
             %    end
             
-            if( ~exist('stepsize', 'var') || isempty(stepsize) )
-                stepsize = 50e-3;
+            stepsizeidx = find(strcmpi('stepsize', varargin));
+            steptimeidx = find(strcmpi('steptime', varargin));
+            immidx = find(strcmpi('imm', varargin));
+            channelidx = find(strcmpi('channel', varargin));
+            
+            %if stepsize isnt set then we fallback to default 50 mV
+            if(~any(stepsizeidx))
+                stepsize = 50e-3 ;
+            else
+    
+                %if a stepsize is not a number then throw an error
+                if(~isnumeric(varargin{stepsizeidx+1}))
+                    error('Step size should be a number');
+                end
+    
+                %otherwise everything ok
+                stepsize = varargin{stepsizeidx+1};
             end
             
-            if( ~isnumeric(stepsize) )
-                error('Step size must be a number');
+            %if steptime isnt set then we fallback to default 10 ms
+            if(~any(steptimeidx))
+                stepsize = 10e-3 ;
+            else
+    
+                %if a steptime is not a number then throw an error
+                if(~isnumeric(varargin{steptimeidx+1}))
+                    error('Step time should be a number');
+                end
+    
+                %otherwise everything ok
+                steptime = varargin{steptimeidx+1};
             end
             
-            if( ~exist('speed', 'var') || isempty(speed) )
-                speed = 10e-3;
+             %if channel isnt set then we fallback to default 1
+            if(~any(channelidx))
+                channel = 1 ;
+            else
+    
+                %if a channel is not a number then throw an error
+                if(~isnumeric(varargin{channelidx+1}))
+                    error('Channel should be a number');
+                end
+    
+                %otherwise everything ok
+                channel = varargin{channelidx+1};
             end
             
-            if( ~isnumeric(speed) )
-                error('Speed must be a number');
+            %if someone sets 'imm' then set the flag here
+            if(any(immidx))
+                imm = 1;
+            else
+                imm = 0;
             end
             
-            
+            %likewise if step time or size is zero then set imm
+            if(stepsize == 0 || steptime == 0)
+                imm = 1;
+            end
+
             current_voltage = obj.getoutputvoltage(channel);
-            
             
             if( current_voltage == voltage )
                 %no nothing
             else
-                
-                if( imm == 1)
+                if(imm == 1)
                     obj.setoutputvoltage(voltage, channel);
                 else
                     rampvoltage = linspace(current_voltage, voltage, round(abs(diff([current_voltage voltage]))/stepsize)+1);
@@ -124,12 +151,8 @@ classdef voltagesource < handle
                         obj.setoutputvoltage(rampvoltage(i), channel);
                         java.lang.Thread.sleep(1000*speed);
                     end
-                    
                 end
             end
-        end
-        
-        
+        end  
     end
-    
 end

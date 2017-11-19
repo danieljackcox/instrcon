@@ -25,6 +25,7 @@ Higher level functions use these driver files to implement more complex operatio
 * Standardise comments in code, etc.
 * Check for any left over 'n.b.' comments in code and fix issues
 * Consider implementing slava logging
+* Implement HP8656A frequency generator
 
 
 # Contents

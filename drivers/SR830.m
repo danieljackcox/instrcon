@@ -67,9 +67,9 @@
 
 
 %------------------------------------------------------------------------------%
-
-classdef SR830 < voltagesource	%generate new class for SR830 and make it a subclass
-% of voltagesource
+%generate new class for SR830 and make it a subclass
+% of voltagesource and freqgenerator
+classdef SR830 < voltagesource & freqgenerator	
 
 
     %declare some basic properties (variables) for use later
