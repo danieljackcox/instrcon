@@ -18,14 +18,17 @@ Higher level functions use these driver files to implement more complex operatio
 * Write first prototype script
 * Improve error handling
 * Write test scripts to test small parts of the system
-* Finish the opendevice function (perhaps add some automation for choosing vendor)
+* Finish the opendevice function (add driver choice functionality)
+* Add tenma detection to opendevice
 * Update K2400 and K2450 files to work
 * Check that A33522A actually works
 * Update main documentation (this)
 * Standardise comments in code, etc.
 * Check for any left over 'n.b.' comments in code and fix issues
 * Consider implementing slava logging
-* Implement HP8656A frequency generator
+* Implement HP8656B frequency generator
+* Start implementation of tenma, note set termination tenmavisa.Terminator = ''
+* Add other agilent/keysight devices
 
 
 # Contents

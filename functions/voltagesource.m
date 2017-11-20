@@ -100,7 +100,7 @@ classdef voltagesource < handle
             
             %if steptime isnt set then we fallback to default 10 ms
             if(~any(steptimeidx))
-                stepsize = 10e-3 ;
+                steptime = 1e-3 ;
             else
     
                 %if a steptime is not a number then throw an error
@@ -149,7 +149,7 @@ classdef voltagesource < handle
                     rampvoltage = linspace(current_voltage, voltage, round(abs(diff([current_voltage voltage]))/stepsize)+1);
                     for i=1:length(rampvoltage)
                         obj.setoutputvoltage(rampvoltage(i), channel);
-                        java.lang.Thread.sleep(1000*speed);
+                        java.lang.Thread.sleep(1000*steptime);
                     end
                 end
             end

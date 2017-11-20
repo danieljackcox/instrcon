@@ -6,12 +6,12 @@
 %     it under the terms of the GNU General Public License as published by
 %     the Free Software Foundation, either version 3 of the License, or
 %     (at your option) any later version.
-% 
+%
 %     This program is distributed in the hope that it will be useful,
 %     but WITHOUT ANY WARRANTY; without even the implied warranty of
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
-% 
+%
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -38,8 +38,7 @@ end
 
 if(isempty(varargin))
     % if varargin is empty then someone just called the open
-    % command with no inputs at all, throw an error
-    error('No connection type provided (must be gpib, tcpip, visa, etc.) for address %s', addr);
+    % command with no connection type defined, choose gpib by default
 end
 
 
@@ -72,10 +71,16 @@ driveridx = find(strcmpi('driver', varargin)); %n.b. implement this later
 % dont have IDN functions
 
 
-%if no vendor given then default to ni
+%if no vendor given then default to first installed vendor
 if(~any(vendoridx))
-    vend = 'ni';
+    visainfo = instrhwinfo('visa');
+    if(isempty(visainfo.InstalledAdaptors))
+        error('n.b. do error here if no vendors');
+    else
+        vend = visainfo.InstalledAdaptors{1};
+    end
 else
+    
     
     %if a vendor is not supported then throw an error
     if(~ismember(varargin{vendoridx+1}, allowedvendors))
@@ -95,9 +100,15 @@ else
     bus = varargin{busidx+1};
 end
 
-%if no connection type given then throw an error
+%if no connection type matches check if it is invalid input
+% and throw an error, if input is empty then default to gpib
 if(~any(typematch))
-    error('Connection type not recognised address %s', addr);
+    if(isempty(varargin))
+        varargin{1} = 'gpib';
+        typematch = 1;
+    else
+        error('Connection type not recognised address %s', addr);
+    end
 end
 if(length(typematch) > 1)
     error('Multiple connection types given address %s', addr);
