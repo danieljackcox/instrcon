@@ -63,7 +63,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
         % arbitrary waveforms not implemented
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setconf(this, type)
+        function setconf(this, type, varargin)
 
             % if no arguments provided then return the current config
             if( nargin == 1 )
@@ -108,7 +108,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
         % getconf: reads the output function type.                          %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getconf(this)
+        function output = getconf(this, varargin)
 
 
                 fprintf(this.instr, 'CONF?');
@@ -121,7 +121,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
         % setoutputvoltage: sets a DC voltage                               %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setoutputvoltage(this, V, channel)
+        function setoutputvoltage(this, V, varargin)
             
             % check that the channel variable exists first
             % if it exists, check if it is a number
@@ -164,7 +164,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
         % not measure any voltage                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getoutputvoltage(this, channel)
+        function output = getoutputvoltage(this, varargin)
             % check that the channel variable exists first
             % if it exists, check if it is a number
             % if not then assign default value 1
@@ -192,7 +192,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
         % setfreq: sets internal frequency              %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setfreq(this, freq, channel)
+        function setfreq(this, freq, varargin)
             
             % check that the channel variable exists first
             % if it exists, check if it is a number
@@ -233,7 +233,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
         % getfreq: reads internal frequency              %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getfreq(this, channel)
+        function output = getfreq(this, varargin)
             
             % check that the channel variable exists first
             % if it exists, check if it is a number
@@ -265,7 +265,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
         % setxcitation: sets the AC output sine wave voltage (in RMS) %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setexcitation(this, excitation, ~)
+        function setexcitation(this, excitation, varargin)
             % for some reason this device doesn't have per channel
             % amplitude control
 
@@ -291,7 +291,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
         % getexcitation: returns the AC output sine wave voltage (in RMS)      %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getexcitation(this)
+        function output = getexcitation(this, varargin)
 
 
                 fprintf(this.instr, 'VOLT?');
@@ -308,7 +308,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
         % rst: sends GPIB *RST command (i.e. resets the device)             %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function rst(this)
+        function rst(this, varargin)
             fprintf(this.instr, '*RST');
         end
 
@@ -316,7 +316,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
         % idn: gets GPIB identity                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = idn(this)
+        function output = idn(this, varargin)
             fprintf(this.instr, 'IDN?');
             output = fscanf(this.instr, '%s');
         end

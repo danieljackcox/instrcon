@@ -61,7 +61,7 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it a subcl
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % setconf: sets the measurement type                     %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function setconf(this, type)
+        function setconf(this, type, varargin)
 
             % if no arguments provided then return the current config
             if( nargin == 1 )
@@ -89,7 +89,7 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it a subcl
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % getconf: reads the measurement type                     %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function output = getconf(this)
+        function output = getconf(this, varargin)
 
                 fprintf(this.instr, 'SOUR:FUNC?');
                 output = fscanf(this.instr, '%s');
@@ -103,7 +103,7 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it a subcl
         % setvoltage: sets a DC voltage                            %                                         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function getvoltage(this, V, ~)
+        function getvoltage(this, V, varargin)
 
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
@@ -130,7 +130,7 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it a subcl
         % not measure any voltage                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getvoltage(this)
+        function output = getvoltage(this, varargin)
 
 
                 fprintf(this.instr, 'SOUR:VOLT?');
@@ -146,7 +146,7 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it a subcl
         % the device, in this case V, I and R                              %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = readoutput(this)
+        function output = readoutput(this, varargin)
             fprintf(this.instr, 'READ?');
             output = fscanf(this.instr, '%f');
 
@@ -158,7 +158,7 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it a subcl
         % rst: sends GPIB *RST command (i.e. resets the device)             %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function rst(this)
+        function rst(this, varargin)
             fprintf(this.instr, '*RST');
         end
 
@@ -166,7 +166,7 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it a subcl
         % idn: gets GPIB identity                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = idn(this)
+        function output = idn(this, varargin)
             fprintf(this.instr, '*IDN?');
             output = fscanf(this.instr, '%s');
         end

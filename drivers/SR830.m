@@ -127,7 +127,7 @@ classdef SR830 < voltagesource & freqgenerator
         % voltage value, it does not measure any voltage                    %                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setoutputvoltage(this, V, channel)
+        function setoutputvoltage(this, V, varargin)
 
             % check that the channel variable exists first
             % if it exists, check if it is a number
@@ -167,7 +167,7 @@ classdef SR830 < voltagesource & freqgenerator
         % AUX out channel                                                   %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getoutputvoltage(this, channel)
+        function output = getoutputvoltage(this, varargin)
 
             % check that the channel variable exists first
             % if it exists, check if it is a number
@@ -196,7 +196,7 @@ classdef SR830 < voltagesource & freqgenerator
         % getinputvoltage: reads the DC voltage on the aux input %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getinputvoltage(this, channel)
+        function output = getinputvoltage(this, varargin)
 
             % check that the channel variable exists first
             % if it exists, check if it is a number
@@ -225,7 +225,7 @@ classdef SR830 < voltagesource & freqgenerator
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % setfreq: sets the output AC frequency     %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function setfreq(this, freq)
+        function setfreq(this, freq, varargin)
 
                 if( ~isnumeric(freq))
                     error('Provided frequency must be a real number%s', instrerror(this, inputname(1), dbstack));
@@ -241,7 +241,7 @@ classdef SR830 < voltagesource & freqgenerator
          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % getfreq: gets the output AC frequency (set value)     %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function output = getfreq(this)
+        function output = getfreq(this, varargin)
 
                 fprintf(this.instr, 'FREQ?');
                 output = fscanf(this.instr, '%f');
@@ -251,7 +251,7 @@ classdef SR830 < voltagesource & freqgenerator
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % getoutputstatus: always returns 1                   %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function output = getoutputstatus(this)
+        function output = getoutputstatus(this, varargin)
 
                 output = 1;
 
@@ -260,7 +260,7 @@ classdef SR830 < voltagesource & freqgenerator
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % setoutputstatus: function does nothing but is required %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function setoutputstatus(this, status, ~)
+        function setoutputstatus(this, status, varargin)
             % this is meant to do nothing!
         end
 
@@ -271,7 +271,7 @@ classdef SR830 < voltagesource & freqgenerator
         % setfreqref: sets the device to use internal or external    %
         % frequency reference                                 %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function setfreqref(this, ref)
+        function setfreqref(this, ref, varargin)
 
                 if( ~isnumeric(ref))
                     error('Provided reference must be an integer or logical%s', instrerror(this, inputname(1), dbstack));
@@ -287,7 +287,7 @@ classdef SR830 < voltagesource & freqgenerator
          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % getfreqref: gets the device reference setting       %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function output = getfreqref(this)
+        function output = getfreqref(this, varargin)
 
                 fprintf(this.instr, 'FMOD?');
                 output = fscanf(this.instr, '%d');
@@ -298,7 +298,7 @@ classdef SR830 < voltagesource & freqgenerator
         % setphase: sets phase shift                    %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setphase(this, phase)
+        function setphase(this, phase, varargin)
 
             % if nothing or empty variable is passed then read the value
             % and return it
@@ -321,7 +321,7 @@ classdef SR830 < voltagesource & freqgenerator
         % getphase: reads phase shift                         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getphase(this)
+        function output = getphase(this, varargin)
 
 
                 fprintf(this.instr, 'PHAS?');
@@ -336,7 +336,7 @@ classdef SR830 < voltagesource & freqgenerator
         % TTL rising edge or TTL falling edge                             %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setreftrig(this, trigtype)
+        function setreftrig(this, trigtype, varargin)
 
             %if empty or nonexistent then return an error
             if( nargin == 1 || isempty(trigtype) )
@@ -366,7 +366,7 @@ classdef SR830 < voltagesource & freqgenerator
         % getreftrig: reads the reference trigger setting                 %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getreftrig(this)
+        function output = getreftrig(this, varargin)
 
 
                 fprintf(this.instr, 'RSLP?');
@@ -379,7 +379,7 @@ classdef SR830 < voltagesource & freqgenerator
         % setharmonic: sets the measurement harmonic           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setharmonic(this, harmonic)
+        function setharmonic(this, harmonic, varargin)
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(harmonic) )
                 error('No harmonic provided%s', instrerror(this, inputname(1), dbstack));
@@ -401,7 +401,7 @@ classdef SR830 < voltagesource & freqgenerator
         % getharmonic: returns the measurement harmonic           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getharmonic(this)
+        function output = getharmonic(this, varargin)
 
                 fprintf(this.instr, 'HARM?');
                 output = fscanf(this.instr, '%d');
@@ -414,7 +414,7 @@ classdef SR830 < voltagesource & freqgenerator
         % setexcitation: sets the AC output sine wave voltage (in RMS) %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setexcitation(this, excitation)
+        function setexcitation(this, excitation, varargin)
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(excitation) )
@@ -437,7 +437,7 @@ classdef SR830 < voltagesource & freqgenerator
         % getexcitation: returns the AC output sine wave voltage (in RMS) %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getexcitation(this)
+        function output = getexcitation(this, varargin)
 
 
                 fprintf(this.instr, 'SLVL?');
@@ -451,7 +451,7 @@ classdef SR830 < voltagesource & freqgenerator
         % between 0 (A), 1 (A-B), 2 (I 1MOhm), 3 (100 MOhm)                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setinputconfig(this, inputconfig)
+        function setinputconfig(this, inputconfig, varargin)
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(inputconfig) )
@@ -481,7 +481,7 @@ classdef SR830 < voltagesource & freqgenerator
         % between 0 (A), 1 (A-B), 2 (I 1MOhm), 3 (100 MOhm)                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getinputconfig(this)
+        function output = getinputconfig(this, varargin)
 
 
                 fprintf(this.instr, 'ISRC?');
@@ -496,7 +496,7 @@ classdef SR830 < voltagesource & freqgenerator
         % floating (0) or grounded (1)                                 %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setshieldgrounding(this, shieldground)
+        function setshieldgrounding(this, shieldground, varargin)
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(shieldground) )
@@ -525,7 +525,7 @@ classdef SR830 < voltagesource & freqgenerator
         % floating (0) or grounded (1)                                 %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getshieldgrounding(this)
+        function output = getshieldgrounding(this, varargin)
 
                 fprintf(this.instr, 'IGND?');
                 output = fscanf(this.instr, '%d');
@@ -540,7 +540,7 @@ classdef SR830 < voltagesource & freqgenerator
         % no filters (0), 1x line freq (1), 2x line freq (2) or both (3)%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setnotchfilter(this, notchfilter)
+        function setnotchfilter(this, notchfilter, varargin)
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(notchfilter) )
@@ -570,7 +570,7 @@ classdef SR830 < voltagesource & freqgenerator
         % no filters (0), 1x line freq (1), 2x line freq (2) or both (3)%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getnotchfilter(this)
+        function output = getnotchfilter(this, varargin)
 
 
                 fprintf(this.instr, 'ILIN?');
@@ -599,7 +599,7 @@ classdef SR830 < voltagesource & freqgenerator
         %                             26          1 V/?A                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setsensitivity(this, sensitivity)
+        function setsensitivity(this, sensitivity, varargin)
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(sensitivity) )
@@ -645,7 +645,7 @@ classdef SR830 < voltagesource & freqgenerator
         %                             26          1 V/?A                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getsensitivity(this)
+        function output = getsensitivity(this, varargin)
 
 
                 fprintf(this.instr, 'SENS?');
@@ -659,7 +659,7 @@ classdef SR830 < voltagesource & freqgenerator
         % or low noise (2)                                               %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setreserve(this, reserve)
+        function setreserve(this, reserve, varargin)
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(reserve) )
@@ -690,7 +690,7 @@ classdef SR830 < voltagesource & freqgenerator
         % or low noise (2)                                               %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getreserve(this)
+        function output = getreserve(this, varargin)
 
 
                 fprintf(this.instr, 'RMOD?');
@@ -718,7 +718,7 @@ classdef SR830 < voltagesource & freqgenerator
         %                                                                 %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function settc(this, tc)
+        function settc(this, tc, varargin)
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(tc) )
@@ -762,7 +762,7 @@ classdef SR830 < voltagesource & freqgenerator
         %                                                                 %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = gettc(this)
+        function output = gettc(this, varargin)
 
 
                 fprintf(this.instr, 'OFLT?');
@@ -777,7 +777,7 @@ classdef SR830 < voltagesource & freqgenerator
         % 6 dB/oct (0), 12 dB/oct (1), 18 dB/oct (2), 24 dB/oct (3)      %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setlpfilterslope(this, lpfilterslope)
+        function setlpfilterslope(this, lpfilterslope, varargin)
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(lpfilterslope) )
@@ -808,7 +808,7 @@ classdef SR830 < voltagesource & freqgenerator
         % 6 dB/oct (0), 12 dB/oct (1), 18 dB/oct (2), 24 dB/oct (3)      %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getlpfilterslope(this)
+        function output = getlpfilterslope(this, varargin)
 
 
                 fprintf(this.instr, 'OFSL?');
@@ -823,7 +823,7 @@ classdef SR830 < voltagesource & freqgenerator
         % worth keeping on                                                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setsyncfilter(this, syncfilter)
+        function setsyncfilter(this, syncfilter, varargin)
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(syncfilter) )
@@ -856,7 +856,7 @@ classdef SR830 < voltagesource & freqgenerator
         % worth keeping on                                                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getsyncfilter(this)
+        function output = getsyncfilter(this, varargin)
 
 
                 fprintf(this.instr, 'SYNC?');
@@ -870,7 +870,7 @@ classdef SR830 < voltagesource & freqgenerator
         % AC (0) or DC (1)                                                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setinputcoupling(this, inputcoupling)
+        function setinputcoupling(this, inputcoupling, varargin)
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(inputcoupling) )
@@ -901,7 +901,7 @@ classdef SR830 < voltagesource & freqgenerator
         % AC (0) or DC (1)                                                  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getinputcoupling(this)
+        function output = getinputcoupling(this, varargin)
 
 
                 fprintf(this.instr, 'ICPL?');
@@ -916,7 +916,7 @@ classdef SR830 < voltagesource & freqgenerator
         % apart. This should only be important at ultra-short time constants%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function [X, Y, R, phase] = getmeas(this)
+        function [X, Y, R, phase] = getmeas(this, varargin)
 
             % dont need to do anything except ask the device for the
             % values
@@ -939,7 +939,7 @@ classdef SR830 < voltagesource & freqgenerator
         % sets the object properties!                                       %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function getsettings(this)
+        function getsettings(this, varargin)
             %get the settings
             phaseoffset = this.getphase;
             inputground = this.getshieldgrounding;
@@ -986,7 +986,7 @@ classdef SR830 < voltagesource & freqgenerator
         % rst: sends GPIB *RST command (i.e. resets the device)             %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function rst(this)
+        function rst(this, varargin)
             fprintf(this.instr, '*RST');
         end
 
@@ -994,7 +994,7 @@ classdef SR830 < voltagesource & freqgenerator
         % idn: gets GPIB identity                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = idn(this)
+        function output = idn(this, varargin)
             fprintf(this.instr, 'IDN?');
             output = fscanf(this.instr, '%s');
         end

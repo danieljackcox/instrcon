@@ -63,7 +63,7 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
         % arbitrary waveforms not implemented
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setconf(this, type)
+        function setconf(this, type, varargin)
 
             % if no arguments provided then return the current config
             if( nargin == 1 )
@@ -109,7 +109,7 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
         % getconf: reads the output function type.                          %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getconf(this)
+        function output = getconf(this, varargin)
 
                 fprintf(this.instr, 'CONF?');
                 output = fscanf(this.instr, '%s');
@@ -121,7 +121,7 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
         % setoutputvoltage: sets a DC voltage                               %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setoutputvoltage(this, V, ~)
+        function setoutputvoltage(this, V, varargin)
 
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
@@ -147,7 +147,7 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
         % not measure any voltage                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getoutputvoltage(this, ~)
+        function output = getoutputvoltage(this, varargin)
 
 
                 fprintf(this.instr, 'VOLT:OFFS?');
@@ -160,7 +160,7 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
         % setfreq: sets internal frequency              %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setfreq(this, freq, ~)
+        function setfreq(this, freq, varargin)
 
             % if nothing or empty variable is passed then read the value
             % and return it
@@ -184,7 +184,7 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
         % getfreq: reads internal frequency              %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getfreq(this, ~)
+        function output = getfreq(this, varargin)
 
 
                 fprintf(this.instr, 'FREQ?');
@@ -199,7 +199,7 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
         % setxcitation: sets the AC output sine wave voltage (in RMS) %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setexcitation(this, excitation, ~)
+        function setexcitation(this, excitation, varargin)
 
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(excitation) )
@@ -223,7 +223,7 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
         % getexcitation: returns the AC output sine wave voltage (in RMS)      %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getexcitation(this, ~)
+        function output = getexcitation(this, varargin)
 
 
                 fprintf(this.instr, 'VOLT?');
@@ -240,7 +240,7 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
         % rst: sends GPIB *RST command (i.e. resets the device)             %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function rst(this)
+        function rst(this, varargin)
             fprintf(this.instr, '*RST');
         end
 
@@ -248,7 +248,7 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
         % idn: gets GPIB identity                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = idn(this)
+        function output = idn(this, varargin)
             fprintf(this.instr, 'IDN?');
             output = fscanf(this.instr, '%s');
         end

@@ -57,7 +57,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % setconf: sets the measurement type                     %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function setconf(this, type, range, resolution)
+        function setconf(this, type, varargin)
 
             % if no arguments provided then return the current config
             if( nargin == 1 )
@@ -152,7 +152,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % getconf: reads the measurement type                     %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function output = getconf(this)
+        function output = getconf(this, varargin)
 
 
                 fprintf(this.instr, 'CONF?');
@@ -170,7 +170,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
         % thread                                                            %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function trigger(this)
+        function trigger(this, varargin)
             fprintf(this.instr, 'INIT;FETC?');
         end
 
@@ -178,7 +178,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
         % getmeas: Reads the output of the device after a trigger event  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getmeas(this)
+        function output = getmeas(this, varargin)
             output = fscanf(this.instr, '%f');
         end
 
@@ -187,7 +187,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
         % setdetband: sets the detection bandwidth                          %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setdetband(this, detband)
+        function setdetband(this, detband, varargin)
 
             if( ~exist('detband', 'var') || isempty(detband) )
                 error('No arguments provided%s', instrerror(this, inputname(1), dbstack));
@@ -206,7 +206,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
         % getdetband: reads the detection bandwidth                         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getdetband(this)
+        function output = getdetband(this, varargin)
 
 
                 fprintf(this.instr, 'DET:BAND?');
@@ -224,7 +224,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
         % cycles                                                            %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function setintegrationtime(this, time)
+        function setintegrationtime(this, time, varargin)
 
             %in order to set NPLC properly we need to know the current
             %measurement function
@@ -272,7 +272,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
         % cycles                                                            %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getintegrationtime(this)
+        function output = getintegrationtime(this, varargin)
 
             %in order to set NPLC properly we need to know the current
             %measurement function
