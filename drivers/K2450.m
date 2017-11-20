@@ -65,7 +65,7 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it a subcl
 
             % if no arguments provided then return the current config
             if( nargin == 1 )
-                error('No arguments provided');
+                error('No arguments provided%s', instrerror(this, inputname(1), dbstack));
 
             else
                 switch type
@@ -76,7 +76,7 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it a subcl
                         fprintf(this.instr, 'SOUR:FUNC CURR');
 
                     otherwise
-                        error('Unrecognised type');
+                        error('Unrecognised type%s', instrerror(this, inputname(1), dbstack));
 
                 end
 
@@ -108,12 +108,12 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it a subcl
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
             if(nargin == 1 || ~exist('V', 'var') || isempty(V))
-                error('No arguments provided');
+                error('No arguments provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % otherwise set the voltage
                 if(~isnumeric(V))
-                    error('Voltage must be a number');
+                    error('Voltage must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 fprintf(this.instr, 'SOUR:VOLT %f', V);

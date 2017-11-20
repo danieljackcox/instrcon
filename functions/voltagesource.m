@@ -51,16 +51,16 @@ classdef voltagesource < handle
     
     methods
         
-        function rampvoltage(obj, voltage, varargin)
+        function rampvoltage(this, voltage, varargin)
             % RAMPVOLTAGE
-            % RAMPVOLTAGE(obj, voltage)
-            % RAMPVOLTAGE(obj, voltage, 'channel', ChannelValue, 'stepsize', StepSizeValue, 'steptime', StepTimeValue, 'imm')
+            % RAMPVOLTAGE(this, voltage)
+            % RAMPVOLTAGE(this, voltage, 'channel', ChannelValue, 'stepsize', StepSizeValue, 'steptime', StepTimeValue, 'imm')
             if( nargin == 0 )
-                error('No arguments passed');
+                error('No arguments passed%s', instrerror(this, inputname(1), dbstack));
             end
             
-            if( ~exist('obj', 'var') || isempty(obj) )
-                error('A device object must be passed');
+            if( ~exist('this', 'var') || isempty(this) )
+                error('A device object must be passed%s', instrerror(this, inputname(1), dbstack));
             end
             
             
@@ -69,7 +69,7 @@ classdef voltagesource < handle
             end
             
             if( ~isnumeric(channel) )
-                error('Channel must be a number');
+                error('Channel must be a number%s', instrerror(this, inputname(1), dbstack));
             end
             
             %    if( ~exists(range_change) || isempty(range_change) )
@@ -91,7 +91,7 @@ classdef voltagesource < handle
     
                 %if a stepsize is not a number then throw an error
                 if(~isnumeric(varargin{stepsizeidx+1}))
-                    error('Step size should be a number');
+                    error('Step size should be a number%s', instrerror(this, inputname(1), dbstack));
                 end
     
                 %otherwise everything ok
@@ -105,7 +105,7 @@ classdef voltagesource < handle
     
                 %if a steptime is not a number then throw an error
                 if(~isnumeric(varargin{steptimeidx+1}))
-                    error('Step time should be a number');
+                    error('Step time should be a number%s', instrerror(this, inputname(1), dbstack));
                 end
     
                 %otherwise everything ok
@@ -119,7 +119,7 @@ classdef voltagesource < handle
     
                 %if a channel is not a number then throw an error
                 if(~isnumeric(varargin{channelidx+1}))
-                    error('Channel should be a number');
+                    error('Channel should be a number%s', instrerror(this, inputname(1), dbstack));
                 end
     
                 %otherwise everything ok
@@ -137,18 +137,29 @@ classdef voltagesource < handle
             if(stepsize == 0 || steptime == 0)
                 imm = 1;
             end
+            
+            % this concerns devices like K2400 that have output control
+            % is voltage source turned on?
+            outputstatus = this.getoutputstatus;
+        
+        % if voltage source is off, set to zero and turn on
+        if(outputstatus) == 0)
+            this.setoutputvoltage(0, channel);
+            this.setoutputstatus(1, channel);
+        end
+            
 
-            current_voltage = obj.getoutputvoltage(channel);
+            current_voltage = this.getoutputvoltage(channel);
             
             if( current_voltage == voltage )
                 %no nothing
             else
                 if(imm == 1)
-                    obj.setoutputvoltage(voltage, channel);
+                    this.setoutputvoltage(voltage, channel);
                 else
                     rampvoltage = linspace(current_voltage, voltage, round(abs(diff([current_voltage voltage]))/stepsize)+1);
                     for i=1:length(rampvoltage)
-                        obj.setoutputvoltage(rampvoltage(i), channel);
+                        this.setoutputvoltage(rampvoltage(i), channel);
                         java.lang.Thread.sleep(1000*steptime);
                     end
                 end

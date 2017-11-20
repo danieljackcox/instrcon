@@ -67,7 +67,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
 
             % if no arguments provided then return the current config
             if( nargin == 1 )
-                error('no configuration provided');
+                error('no configuration provided%s', instrerror(this, inputname(1), dbstack));
 
             else
                 switch type
@@ -97,7 +97,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
                             fprintf(this.instr, 'FUNC DC');
 
                     otherwise
-                        error('Unrecognised type');
+                        error('Unrecognised type%s', instrerror(this, inputname(1), dbstack));
                 end
             end
         end
@@ -128,7 +128,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
             % if not then assign default value 1
             if(exist('channel', 'var'))
                 if(~isnumeric(channel))
-                    error('Channel must be an integer number\n Device Agilent 33522A "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                    error('Channel must be an integer number%s', instrerror(this, inputname(1), dbstack));
                 end
             else
                 channel = 1;
@@ -136,19 +136,19 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
 
             % make sure that the channel is a number between 1 and 4
             if( ~ismember(channel, 1:2) )
-                error('Channel number must be between 1 and 2\n Device Agilent 33522A "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                error('Channel number must be between 1 and 2%s', instrerror(this, inputname(1), dbstack));
             end
             
 
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
             if(nargin == 1 || ~exist('V', 'var') || isempty(V))
-                error('No voltage provided');
+                error('No voltage provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % otherwise set the voltage
                 if(~isnumeric(V))
-                    error('Voltage must be a number');
+                    error('Voltage must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 fprintf(this.instr, 'SOUR%d:VOLT:OFFS %f', channel, V);
@@ -170,7 +170,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
             % if not then assign default value 1
             if(exist('channel', 'var'))
                 if(~isnumeric(channel))
-                    error('Channel must be an integer number\n Device Agilent 33522A "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                    error('Channel must be an integer number%s', instrerror(this, inputname(1), dbstack));
                 end
             else
                 channel = 1;
@@ -178,7 +178,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
 
             % make sure that the channel is a number between 1 and 4
             if( ~ismember(channel, 1:2) )
-                error('Channel number must be between 1 and 2\n Device Agilent 33522A "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                error('Channel number must be between 1 and 2%s', instrerror(this, inputname(1), dbstack));
             end
 
 
@@ -199,7 +199,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
             % if not then assign default value 1
             if(exist('channel', 'var'))
                 if(~isnumeric(channel))
-                    error('Channel must be an integer number\n Device Agilent 33522A "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                    error('Channel must be an integer number%s', instrerror(this, inputname(1), dbstack));
                 end
             else
                 channel = 1;
@@ -207,18 +207,18 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
 
             % make sure that the channel is a number between 1 and 4
             if( ~ismember(channel, 1:2) )
-                error('Channel number must be between 1 and 2\n Device Agilent 33522A "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                error('Channel number must be between 1 and 2%s', instrerror(this, inputname(1), dbstack));
             end
 
 
             % if nothing or empty variable is passed then read the value
             % and return it
             if( nargin == 1 || isempty(freq) )
-                error('No frequency provided');
+                error('No frequency provided%s', instrerror(this, inputname(1), dbstack));
             else
                 % otherwise do basic sanity checking and then set the frequency
                 if( ~isnumeric(freq))
-                    error('Provided frequency must be a real number');
+                    error('Provided frequency must be a real number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 fprintf(this.instr, 'SOUR%d:FREQ %f', channel, freq);
@@ -240,7 +240,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
             % if not then assign default value 1
             if(exist('channel', 'var'))
                 if(~isnumeric(channel))
-                    error('Channel must be an integer number\n Device Agilent 33522A "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                    error('Channel must be an integer number%s', instrerror(this, inputname(1), dbstack));
                 end
             else
                 channel = 1;
@@ -248,7 +248,7 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
 
             % make sure that the channel is a number between 1 and 4
             if( ~ismember(channel, 1:2) )
-                error('Channel number must be between 1 and 2\n Device Agilent 33522A "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                error('Channel number must be between 1 and 2%s', instrerror(this, inputname(1), dbstack));
             end
 
 
@@ -271,11 +271,11 @@ classdef A33522A < voltagesource	%generate new class for A33522A and
 
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(excitation) )
-                error('No excitation provided');
+                error('No excitation provided%s', instrerror(this, inputname(1), dbstack));
             else
                 % check if passed value is a number
                 if( ~isnumeric(excitation))
-                    error('AC Sine Excitation must be a number');
+                    error('AC Sine Excitation must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 %set the excitation

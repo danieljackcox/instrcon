@@ -19,7 +19,8 @@
 %
 % open function, will open gpib device, identify it and return correct
 % device driver object
-% vend and bus are optional arguments
+% OPENDEVICE(address, 'addrtype', 'vendor', vendorstring, 'bus', busstring)
+
 function handle = opendevice(addr, varargin)
 
 addpath('../drivers');
@@ -66,16 +67,14 @@ end
 
 vendoridx = find(strcmpi('vendor', varargin));
 busidx = find(strcmpi('bus', varargin));
-driveridx = find(strcmpi('driver', varargin)); %n.b. implement this later
-% driver option should specify driver, useful for testing and instuments that
-% dont have IDN functions
+driveridx = find(strcmpi('driver', varargin));
 
 
 %if no vendor given then default to first installed vendor
 if(~any(vendoridx))
     visainfo = instrhwinfo('visa');
     if(isempty(visainfo.InstalledAdaptors))
-        error('n.b. do error here if no vendors');
+        error('No vendors installed, address %s', addr);
     else
         vend = visainfo.InstalledAdaptors{1};
     end
@@ -84,7 +83,7 @@ else
     
     %if a vendor is not supported then throw an error
     if(~ismember(varargin{vendoridx+1}, allowedvendors))
-        error('Vendor type not supported address %s', addr);
+        error('Vendor type not supported, address %s', addr);
     end
     
     %otherwise everything ok
@@ -119,7 +118,7 @@ end
 % given
 switch varargin{typematch}
     case 'gpib'
-        instr = visa(vend, sprintf('GPIB0::%d::INSTR', addr));
+        instr = visa(vend, sprintf('GPIB%d::%d::INSTR', bus, addr));
     case 'serial'
         instr = visa(vend, sprintf('ASRL%d::INSTR', addr));
     case 'tcpip'
@@ -154,7 +153,10 @@ clrdevice(instr); % hardware buffers
 % end
 
 
-%query device for its identity
+% if the 'driver' flag hasn't been set then we query the device
+% if it has been set then we pass that value as the identity
+if(~any(driveridx))
+    %query device for its identity
 identity = query(instr, '*IDN?');
 
 %match to a driver object
@@ -164,6 +166,12 @@ for i=1:length(idns)
 end
 
 drivernumber = find(matches);
+else
+    reqdriver = varargin{driveridx+1}
+    driverfunchandles = cellfun(@func2str, drivers, 'UniformOutput', 0);
+    drivernumber = find(strcmpi(reqdriver, driverfunchandles))
+end
+
 
 if(isempty(drivernumber))
     warning('No match found for device\n IDN: %s\nAddress: %s', identity, addr);

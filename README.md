@@ -13,22 +13,28 @@ Higher level functions use these driver files to implement more complex operatio
 * Keithley 2400 Sourcemeter
 * Keithley 2450 Sourcemeter
 * Agilent 33522A 30 MHz Function/Arbitrary Waveform Generator
+* Tenma 72-2550 power supply
+* HP8656B signal generator
 
 # TODO
 * Write first prototype script
-* Improve error handling
 * Write test scripts to test small parts of the system
-* Finish the opendevice function (add driver choice functionality)
-* Add tenma detection to opendevice
+* Retest the opendevice function
 * Update K2400 and K2450 files to work
 * Check that A33522A actually works
 * Update main documentation (this)
 * Standardise comments in code, etc.
 * Check for any left over 'n.b.' comments in code and fix issues
 * Consider implementing slava logging
-* Implement HP8656B frequency generator
-* Start implementation of tenma, note set termination tenmavisa.Terminator = ''
+* Test HP8656B frequency generator
+* Test Tenma driver
 * Add other agilent/keysight devices
+* Consider allowing SR830 file to accept text arguments for sensitivity, etc.
+* Check if setconf in HP33120A works
+* Update driver functions to allow arbitrary number of arguments
+* Change channel functions to use a text label for input
+* Update drivers to grab output status (energised or not)
+* Requested for implementation: keysight 33510B, keysight 33511B, Rohde & Schwarz SMY 01
 
 
 # Contents

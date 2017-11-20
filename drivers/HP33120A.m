@@ -36,8 +36,8 @@
 
 %------------------------------------------------------------------------------%
 
-classdef HP33120A < voltagesource	%generate new class for SRS830 and
-    % make it a subclass of voltagesource
+classdef HP33120A < voltagesource & freqgenerator	%generate new class
+% for HP33120A and make it a subclass of voltagesource and freqgenerator
 
 
     %declare some basic properties (variables) for use later
@@ -67,7 +67,7 @@ classdef HP33120A < voltagesource	%generate new class for SRS830 and
 
             % if no arguments provided then return the current config
             if( nargin == 1 )
-                error('no configuration provided');
+                error('No config type provided, use ''getconf'' to read configuration%s', instrerror(this, inputname(1), dbstack));
 
             else
                 switch type
@@ -97,7 +97,8 @@ classdef HP33120A < voltagesource	%generate new class for SRS830 and
                             fprintf(this.instr, 'FUNC:SHAP DC');
 
                     otherwise
-                        error('Unrecognised type');
+                    
+                       error('Type ''%s'' not recognised, supported types are ''sine'', ''square'', ''triangle'', ''ramp'', ''noise'', ''dc''%s', type, instrerror(this, inputname(1), dbstack));
                 end
             end
         end
@@ -110,10 +111,9 @@ classdef HP33120A < voltagesource	%generate new class for SRS830 and
 
         function output = getconf(this)
 
-
                 fprintf(this.instr, 'CONF?');
                 output = fscanf(this.instr, '%s');
-
+                
         end
 
 
@@ -126,12 +126,12 @@ classdef HP33120A < voltagesource	%generate new class for SRS830 and
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
             if(nargin == 1 || ~exist('V', 'var') || isempty(V))
-                error('No voltage provided');
+                error('No voltage provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % otherwise set the voltage
                 if(~isnumeric(V))
-                    error('Voltage must be a number');
+                    error('Voltage must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 fprintf(this.instr, 'VOLT:OFFS %f', V);
@@ -165,11 +165,11 @@ classdef HP33120A < voltagesource	%generate new class for SRS830 and
             % if nothing or empty variable is passed then read the value
             % and return it
             if( nargin == 1 || isempty(freq) )
-                error('No frequency provided');
+                error('No frequency provided%s', instrerror(this, inputname(1), dbstack));
             else
                 % otherwise do basic sanity checking and then set the frequency
                 if( ~isnumeric(freq))
-                    error('Provided frequency must be a real number');
+                    error('Provided frequency must be a real number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 fprintf(this.instr, 'FREQ %f', freq);
@@ -203,11 +203,11 @@ classdef HP33120A < voltagesource	%generate new class for SRS830 and
 
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(excitation) )
-                error('No excitation provided');
+                error('No excitation provided%s', instrerror(this, inputname(1), dbstack));
             else
                 % check if passed value is a number
                 if( ~isnumeric(excitation))
-                    error('AC Sine Excitation must be a number');
+                    error('AC Sine Excitation must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 %set the excitation

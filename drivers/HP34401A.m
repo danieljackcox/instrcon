@@ -61,7 +61,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
 
             % if no arguments provided then return the current config
             if( nargin == 1 )
-                error('No arugments provided');
+                error('No arugments provided%s', instrerror(this, inputname(1), dbstack));
 
             else
                 switch type
@@ -141,7 +141,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
                         end
                         % if type isnt matched then throw an error
                     otherwise
-                        error('Unrecognised type');
+                        error('Unrecognised type%s', instrerror(this, inputname(1), dbstack));
                 end
             end
         end
@@ -190,10 +190,10 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
         function setdetband(this, detband)
 
             if( ~exist('detband', 'var') || isempty(detband) )
-                error('No arguments provided');
+                error('No arguments provided%s', instrerror(this, inputname(1), dbstack));
             else
                 if( ~ismember(detband, [3, 20, 200]) )
-                    error('Detection band can only be 3 Hz, 20 Hz, or 200 Hz');
+                    error('Detection band can only be 3 Hz, 20 Hz, or 200 Hz%s', instrerror(this, inputname(1), dbstack));
                 end
                 fprintf(this.instr, 'DET:BAND %u', detband);
             end
@@ -236,7 +236,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
 
 
             if( ~exist('time', 'var') || isempty(time) )
-                error('No arguments provided');
+                error('No arguments provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 if(isnumeric(time))
@@ -256,7 +256,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
                         case 'slow6'
                             fprintf(this.instr, '%s:NPLC 100', functiontype);
                         otherwise
-                            error('Unrecognised NPLC amount');
+                            error('Unrecognised NPLC amount%s', instrerror(this, inputname(1), dbstack));
                     end
                 end
             end

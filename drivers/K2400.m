@@ -60,7 +60,7 @@ classdef K2400 < voltagesource	%generate new class for K2400 and make it a subcl
 
             % if no arguments provided then return the current config
             if( nargin == 1 )
-                error('No arugments provided');
+                error('No arugments provided%s', instrerror(this, inputname(1), dbstack));
 
             else
                 switch type
@@ -74,7 +74,7 @@ classdef K2400 < voltagesource	%generate new class for K2400 and make it a subcl
                         fprintf(this.instr, ':CONF:RES');
 
                     otherwise
-                        error('Unrecognised type');
+                        error('Unrecognised type%s', instrerror(this, inputname(1), dbstack));
 
                 end
 
@@ -106,12 +106,12 @@ classdef K2400 < voltagesource	%generate new class for K2400 and make it a subcl
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
             if(nargin == 1 || ~exist('V', 'var') || isempty(V))
-                error('No arguments provided');
+                error('No arguments provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % otherwise set the voltage
                 if(~isnumeric(V))
-                    error('Voltage must be a number');
+                    error('Voltage must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 fprintf(this.instr, ':SOUR:VOLT %f', V);
@@ -122,12 +122,12 @@ classdef K2400 < voltagesource	%generate new class for K2400 and make it a subcl
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getvoltage: reads a DC voltage                            %
+        % getoutputvoltage: reads a DC voltage                            %
         % IMPORTANT: setoutputvoltage can return the *set* voltage value, it does %
         % not measure any voltage                                           %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function output = getvoltage(this)
+        function output = getoutputvoltage(this)
 
 
                 fprintf(this.instr, ':SOUR:VOLT?');
@@ -142,7 +142,7 @@ classdef K2400 < voltagesource	%generate new class for K2400 and make it a subcl
         % the device, in this case V, I and R                              %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        function [voltage, current, resistance] = getmeas(this)
+        function [voltage, current, resistance] = getmeas(this, ~)
             fprintf(this.instr, ':READ?');
 
             tmp_output = scanstr(this.instr, ',', '%f');

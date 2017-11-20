@@ -64,6 +64,8 @@
 % setsyncfilter: set synchronous filter status
 % getsyncfilter: read synchronous filter status
 % getmeas: reads X, Y, R, phase components from the input
+% setoutputstatus: turns output on or off (does nothing here)
+% getoutputstatus: returns output status (always on)
 
 
 %------------------------------------------------------------------------------%
@@ -99,7 +101,7 @@ classdef SR830 < voltagesource & freqgenerator
 
             if(exist('noreset', 'var'))
                 if(~isnumeric(noreset))
-                    error('Noreset must be an integer\n Device SR830 at GPIB %d', obj.instr.PrimaryAddress);
+                    error('Noreset must be an integer\%s', instrerror(this, inputname(1), dbstack));
                 end
             else
                 noreset = 0;
@@ -132,7 +134,7 @@ classdef SR830 < voltagesource & freqgenerator
             % if not then assign default value 1
             if(exist('channel', 'var'))
                 if(~isnumeric(channel))
-                    error('Channel must be an integer number\n Device SR830 "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                    error('Channel must be an integer number%s', instrerror(this, inputname(1), dbstack));
                 end
             else
                 channel = 1;
@@ -140,18 +142,18 @@ classdef SR830 < voltagesource & freqgenerator
 
             % make sure that the channel is a number between 1 and 4
             if( ~ismember(channel, 1:4) )
-                error('Channel number must be between 1 and 4\n Device SR830 "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                error('Channel number must be between 1 and 4%s', instrerror(this, inputname(1), dbstack));
             end
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
             if(nargin == 1 || ~exist('V', 'var') || isempty(V))
-                error('No voltage passed');
+                error('No voltage passed%s', instrerror(this, inputname(1), dbstack));
 
             else
 
                 % otherwise set the voltage
                 if(~isnumeric(V))
-                    error('Voltage must be a number\n Device SR830 "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                    error('Voltage must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 fprintf(this.instr, 'AUX V %d, %f', channel, V);
@@ -172,7 +174,7 @@ classdef SR830 < voltagesource & freqgenerator
             % if not then assign default value 1
             if(exist('channel', 'var'))
                 if(~isnumeric(channel))
-                    error('Channel must be an integer number\n Device SR830 "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                    error('Channel must be an integer number%s', instrerror(this, inputname(1), dbstack));
                 end
             else
                 channel = 1;
@@ -180,7 +182,7 @@ classdef SR830 < voltagesource & freqgenerator
 
             % make sure that the channel is a number between 1 and 4
             if( ~ismember(channel, 1:4) )
-                error('Channel number must be between 1 and 4\n Device SR830 "%s" at %d', inputname(1), this.instr.PrimaryAddress);
+                error('Channel number must be between 1 and 4%s', instrerror(this, inputname(1), dbstack));
             end
 
             %if we got this far then everything should be fine
@@ -201,7 +203,7 @@ classdef SR830 < voltagesource & freqgenerator
             % if not then assign default value 1
             if(exist('channel', 'var'))
                 if(~isnumeric(channel))
-                    error('Channel must be an integer number');
+                    error('Channel must be an integer number%s', instrerror(this, inputname(1), dbstack));
                 end
             else
                 channel = 1;
@@ -209,7 +211,7 @@ classdef SR830 < voltagesource & freqgenerator
 
             % make sure that the channel is a number between 1 and 4
             if( ~ismember(channel, 1:4) )
-                error('Channel number must be between 1 and 4');
+                error('Channel number must be between 1 and 4%s', instrerror(this, inputname(1), dbstack));
             end
 
             % read the voltage and output
@@ -226,7 +228,7 @@ classdef SR830 < voltagesource & freqgenerator
         function setfreq(this, freq)
 
                 if( ~isnumeric(freq))
-                    error('Provided frequency!!');
+                    error('Provided frequency must be a real number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 % passes all error checking, then execute
@@ -245,6 +247,22 @@ classdef SR830 < voltagesource & freqgenerator
                 output = fscanf(this.instr, '%f');
 
         end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % getoutputstatus: always returns 1                   %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function output = getoutputstatus(this)
+
+                output = 1;
+
+        end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % setoutputstatus: function does nothing but is required %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        function setoutputstatus(this, status, ~)
+            % this is meant to do nothing!
+        end
 
 
 
@@ -256,7 +274,7 @@ classdef SR830 < voltagesource & freqgenerator
         function setfreqref(this, ref)
 
                 if( ~isnumeric(ref))
-                    error('Provided reference must be an integer or logical');
+                    error('Provided reference must be an integer or logical%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 % passes all error checking, then execute
@@ -285,11 +303,11 @@ classdef SR830 < voltagesource & freqgenerator
             % if nothing or empty variable is passed then read the value
             % and return it
             if( nargin == 1 || isempty(phase) )
-                error('No phase provided');
+                error('No phase provided%s', instrerror(this, inputname(1), dbstack));
             else
                 % otherwise do basic sanity checking and then set the frequency
                 if( ~isnumeric(phase))
-                    error('Provided phase must be a real number');
+                    error('Provided phase must be a real number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 fprintf(this.instr, 'PHAS %f', phase);
@@ -322,17 +340,17 @@ classdef SR830 < voltagesource & freqgenerator
 
             %if empty or nonexistent then return an error
             if( nargin == 1 || isempty(trigtype) )
-                error('No Reference Type provided');
+                error('No Reference Type provided%s', instrerror(this, inputname(1), dbstack));
             else
                 % otherwise we set the value
 
                 % check that it is a real number
                 if( ~isnumeric(trigtype))
-                    error('Provided reference trigger must be an integer between 0 and 2');
+                    error('Provided reference trigger must be an integer between 0 and 2%s', instrerror(this, inputname(1), dbstack));
                 end
                 % and check that the number is 0, 1, or 2
                 if( ~ismember(trigtype, 0:2) )
-                    error('Input must be 0, 1, or 2');
+                    error('Input must be 0, 1, or 2%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 fprintf(this.instr, 'RSLP %d', trigtype);
@@ -364,11 +382,11 @@ classdef SR830 < voltagesource & freqgenerator
         function setharmonic(this, harmonic)
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(harmonic) )
-                error('No harmonic provided');
+                error('No harmonic provided%s', instrerror(this, inputname(1), dbstack));
             else
                 % otherwise check if passed value is a number then set it
                 if( ~isnumeric(harmonic))
-                    error('Harmonic must be an integer larger than 1');
+                    error('Harmonic must be an integer larger than 1%s', instrerror(this, inputname(1), dbstack));
                 end
 
 
@@ -400,11 +418,11 @@ classdef SR830 < voltagesource & freqgenerator
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(excitation) )
-                error('No excitation provided');
+                error('No excitation provided%s', instrerror(this, inputname(1), dbstack));
             else
                 % check if passed value is a number
                 if( ~isnumeric(excitation))
-                    error('AC Sine Excitation must be a number');
+                    error('AC Sine Excitation must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 %set the excitation
@@ -437,17 +455,17 @@ classdef SR830 < voltagesource & freqgenerator
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(inputconfig) )
-                error('No input config provided');
+                error('No input config provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % check if passed value is a number, and then check if it is
                 % in the accepted range
                 if( ~isnumeric(inputconfig))
-                    error('Input Configuration must be a number');
+                    error('Input Configuration must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 if( ~ismember(inputconfig, 0:3) )
-                    error('Input must be 0, 1, 2, or 3');
+                    error('Input must be 0, 1, 2, or 3%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 % set the value
@@ -482,16 +500,16 @@ classdef SR830 < voltagesource & freqgenerator
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(shieldground) )
-                error('No ground shield configuration provided');
+                error('No ground shield configuration provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % check if number, then check if in correct range
                 if( ~isnumeric(shieldground))
-                    error('Input Shield Grounding must be a number');
+                    error('Input Shield Grounding must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 if( ~ismember(shieldground, [0 1]) )
-                    error('Input must be 0 or 1');
+                    error('Input must be 0 or 1%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 % set the value
@@ -526,16 +544,16 @@ classdef SR830 < voltagesource & freqgenerator
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(notchfilter) )
-                error('no notch filter provided');
+                error('no notch filter provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % check if number, then check if in correct range
                 if( ~isnumeric(notchfilter))
-                    error('Notch Filter must be a number');
+                    error('Notch Filter must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 if( ~ismember(notchfilter , 0:3) )
-                    error('Input must be between 0 and 3');
+                    error('Input must be between 0 and 3%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 % set the value
@@ -585,16 +603,16 @@ classdef SR830 < voltagesource & freqgenerator
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(sensitivity) )
-                error('no sensitivity provided');
+                error('no sensitivity provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % check if number, then check range is correct
                 if( ~isnumeric(sensitivity))
-                    error('Sensitivity must be a number');
+                    error('Sensitivity must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 if( ~ismember(sensitivity, 0:26) )
-                    error('Input must be an integer between 0 and 26');
+                    error('Input must be an integer between 0 and 26%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 % set the value
@@ -645,16 +663,16 @@ classdef SR830 < voltagesource & freqgenerator
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(reserve) )
-                error('no reserve provided');
+                error('no reserve provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % check if number, then check if in correct range
                 if( ~isnumeric(reserve) )
-                    error('Reserve must be a number');
+                    error('Reserve must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 if( ~ismember(reserve , 0:2) )
-                    error('Input must be between 0 and 2');
+                    error('Input must be between 0 and 2%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 % set the value
@@ -704,16 +722,16 @@ classdef SR830 < voltagesource & freqgenerator
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(tc) )
-                error('no tc provided');
+                error('no tc provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % check if number, then check range is correct
                 if( ~isnumeric(tc))
-                    error('Time Constant must be a number');
+                    error('Time Constant must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 if( ~ismember(tc, 0:19) )
-                    error('Input must be an integer between 0 and 19');
+                    error('Input must be an integer between 0 and 19%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 % set the value
@@ -763,16 +781,16 @@ classdef SR830 < voltagesource & freqgenerator
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(lpfilterslope) )
-                error('no filter slope provided');
+                error('no filter slope provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % check if number, then check if in correct range
                 if( ~isnumeric(lpfilterslope) )
-                    error('Filter slope must be a number');
+                    error('Filter slope must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 if( ~ismember(lpfilterslope , 0:3) )
-                    error('Input must be between 0 and 3');
+                    error('Input must be between 0 and 3%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 % set the value
@@ -809,16 +827,16 @@ classdef SR830 < voltagesource & freqgenerator
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(syncfilter) )
-                error('no sync filter provided');
+                error('no sync filter provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % check if number, then check if in correct range
                 if( ~isnumeric(syncfilter) )
-                    error('Sync filter status must be a number');
+                    error('Sync filter status must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 if( ~ismember(syncfilter , 0:1) )
-                    error('Input must be 0 or 1');
+                    error('Input must be 0 or 1%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 % set the value
@@ -856,16 +874,16 @@ classdef SR830 < voltagesource & freqgenerator
 
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(inputcoupling) )
-                error('no input coupling provided');
+                error('no input coupling provided%s', instrerror(this, inputname(1), dbstack));
             else
 
                 % check if number, then check if in correct range
                 if( ~isnumeric(inputcoupling) )
-                    error('Input coupling must be a number');
+                    error('Input coupling must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 if( ~ismember(inputcoupling , 0:1) )
-                    error('Input must be 0 or 1');
+                    error('Input must be 0 or 1%s', instrerror(this, inputname(1), dbstack));
                 end
 
                 % set the value
