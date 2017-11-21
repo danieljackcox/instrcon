@@ -29,16 +29,11 @@ Higher level functions use these driver files to implement more complex operatio
 * Test HP8656B frequency generator
 * Test Tenma driver
 * Add other agilent/keysight devices
-* Consider allowing SR830 file to accept text arguments for sensitivity, etc.
 * Check if setconf in HP33120A works
-* Update driver functions to allow arbitrary number of arguments
-* Change channel functions to use a text label for input
 * Update drivers to grab output status (energised or not)
 * Requested for implementation: keysight 33510B, keysight 33511B, Rohde & Schwarz SMY 01
-* Correct channel issues in A33522A, SR830
 * fix setconf in HP34401A
 * In general retest every instrument because they probably dont work anymore
-
 
 
 # Contents

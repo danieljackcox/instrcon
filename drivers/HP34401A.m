@@ -6,12 +6,12 @@
 %     it under the terms of the GNU General Public License as published by
 %     the Free Software Foundation, either version 3 of the License, or
 %     (at your option) any later version.
-% 
+%
 %     This program is distributed in the hope that it will be useful,
 %     but WITHOUT ANY WARRANTY; without even the implied warranty of
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
-% 
+%
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -36,38 +36,38 @@
 %------------------------------------------------------------------------------%
 
 classdef HP34401A < common	%generate new class for HP34401A and make it a subclass of common
-
-
+    
+    
     %declare some basic properties (variables) for use later
     % UNFINISHED
     properties
         instr
     end
-
-
+    
+    
     methods
-
+        
         %constructor (i.e. creator class, called by default)
         function obj = HP34401A(instr)
             %a gpib object is passed when creating the object, so make it
             %part of the object here
             obj.instr = instr;
         end
-
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % setconf: sets the measurement type                     %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function setconf(this, type, varargin)
-
+            
             % if no arguments provided then return the current config
             if( nargin == 1 )
                 error('No arugments provided%s', instrerror(this, inputname(1), dbstack));
-
+                
             else
                 switch type
                     
                     %n.b. check if these still work...
-
+                    
                     % if type is dcvolt then configure for DC voltage measurement
                     case 'dcvolt'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
@@ -75,7 +75,7 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
                         else
                             fprintf(this.instr, 'CONF:VOLT:DC');
                         end
-
+                        
                         % if type is acvolt then configure for AC voltage measurement
                     case 'acvolt'
                         if( exist('range', 'var') && exist('resolution', 'var') && ~isempty(range) && ~isempty(resolution) )
@@ -145,50 +145,50 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
                 end
             end
         end
-
-
-
-
+        
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % getconf: reads the measurement type                     %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function output = getconf(this, varargin)
-
-
-                fprintf(this.instr, 'CONF?');
-                output = fscanf(this.instr, '%s');
-
+            
+            
+            fprintf(this.instr, 'CONF?');
+            output = fscanf(this.instr, '%s');
+            
         end
-
-
-
-
+        
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % trigger: Triggers the dvm to start a measurement                  %
         % this is done seperately from the reading because measurements     %
         % can take several seconds, completely freezing the matlab main     %
         % thread                                                            %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+        
         function trigger(this, varargin)
             fprintf(this.instr, 'INIT;FETC?');
         end
-
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % getmeas: Reads the output of the device after a trigger event  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+        
         function output = getmeas(this, varargin)
             output = fscanf(this.instr, '%f');
         end
-
-
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % setdetband: sets the detection bandwidth                          %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+        
         function setdetband(this, detband, varargin)
-
+            
             if( ~exist('detband', 'var') || isempty(detband) )
                 error('No arguments provided%s', instrerror(this, inputname(1), dbstack));
             else
@@ -197,48 +197,48 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
                 end
                 fprintf(this.instr, 'DET:BAND %u', detband);
             end
-
+            
         end
-
-
-
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % getdetband: reads the detection bandwidth                         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+        
         function output = getdetband(this, varargin)
-
-
-                fprintf(this.instr, 'DET:BAND?');
-                output = fscanf(this.instr, '%f');
-
-
+            
+            
+            fprintf(this.instr, 'DET:BAND?');
+            output = fscanf(this.instr, '%f');
+            
+            
         end
-
-
-
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % setintegrationtime: sets the integration time for the             %
         % current configuration                                             %
         % nplc is the measurement integration time in number of power line  %
         % cycles                                                            %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+        
         function setintegrationtime(this, time, varargin)
-
+            
             %in order to set NPLC properly we need to know the current
             %measurement function
             fprintf(this.instr, 'FUNC?');
-
+            
             %function is returned in quotes so strip those away
             functiontype = strsplit(fscanf(this.instr, '%s'), '"');
             functiontype = functiontype{2};
-
-
+            
+            
             if( ~exist('time', 'var') || isempty(time) )
                 error('No arguments provided%s', instrerror(this, inputname(1), dbstack));
             else
-
+                
                 if(isnumeric(time))
                     fprintf(this.instr, '%s:NPLC %f', functiontype, time);
                 else
@@ -260,36 +260,38 @@ classdef HP34401A < common	%generate new class for HP34401A and make it a subcla
                     end
                 end
             end
-
+            
         end
-
-
-
+        
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % getintegrationtime: reads or sets the integration time for the    %
         % current configuration                                             %
         % nplc is the measurement integration time in number of power line  %
         % cycles                                                            %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+        
         function output = getintegrationtime(this, varargin)
-
+            
             %in order to set NPLC properly we need to know the current
             %measurement function
             fprintf(this.instr, 'FUNC?');
-
+            
             %function is returned in quotes so strip those away
             functiontype = strsplit(fscanf(this.instr, '%s'), '"');
             functiontype = functiontype{2};
-
-
+            
+            
             fprintf(this.instr, '%s:NPLC?', functiontype);
             output = fscanf(this.instr, '%f');
-
+            
         end
-
-
-
+        
+        
+        
+        
+        
     end
-
+    
 end

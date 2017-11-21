@@ -157,15 +157,15 @@ clrdevice(instr); % hardware buffers
 % if it has been set then we pass that value as the identity
 if(~any(driveridx))
     %query device for its identity
-identity = query(instr, '*IDN?');
-
-%match to a driver object
-matches = zeros(size(idns));
-for i=1:length(idns)
-    matches(i) = ~isempty(strfind(identity, idns{i}));
-end
-
-drivernumber = find(matches);
+    identity = query(instr, '*IDN?');
+    
+    %match to a driver object
+    matches = zeros(size(idns));
+    for i=1:length(idns)
+        matches(i) = ~isempty(strfind(identity, idns{i}));
+    end
+    
+    drivernumber = find(matches);
 else
     reqdriver = varargin{driveridx+1}
     driverfunchandles = cellfun(@func2str, drivers, 'UniformOutput', 0);

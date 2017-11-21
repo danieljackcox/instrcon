@@ -42,7 +42,7 @@ classdef multimeter < handle
     methods (Abstract)
         
         getmeas(this)
-
+        
     end
     
 end

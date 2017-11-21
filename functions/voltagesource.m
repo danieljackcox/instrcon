@@ -46,6 +46,8 @@ classdef voltagesource < handle
         
         getoutputvoltage(this)
         setoutputvoltage(this)
+        getoutputstatus(this)
+        setoutputstatus(this)
         
     end
     
@@ -64,14 +66,6 @@ classdef voltagesource < handle
             end
             
             
-            if( ~exist('channel', 'var') || isempty(channel) )
-                channel = 1;
-            end
-            
-            if( ~isnumeric(channel) )
-                error('Channel must be a number%s', instrerror(this, inputname(1), dbstack));
-            end
-            
             %    if( ~exists(range_change) || isempty(range_change) )
             %        if( ~ismember(range_change, 0:1) )
             %            error('range_change must be 0 or 1');
@@ -88,12 +82,12 @@ classdef voltagesource < handle
             if(~any(stepsizeidx))
                 stepsize = 50e-3 ;
             else
-    
+                
                 %if a stepsize is not a number then throw an error
                 if(~isnumeric(varargin{stepsizeidx+1}))
                     error('Step size should be a number%s', instrerror(this, inputname(1), dbstack));
                 end
-    
+                
                 %otherwise everything ok
                 stepsize = varargin{stepsizeidx+1};
             end
@@ -102,26 +96,26 @@ classdef voltagesource < handle
             if(~any(steptimeidx))
                 steptime = 1e-3 ;
             else
-    
+                
                 %if a steptime is not a number then throw an error
                 if(~isnumeric(varargin{steptimeidx+1}))
                     error('Step time should be a number%s', instrerror(this, inputname(1), dbstack));
                 end
-    
+                
                 %otherwise everything ok
                 steptime = varargin{steptimeidx+1};
             end
             
-             %if channel isnt set then we fallback to default 1
+            %if channel isnt set then we fallback to default 1
             if(~any(channelidx))
                 channel = 1 ;
             else
-    
+                
                 %if a channel is not a number then throw an error
                 if(~isnumeric(varargin{channelidx+1}))
                     error('Channel should be a number%s', instrerror(this, inputname(1), dbstack));
                 end
-    
+                
                 %otherwise everything ok
                 channel = varargin{channelidx+1};
             end
@@ -141,14 +135,14 @@ classdef voltagesource < handle
             % this concerns devices like K2400 that have output control
             % is voltage source turned on?
             outputstatus = this.getoutputstatus;
-        
-        % if voltage source is off, set to zero and turn on
-        if(outputstatus) == 0)
-            this.setoutputvoltage(0, channel);
-            this.setoutputstatus(1, channel);
-        end
             
-
+            % if voltage source is off, set to zero and turn on
+            if(outputstatus) == 0)
+                this.setoutputvoltage(0, channel);
+                this.setoutputstatus(1, channel);
+            end
+            
+            
             current_voltage = this.getoutputvoltage(channel);
             
             if( current_voltage == voltage )
@@ -164,6 +158,6 @@ classdef voltagesource < handle
                     end
                 end
             end
-        end  
+        end
     end
 end
