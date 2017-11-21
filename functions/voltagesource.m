@@ -134,22 +134,22 @@ classdef voltagesource < handle
             
             % if voltage source is off, set to zero and turn on
             if(outputstatus == 0)
-                this.setoutputvoltage(0, channel);
-                this.setoutputstatus(1, channel);
+                this.setoutputvoltage(0, 'channel', channel);
+                this.setoutputstatus(1, 'channel', channel);
             end
             
             
-            current_voltage = this.getoutputvoltage(channel);
+            current_voltage = this.getoutputvoltage('channel', channel);
             
             if( current_voltage == voltage )
                 %no nothing
             else
                 if(imm == 1)
-                    this.setoutputvoltage(voltage, channel);
+                    this.setoutputvoltage(voltage, 'channel', channel);
                 else
                     rampvoltage = linspace(current_voltage, voltage, round(abs(diff([current_voltage voltage]))/stepsize)+1);
                     for i=1:length(rampvoltage)
-                        this.setoutputvoltage(rampvoltage(i), channel);
+                        this.setoutputvoltage(rampvoltage(i), 'channel', channel);
                         java.lang.Thread.sleep(1000*steptime);
                     end
                 end

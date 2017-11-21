@@ -35,7 +35,7 @@
 
 %------------------------------------------------------------------------------%
 
-classdef HP34401A < common	%generate new class for HP34401A and make it a subclass of common
+classdef HP34401A < multimeter	%generate new class for HP34401A and make it a subclass of common
     
     
     %declare some basic properties (variables) for use later
