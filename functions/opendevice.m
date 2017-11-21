@@ -51,7 +51,7 @@ allowedtypes = {'gpib', 'serial', 'tcpip', 'usb', 'visa'};
 allowedvendors = {'agilent', 'ni', 'tek'};
 
 %array preallocation always good when using for loops
-typematch = zeros(nargin-1);
+typematch = zeros(1, nargin-1);
 
 
 %this for loop is required because 'ismember' doesn't work with
@@ -109,14 +109,16 @@ if(~any(typematch))
         error('Connection type not recognised address %s', addr);
     end
 end
-if(length(typematch) > 1)
+
+if(sum(typematch) > 1)
     error('Multiple connection types given address %s', addr);
 end
 
 
 % now generate the instrument object depending on the type
 % given
-switch varargin{typematch}
+
+switch varargin{typematch == 1}
     case 'gpib'
         instr = visa(vend, sprintf('GPIB%d::%d::INSTR', bus, addr));
     case 'serial'
@@ -135,15 +137,15 @@ try
     fopen(instr);
 catch
     % CHANGE THIS ERROR
-    error('Cannot open GPIB device at address %s', num2str(addr));
+    error('Cannot open ''%s'' device at address %s', varargin{typematch == 1}, num2str(addr));
 end
 
 % assuming everything went well we can then
 % flush input and output buffers, this is important on certain devices
 % such as SR830
-flushinput(instr); %software buffers
-flushoutput(instr);
-clrdevice(instr); % hardware buffers
+% flushinput(instr); %software buffers
+% flushoutput(instr);
+% clrdevice(instr); % hardware buffers
 
 
 %n.b. fix this to correct for getting rid of common.m
@@ -167,9 +169,9 @@ if(~any(driveridx))
     
     drivernumber = find(matches);
 else
-    reqdriver = varargin{driveridx+1}
+    reqdriver = varargin{driveridx+1};
     driverfunchandles = cellfun(@func2str, drivers, 'UniformOutput', 0);
-    drivernumber = find(strcmpi(reqdriver, driverfunchandles))
+    drivernumber = find(strcmpi(reqdriver, driverfunchandles));
 end
 
 
@@ -177,7 +179,6 @@ if(isempty(drivernumber))
     warning('No match found for device\n IDN: %s\nAddress: %s', identity, addr);
     handle = instr;
 else
-    
     %call that object and return the correct handle
     handle = drivers{drivernumber}(instr);
     

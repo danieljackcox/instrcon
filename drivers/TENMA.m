@@ -49,11 +49,12 @@ classdef TENMA < voltagesource & multimeter	%generate new class for TENMA and
         function obj = TENMA(instr)
             %a visa object is passed when creating the object, so make it
             %part of the object here
+            %instr.Terminator = '';
             obj.instr = instr;
+            obj.instr.Terminator = '';
             
             % this is REQUIRED to communicate with the tenma, otherwise
             % it wont reply
-            obj.instr.Terminator = '';
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,7 +90,7 @@ classdef TENMA < voltagesource & multimeter	%generate new class for TENMA and
         function output = getoutputvoltage(this, ~)
             
             fprintf(this.instr, 'VSET1?');
-            output = fscanf(this.instr, '%f');
+            output = str2double(char(fread(this.instr, 5)));
             
         end
         
@@ -126,8 +127,9 @@ classdef TENMA < voltagesource & multimeter	%generate new class for TENMA and
         function output = getoutputcurrent(this, ~)
             
             fprintf(this.instr, 'ISET1?');
-            output = fscanf(this.instr, '%f');
-            
+            output = char(fread(this.instr, 6));
+            output = str2double(output(1:5));
+                        
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -136,10 +138,10 @@ classdef TENMA < voltagesource & multimeter	%generate new class for TENMA and
         
         function [voltage, current] = getmeas(this, ~)
             fprintf(this.instr, 'VOUT1?');
-            voltage = fscanf(this.instr, '%f');
+            voltage = str2double(char(fread(this.instr, 5)));
             
             fprintf(this.instr, 'IOUT1?');
-            current = fscanf(this.instr, '%f');
+            current = str2double(char(fread(this.instr, 5)));
             
         end
         
@@ -147,30 +149,30 @@ classdef TENMA < voltagesource & multimeter	%generate new class for TENMA and
         % getoutputstatus: return if output is on or not      %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function output = getoutputstatus(this, ~)
-            
             fprintf(this.instr, 'STATUS?');
-            reply = dec2bin( fscanf(this.instr, '%u'), 8);
+            reply = dec2bin( fread(this.instr, 1), 8);
             
-            output str2num(reply(7));
+            output = str2double(reply(2));
             
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % setoutputstatus: turns output on or off  %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function setoutputstatus(this, status, ~)
-            
+        function setoutputstatus(this, status, varargin)
             if(nargin == 1 || ~exist('status', 'var') || isempty(status))
                 error('No output status provided%s', instrerror(this, inputname(1), dbstack));
-                elseerror('Output status must be 0 or 1%s', instrerror(this, inputname(1), dbstack));
+            else
+                
                 
                 % otherwise set the status
                 if(~isnumeric(status))
-                    error('Output status must be a number%s', instrerror(this, inputname(1), dbstack));
+                    error('Output status must be 0 or 1%s', instrerror(this, inputname(1), dbstack));
                 end
                 
                 fprintf(this.instr, 'OUT%u', status);
             end
+        end
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % rst: sends GPIB *RST command (i.e. resets the device)             %

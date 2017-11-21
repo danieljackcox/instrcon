@@ -30,10 +30,6 @@
 % rampvoltage: safely ramps the DC output voltage of the generator
 classdef voltagesource < handle
     
-    properties
-        verb = 0; % verbosity, off by default
-    end
-    
     methods
         % constructor object
         function obj = voltagesource
@@ -137,7 +133,7 @@ classdef voltagesource < handle
             outputstatus = this.getoutputstatus;
             
             % if voltage source is off, set to zero and turn on
-            if(outputstatus) == 0)
+            if(outputstatus == 0)
                 this.setoutputvoltage(0, channel);
                 this.setoutputstatus(1, channel);
             end
