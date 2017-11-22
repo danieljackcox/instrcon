@@ -19,7 +19,7 @@ Higher level functions use these driver files to implement more complex operatio
 # TODO
 * Write first prototype script
 * Write test scripts to test small parts of the system
-* Retest the opendevice function
+* Retest the opendevice function *
 * Update K2400 and K2450 files to work
 * Check that A33522A actually works
 * Update main documentation (this)
@@ -27,13 +27,15 @@ Higher level functions use these driver files to implement more complex operatio
 * Check for any left over 'n.b.' comments in code and fix issues
 * Consider implementing slava logging
 * Test HP8656B frequency generator
-* Test Tenma driver
+* Test Tenma driver *
 * Add other agilent/keysight devices
-* Check if setconf in HP33120A works
-* Update drivers to grab output status (energised or not)
+* Check if setconf in HP33120A works *
+* Update drivers to grab output status (energised or not) *
 * Requested for implementation: keysight 33510B, keysight 33511B, Rohde & Schwarz SMY 01
-* fix setconf in HP34401A
+* fix setconf in HP34401A *
 * In general retest every instrument because they probably dont work anymore
+* SR830 set/getinputcoupling to handle human readable text
+* SR830 update getmeas to accept inputs
 
 
 # Contents
