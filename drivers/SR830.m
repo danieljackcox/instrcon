@@ -24,6 +24,14 @@
 % Properties are variables that are part of this pseudo-device and represent
 % real-world setting and values such as the current voltage
 %
+% To use in measurement scripts first call the OPENDEVICE function
+% e.g. lia = OPENDEVICE(5, 'gpib')
+% This will create an SR830 object and assign it to lia variable
+% You can then call functions like SETOUTPUTVOLTAGE
+% lia.SETOUTPUTVOLTAGE(5)
+% or
+% SETOUTPUTVOLTAGE(lia, 5)
+%
 % Methods are functions used to access the abilities of the device
 % for example setting a voltage or reading in a resistance value
 % current methods (functions) are listed below:
@@ -118,6 +126,8 @@ classdef SR830 < voltagesource & freqgenerator
             
         end
 
+        
+        
         function setoutputvoltage(this, V, varargin)
             % SETOUTPUTVOLTAGE(voltage)
             % SETOUTPUTVOLTAGE(voltage, 'channel', channelnumber)
@@ -163,12 +173,8 @@ classdef SR830 < voltagesource & freqgenerator
                 
             end
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getoutputvoltage: reads the current set voltage on the specified  %
-        % AUX out channel                                                   %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = getoutputvoltage(this, varargin)
             % voltage = GETOUTPUTVOLTAGE()
@@ -206,12 +212,8 @@ classdef SR830 < voltagesource & freqgenerator
             fprintf(this.instr, 'AUXV? %d', channel);
             output = fscanf(this.instr, '%f');
         end
+
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getinputvoltage: reads the DC voltage on the aux input %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = getinputvoltage(this, varargin)
             % voltage = GETINPUTVOLTAGE
@@ -248,12 +250,9 @@ classdef SR830 < voltagesource & freqgenerator
             output = fscanf(this.instr, '%f');
             
         end
+
         
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setfreq: sets the output AC frequency     %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function setfreq(this, freq, varargin)
             % SETFREQ(frequency)
             %
@@ -267,12 +266,9 @@ classdef SR830 < voltagesource & freqgenerator
             fprintf(this.instr, 'FREQ %f', freq);
             
         end
+
         
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getfreq: gets the output AC frequency (set value)     %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function output = getfreq(this, varargin)
             % frequency = GETFREQ
             %
@@ -283,10 +279,9 @@ classdef SR830 < voltagesource & freqgenerator
             output = fscanf(this.instr, '%f');
             
         end
+
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getoutputstatus: always returns 1                   %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         function output = getoutputstatus(this, varargin)
             % outputstatus = GETOUTPUTSTATUS
             %
@@ -296,10 +291,9 @@ classdef SR830 < voltagesource & freqgenerator
             output = 1;
             
         end
+
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setoutputstatus: function does nothing but is required %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         function setoutputstatus(this, varargin)
             % SETOUTPUTSTATUS
             %
@@ -307,14 +301,9 @@ classdef SR830 < voltagesource & freqgenerator
             
             % this is meant to do nothing!
         end
+
         
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setfreqref: sets the device to use internal or external    %
-        % frequency reference                                 %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function setfreqref(this, ref, varargin)
             % SETFREQREF(reference)
             % SETFREQREF('int')
@@ -334,12 +323,9 @@ classdef SR830 < voltagesource & freqgenerator
             fprintf(this.instr, 'FMOD %d', ref);
             
         end
+
         
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getfreqref: gets the device reference setting       %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function [output, humanreadable] = getfreqref(this, varargin)
             % freqref = GETFREQREF
             % [freqref, human_readable_version] = GETFREQREF
@@ -355,11 +341,9 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = fr_text{output+1};
             
         end
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setphase: sets phase shift                    %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+ 
+ 
+ 
         function setphase(this, phase, varargin)
             % SETPHASE(phase)
             %
@@ -380,11 +364,8 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getphase: reads phase shift                         %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = getphase(this, varargin)
             % phase = GETPHASE
@@ -396,13 +377,8 @@ classdef SR830 < voltagesource & freqgenerator
             output = fscanf(this.instr, '%f');
             
         end
+
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setreftrig: sets the reference trigger to sine zero crossing,   %
-        % TTL rising edge or TTL falling edge                             %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setreftrig(this, trigtype, varargin)
             % SETREFTRIG(trigtype)
@@ -436,14 +412,9 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
-        
-        
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getreftrig: reads the reference trigger setting                 %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+ 
+ 
+ 
         function [output, humanreadable] = getreftrig(this, varargin)
             % reftrig = GETREFTRIG
             % [reftrig, human_readable_version] = GETREFTRIG
@@ -461,11 +432,8 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = rt_text{output+1};
             
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setharmonic: sets the measurement harmonic           %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setharmonic(this, harmonic, varargin)
             % SETHARMONIC(harmonic)
@@ -488,11 +456,8 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getharmonic: returns the measurement harmonic           %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = getharmonic(this, varargin)
             % harmonic = GETHARMONIC
@@ -504,12 +469,8 @@ classdef SR830 < voltagesource & freqgenerator
             output = fscanf(this.instr, '%d');
             
         end
+
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setexcitation: sets the AC output sine wave voltage (in RMS) %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setexcitation(this, excitation, varargin)
             % SETEXCITATION(voltage)
@@ -533,11 +494,8 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getexcitation: returns the AC output sine wave voltage (in RMS) %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = getexcitation(this, varargin)
             % voltage = GETEXCITATION
@@ -549,12 +507,8 @@ classdef SR830 < voltagesource & freqgenerator
             output = fscanf(this.instr, '%f');
             
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setinputconfig: sets the device input configuration, choose  %
-        % between 0 (A), 1 (A-B), 2 (I 1MOhm), 3 (100 MOhm)                  %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setinputconfig(this, inputconfig, varargin)
             % SETINPUTCONFIG(config)
@@ -591,12 +545,8 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getinputconfig: reads the device input configuration, choose  %
-        % between 0 (A), 1 (A-B), 2 (I 1MOhm), 3 (100 MOhm)                  %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function [output, humanreadable] = getinputconfig(this, varargin)
             % config = GETINPUTCONFIG
@@ -613,13 +563,8 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
+
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setshieldgrounding: Sets the input shield to be        %
-        % floating (0) or grounded (1)                                 %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setshieldgrounding(this, shieldground, varargin)
             % SETSHIELDGROUNDING(config)
@@ -627,7 +572,8 @@ classdef SR830 < voltagesource & freqgenerator
             % SETSHIELDGROUNDING('grounded')
             %
             % Sets grounding configuration on input, numeric or text input
-            % Numeric input is 0 or 1
+            % Numeric values allowed are 0 or 1
+            % text values allowed are 'floating' or 'grounded'
             
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(shieldground) )
@@ -653,12 +599,8 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getshieldgrounding: reads the input shield to be        %
-        % floating (0) or grounded (1)                                 %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function [output, humanreadable] = getshieldgrounding(this, varargin)
             % config = GETSHIELDGROUNDING
@@ -666,6 +608,7 @@ classdef SR830 < voltagesource & freqgenerator
             %
             % Return shield grounding configuration
             % Returns second variable as human readable text
+            % 'floating' or 'grounded'
             
             fprintf(this.instr, 'IGND?');
             output = fscanf(this.instr, '%d');
@@ -675,14 +618,8 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
+
         
-        
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setnotchfilter: sets the input line notch filter status %
-        % no filters (0), 1x line freq (1), 2x line freq (2) or both (3)%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setnotchfilter(this, notchfilter, varargin)
             % SETNOTCHFILTER(notchfilter)
@@ -717,13 +654,8 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
+
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getnotchfilter: reads the input line notch filter status %
-        % no filters (0), 1x line freq (1), 2x line freq (2) or both (3)%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function [output, humanreadable] = getnotchfilter(this, varargin)
             % notchfilter = GETNOTCHFILTER
@@ -740,27 +672,8 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
+
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setsensitivity: sets the sensitivity. The input                 %
-        % is an integer that corresponds to a sensitivity listed below    %
-        % 0       2 nV/fA             13          50 ?V/pA                %
-        % 1       5 nV/fA             14          100 ?V/pA               %
-        % 2       10 nV/fA            15          200 ?V/pA               %
-        % 3       20 nV/fA            16          500 ?V/pA               %
-        % 4       50 nV/fA            17          1 mV/nA                 %
-        % 5       100 nV/fA           18          2 mV/nA                 %
-        % 6       200 nV/fA           19          5 mV/nA                 %
-        % 7       500 nV/fA           20          10 mV/nA                %
-        % 8       1 ?V/pA             21          20 mV/nA                %
-        % 9       2 ?V/pA             22          50 mV/nA                %
-        % 10      5 ?V/pA             23          100 mV/nA               %
-        % 11      10 ?V/pA            24          200 mV/nA               %
-        % 12      20 ?V/pA            25          500 mV/nA               %
-        %                             26          1 V/?A                  %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setsensitivity(this, sensitivity, varargin)
             % SETSENSITIVITY(sensitivity)
@@ -769,6 +682,22 @@ classdef SR830 < voltagesource & freqgenerator
             % Set the measurement sensitivity
             % Accepts numeric argument (0-26)
             % also accepts text input, e.g. '5 nV', '1 mV'
+            %
+            % The input                 
+            % is an integer that corresponds to a sensitivity listed below
+            % 0       2 nV/fA             13          50 uV/pA
+            % 1       5 nV/fA             14          100 uV/pA
+            % 2       10 nV/fA            15          200 uV/pA
+            % 3       20 nV/fA            16          500 uV/pA
+            % 4       50 nV/fA            17          1 mV/nA
+            % 5       100 nV/fA           18          2 mV/nA
+            % 6       200 nV/fA           19          5 mV/nA
+            % 7       500 nV/fA           20          10 mV/nA
+            % 8       1 uV/pA             21          20 mV/nA
+            % 9       2 uV/pA             22          50 mV/nA
+            % 10      5 uV/pA             23          100 mV/nA
+            % 11      10 uV/pA            24          200 mV/nA
+            %                             26          1 V/uA     
             
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(sensitivity) )
@@ -799,29 +728,8 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
+
         
-        
-        
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getsensitivity: reads the sensitivity. The return               %
-        % is an integer that corresponds to a sensitivity listed below    %
-        % 0       2 nV/fA             13          50 ?V/pA                %
-        % 1       5 nV/fA             14          100 ?V/pA               %
-        % 2       10 nV/fA            15          200 ?V/pA               %
-        % 3       20 nV/fA            16          500 ?V/pA               %
-        % 4       50 nV/fA            17          1 mV/nA                 %
-        % 5       100 nV/fA           18          2 mV/nA                 %
-        % 6       200 nV/fA           19          5 mV/nA                 %
-        % 7       500 nV/fA           20          10 mV/nA                %
-        % 8       1 ?V/pA             21          20 mV/nA                %
-        % 9       2 ?V/pA             22          50 mV/nA                %
-        % 10      5 ?V/pA             23          100 mV/nA               %
-        % 11      10 ?V/pA            24          200 mV/nA               %
-        % 12      20 ?V/pA            25          500 mV/nA               %
-        %                             26          1 V/?A                  %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function [output, humanreadable] = getsensitivity(this, varargin)
             % sensitivity = GETSENSITIVITY
@@ -829,6 +737,22 @@ classdef SR830 < voltagesource & freqgenerator
             %
             % Returns current sensitivity
             % Second variable is human readable text
+            %
+            % The output                 
+            % is an integer that corresponds to a sensitivity listed below
+            % 0       2 nV/fA             13          50 uV/pA
+            % 1       5 nV/fA             14          100 uV/pA
+            % 2       10 nV/fA            15          200 uV/pA
+            % 3       20 nV/fA            16          500 uV/pA
+            % 4       50 nV/fA            17          1 mV/nA
+            % 5       100 nV/fA           18          2 mV/nA
+            % 6       200 nV/fA           19          5 mV/nA
+            % 7       500 nV/fA           20          10 mV/nA
+            % 8       1 uV/pA             21          20 mV/nA
+            % 9       2 uV/pA             22          50 mV/nA
+            % 10      5 uV/pA             23          100 mV/nA
+            % 11      10 uV/pA            24          200 mV/nA
+            %                             26          1 V/uA
             
             
             fprintf(this.instr, 'SENS?');
@@ -843,12 +767,8 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setreserve: sets the reserve value, high (0), normal (1) %
-        % or low noise (2)                                               %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setreserve(this, reserve, varargin)
             % SETRESERVE(reserve)
@@ -881,14 +801,8 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
+
         
-        
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getreserve: reads the reserve value, high (0), normal (1) %
-        % or low noise (2)                                               %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function [output, humanreadable] = getreserve(this, varargin)
             % reserve = GETRESERVE
@@ -905,26 +819,8 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
+
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % settc: sets the time constant. The input                        %
-        % is an integer that corresponds to a time constant listed below  %
-        % tip: during measurement the settling time is at least 5 times   %
-        % the set TC                                                      %
-        % 0       10 ??s             10          1 s                       %
-        % 1       30 ??s             11          3 s                       %
-        % 2       100 ??s            12          10 s                      %
-        % 3       300 ??s            13          30 s                      %
-        % 4       1 ms              14          100 s                     %
-        % 5       3 ms              15          300 s                     %
-        % 6       10 ms             16          1 ks                      %
-        % 7       30 ms             17          3 ks                      %
-        % 8       100 ms            18          10 ks                     %
-        % 9       300 ms            19          30 ks                     %
-        %                                                                 %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function settc(this, tc, varargin)
             % SETTC(tc)
@@ -935,6 +831,20 @@ classdef SR830 < voltagesource & freqgenerator
             % Text input should be in seconds, i.e. '1 s', '30 ms', etc.
             % see SR830 manual for full details
             % NOTE: Measurement settling time is typically 5 times the tc time
+            % 
+            % The input
+            % is an integer that corresponds to a time constant listed below
+            %
+            % 0       10 ??s            10          1 s
+            % 1       30 ??s            11          3 s
+            % 2       100 ??s           12          10 s
+            % 3       300 ??s           13          30 s
+            % 4       1 ms              14          100 s
+            % 5       3 ms              15          300 s
+            % 6       10 ms             16          1 ks
+            % 7       30 ms             17          3 ks
+            % 8       100 ms            18          10 ks
+            % 9       300 ms            19          30 ks
             
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(tc) )
@@ -963,27 +873,8 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
+
         
-        
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % gettc: reads the time constant. The return                      %
-        % is an integer that corresponds to a time constant listed below  %
-        % tip: during measurement the settling time is at least 5 times   %
-        % the set TC                                                      %
-        % 0       10 ??s             10          1 s                       %
-        % 1       30 ??s             11          3 s                       %
-        % 2       100 ??s            12          10 s                      %
-        % 3       300 ??s            13          30 s                      %
-        % 4       1 ms              14          100 s                     %
-        % 5       3 ms              15          300 s                     %
-        % 6       10 ms             16          1 ks                      %
-        % 7       30 ms             17          3 ks                      %
-        % 8       100 ms            18          10 ks                     %
-        % 9       300 ms            19          30 ks                     %
-        %                                                                 %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function [output, humanreadable] = gettc(this, varargin)
             % tc = GETTC
@@ -992,6 +883,20 @@ classdef SR830 < voltagesource & freqgenerator
             % Returns current time constant
             % Output is numeric (see SR830 manual)
             % Second variable returns human readable text
+            % 
+            % The output
+            % is an integer that corresponds to a time constant listed below
+            %
+            % 0       10 ??s            10          1 s
+            % 1       30 ??s            11          3 s
+            % 2       100 ??s           12          10 s
+            % 3       300 ??s           13          30 s
+            % 4       1 ms              14          100 s
+            % 5       3 ms              15          300 s
+            % 6       10 ms             16          1 ks
+            % 7       30 ms             17          3 ks
+            % 8       100 ms            18          10 ks
+            % 9       300 ms            19          30 ks
             
             
             fprintf(this.instr, 'OFLT?');
@@ -1005,13 +910,8 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
+
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setlpfilterslope: sets the low-pass filter slope,        %
-        % 6 dB/oct (0), 12 dB/oct (1), 18 dB/oct (2), 24 dB/oct (3)      %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setlpfilterslope(this, lpfilterslope, varargin)
             % SETLPFILTERSLOPE(slope)
@@ -1045,12 +945,8 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getlpfilterslope: reads the low-pass filter slope,        %
-        % 6 dB/oct (0), 12 dB/oct (1), 18 dB/oct (2), 24 dB/oct (3)      %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = getlpfilterslope(this, varargin)
             % slope = GETLPFILTERSLOPE
@@ -1070,13 +966,8 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setsyncfilter: sets the synchronous filter status           %
-        % OFF (0) or ON (1), only operates below excitation frequecy 200 Hz %
-        % worth keeping on                                                  %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setsyncfilter(this, syncfilter, varargin)
             % SETSYNCFILTER(filter)
@@ -1106,16 +997,8 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
+
         
-        
-        
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getsyncfilter: reads the synchronous filter status           %
-        % OFF (0) or ON (1), only operates below excitation frequecy 200 Hz %
-        % worth keeping on                                                  %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = getsyncfilter(this, varargin)
             % filter = GETSYNCFILTER
@@ -1128,11 +1011,8 @@ classdef SR830 < voltagesource & freqgenerator
             
             
         end
+
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setinputcoupling: sets the input coupling                   %
-        % AC (0) or DC (1)                                                  %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setinputcoupling(this, inputcoupling, varargin)
             % SETINPUTCOUPLING(coupling)
@@ -1160,14 +1040,8 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
+
         
-        
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getinputcoupling: reads the input coupling                   %
-        % AC (0) or DC (1)                                                  %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = getinputcoupling(this, varargin)
             % coupling = GETINPUTCOUPLING
@@ -1180,18 +1054,18 @@ classdef SR830 < voltagesource & freqgenerator
             output = fscanf(this.instr, '%d');
             
         end
+
         
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getmeas: returns the AC input values (X, Y, R, phase)          %
-        % note: the values for X, Y and R, phase are recorded approx 10 uS  %
-        % apart. This should only be important at ultra-short time constants%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        function [X, Y, R, phase] = getmeas(this, varargin)
-            % [x, y, r, phase] = GETMEAS
+        function [r, x, y, phase] = getmeas(this, varargin)
+            % [r, x, y, phase] = GETMEAS
             %
-            % Triggers a measurement, returns x, y, r and phase components
+            % Triggers a measurement, returns r, x, y, and phase components
+            % x and y components are measured simultaneously as are r and phase
+            % this means that there is a small delay between measuring x,y and
+            % r, phase making it possible they will yield slightly different
+            % results, this should not be a problem except at very short time
+            % constants.
             
             % dont need to do anything except ask the device for the
             % values
@@ -1205,16 +1079,14 @@ classdef SR830 < voltagesource & freqgenerator
             phase   = tmp_output(4);
             
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getsettings: executes other functions in this file and returns    %
-        % a formatted list of the current device settings                   %
-        % n.b. this function does not directly return values but rather     %
-        % sets the object properties!                                       %given in actual
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function getsettings(this, varargin)
+            % GETSETTINGS
+            % sets the current device settings and sets them as properties
+            % most likely will be depreciated soon
+            
             %get the settings
             phaseoffset = this.getphase;
             inputground = this.getshieldgrounding;
@@ -1255,11 +1127,8 @@ classdef SR830 < voltagesource & freqgenerator
             
             
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % rst: sends GPIB *RST command (i.e. resets the device)             %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function rst(this, varargin)
             % RST
@@ -1267,10 +1136,8 @@ classdef SR830 < voltagesource & freqgenerator
             % Sends SCPI *RST command
             fprintf(this.instr, '*RST');
         end
+
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % idn: gets GPIB identity                                           %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = idn(this, varargin)
             % IDN
