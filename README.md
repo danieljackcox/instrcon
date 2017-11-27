@@ -27,7 +27,7 @@ Higher level functions use these driver files to implement more complex operatio
 * Consider implementing slava logging
 * Test HP8656B frequency generator
 * Add other agilent/keysight devices
-* Requested for implementation: keysight 33510B, keysight 33511B, Rohde & Schwarz SMY 01
+* Requested for implementation: Rohde & Schwarz SMY 01
 * In general retest every instrument because they probably dont work anymore
 
 

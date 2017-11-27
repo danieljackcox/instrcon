@@ -53,7 +53,9 @@
 % getexcitation: read current set AC excitation voltage
 % setinputconfig: set the input configuration (A, A-B, I, etc.)
 % getinputconfig: read the input configuration
-% setshieldgrounding: set shield grounding configuration
+% setshieldgrounding: set shield grounding configurationflushinput(instr); %software buffers
+% flushoutput(instr);
+% clrdevice(instr);
 % getshieldgrounding: read shield grounding configuration
 % setnotchfilter: set the notch filter configuration
 % getnotchfilter: read the notch filter configuration
@@ -72,7 +74,7 @@
 % getoutputstatus: returns output status (always on)
 
 
-%------------------------------------------------------------------------------%
+
 %generate new class for SR830 and make it a subclass
 % of voltagesource and freqgenerator
 classdef SR830 < voltagesource & freqgenerator
@@ -120,10 +122,26 @@ classdef SR830 < voltagesource & freqgenerator
                 %fprintf(obj.instr, '*RST');
             end
             
-            
+            % flush the input and output queue as sometimes previous
+            % measurements that were not terminated properly can persist
+            % in the buffers
+
+            flushinput(instr); %software buffers
+            flushoutput(instr); 
+            clrdevice(instr); %hardware buffers
             
             obj.getsettings;
             
+        end
+        
+        
+        
+        function delete(this)
+            % delete(SR830Object)
+            % Destruction object, will close the instrument and handle anything
+            % needed before that
+            
+            fclose(this.instr);
         end
 
         
@@ -157,6 +175,7 @@ classdef SR830 < voltagesource & freqgenerator
             if( ~ismember(channel, 1:4) )
                 error('Channel number must be between 1 and 4%s', instrerror(this, inputname(1), dbstack));
             end
+            
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
             if(nargin == 1 || ~exist('V', 'var') || isempty(V))
