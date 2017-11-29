@@ -105,7 +105,7 @@ classdef SR830 < voltagesource & freqgenerator
             % object = SR830(instrumentObject, noresetFlag)
             % Creation object, called when SR830 is created by opendevice
             % handles any instrument-specific setup required
-        
+            
             %a gpib object is passed when creating the object, so make it
             %part of the object here
             obj.instr = instr;
@@ -127,20 +127,20 @@ classdef SR830 < voltagesource & freqgenerator
             % flush the input and output queue as sometimes previous
             % measurements that were not terminated properly can persist
             % in the buffers
-
-%             flushinput(instr); %software buffers
-%             flushoutput(instr); 
-%             clrdevice(instr); %hardware buffers
-%             
-%             
-%             
-%             obj.getsettings;
+            
+            %             flushinput(instr); %software buffers
+            %             flushoutput(instr);
+            %             clrdevice(instr); %hardware buffers
+            %
+            %
+            %
+            %             obj.getsettings;
             
             % read the settings file and set the verbose level
             obj.verbose = getsettings('verbose');
             obj.logging = getsettings('logging');
             
-            logmessage(1, obj, sprintf('SR830 connected at %s', obj.instr.RsrcName));
+            logmessage(1, obj, sprintf('%s connected at %s', class(obj), obj.instr.Name));
             
         end
         
@@ -152,9 +152,9 @@ classdef SR830 < voltagesource & freqgenerator
             % needed before that
             
             fclose(this.instr);
-            logmessage(1, obj, sprintf('SR830 disconnected at %s', obj.instr.RsrcName));
+            logmessage(1, this, sprintf('%s disconnected at %s', class(this), this.instr.Name));
         end
-
+        
         
         
         function setoutputvoltage(this, V, varargin)
@@ -201,12 +201,12 @@ classdef SR830 < voltagesource & freqgenerator
                 
                 fprintf(this.instr, sprintf('AUX V %d, %f', channel, V));
                 
-                if( length( dbstack < 2 ) )
-                    logmessage(2, this, sprintf('SR830 ''%s'' at %s setting voltage on channel %d to %f', inputname(1), this.instr.RsrcName, channel, V));
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETOUTPUTVOLTAGE on channel %d to %2.3f V', class(this), inputname(1), this.instr.Name, channel, V));
                 end
             end
         end
-
+        
         
         
         function output = getoutputvoltage(this, varargin)
@@ -244,8 +244,12 @@ classdef SR830 < voltagesource & freqgenerator
             %if we got this far then everything should be fine
             fprintf(this.instr, 'AUXV? %d', channel);
             output = fscanf(this.instr, '%f');
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETOUTPUTVOLTAGE on channel %d is %2.3f V', class(this), inputname(1), this.instr.Name, channel, output));
+            end
         end
-
+        
         
         
         function output = getinputvoltage(this, varargin)
@@ -282,8 +286,12 @@ classdef SR830 < voltagesource & freqgenerator
             fprintf(this.instr, 'OAUX? %d', channel);
             output = fscanf(this.instr, '%f');
             
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETINPUTVOLTAGE on channel %d is %2.3f V', class(this), inputname(1), this.instr.Name, channel, output));
+            end
+            
         end
-
+        
         
         
         function setfreq(this, freq, varargin)
@@ -298,8 +306,12 @@ classdef SR830 < voltagesource & freqgenerator
             % passes all error checking, then execute
             fprintf(this.instr, 'FREQ %f', freq);
             
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s SETFREQ to %6.3f Hz', class(this), inputname(1), this.instr.Name, freq));
+            end
+            
         end
-
+        
         
         
         function output = getfreq(this, varargin)
@@ -311,30 +323,33 @@ classdef SR830 < voltagesource & freqgenerator
             fprintf(this.instr, 'FREQ?');
             output = fscanf(this.instr, '%f');
             
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETFREQ is %6.3f Hz', class(this), inputname(1), this.instr.Name, output));
+            end
+            
         end
-
         
         
-        function output = getoutputstatus(this, varargin)
+        
+        function output = getoutputstatus(varargin)
             % outputstatus = GETOUTPUTSTATUS
             %
             % Returns if DC sources are energised
             % Not an option on this instrument so returns 1 always
             
             output = 1;
-            
         end
-
         
         
-        function setoutputstatus(this, varargin)
+        
+        function setoutputstatus(varargin)
             % SETOUTPUTSTATUS
             %
             % Not an option on this instrument so does nothing
             
             % this is meant to do nothing!
         end
-
+        
         
         
         function setfreqref(this, ref, varargin)
@@ -348,15 +363,19 @@ classdef SR830 < voltagesource & freqgenerator
             
             if( ~isnumeric(ref))
                 ref_text = {'int','ext'};
-                    
-                    ref = find(strcmpi(ref, ref_text)) - 1;
+                
+                ref = find(strcmpi(ref, ref_text)) - 1;
             end
             
             % passes all error checking, then execute
             fprintf(this.instr, 'FMOD %d', ref);
             
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s SETFREQREF to %d', class(this), inputname(1), this.instr.Name, ref));
+            end
+            
         end
-
+        
         
         
         function [output, humanreadable] = getfreqref(this, varargin)
@@ -370,13 +389,17 @@ classdef SR830 < voltagesource & freqgenerator
             output = fscanf(this.instr, '%d');
             
             %make a human-readable list of settings
-           fr_text = {'int','ext'};
+            fr_text = {'int','ext'};
             humanreadable = fr_text{output+1};
             
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETFREQREF is %s', class(this), inputname(1), this.instr.Name, humanreadable));
+            end
+            
         end
- 
- 
- 
+        
+        
+        
         function setphase(this, phase, varargin)
             % SETPHASE(phase)
             %
@@ -394,10 +417,14 @@ classdef SR830 < voltagesource & freqgenerator
                 
                 fprintf(this.instr, 'PHAS %f', phase);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETPHASE to %3.3f', class(this), inputname(1), this.instr.Name, phase));
+                end
+                
             end
             
         end
-
+        
         
         
         function output = getphase(this, varargin)
@@ -409,8 +436,12 @@ classdef SR830 < voltagesource & freqgenerator
             fprintf(this.instr, 'PHAS?');
             output = fscanf(this.instr, '%f');
             
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETPHASE is %3.3f', class(this), inputname(1), this.instr.Name, output));
+            end
+            
         end
-
+        
         
         
         function setreftrig(this, trigtype, varargin)
@@ -419,7 +450,7 @@ classdef SR830 < voltagesource & freqgenerator
             %
             % Sets the reference frequency trigger type
             % to sine, TTL rising edge or TTL falling edge
-            % Arguments are numeric (0, 1, 2) 
+            % Arguments are numeric (0, 1, 2)
             % or text ('sine', 'rising', 'falling')
             
             %if empty or nonexistent then return an error
@@ -434,10 +465,10 @@ classdef SR830 < voltagesource & freqgenerator
                     
                     trigtype = find(strcmpi(trigtype, rt_text)) - 1;
                 else
-                % and check that the number is 0, 1, or 2
-                if( ~ismember(trigtype, 0:2) )
-                    error('Input must be 0, 1, or 2%s', instrerror(this, inputname(1), dbstack));
-                end
+                    % and check that the number is 0, 1, or 2
+                    if( ~ismember(trigtype, 0:2) )
+                        error('Input must be 0, 1, or 2%s', instrerror(this, inputname(1), dbstack));
+                    end
                 end
                 
                 fprintf(this.instr, 'RSLP %d', trigtype);
@@ -445,9 +476,9 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
- 
- 
- 
+        
+        
+        
         function [output, humanreadable] = getreftrig(this, varargin)
             % reftrig = GETREFTRIG
             % [reftrig, human_readable_version] = GETREFTRIG
@@ -465,7 +496,7 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = rt_text{output+1};
             
         end
-
+        
         
         
         function setharmonic(this, harmonic, varargin)
@@ -489,7 +520,7 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
-
+        
         
         
         function output = getharmonic(this, varargin)
@@ -502,7 +533,7 @@ classdef SR830 < voltagesource & freqgenerator
             output = fscanf(this.instr, '%d');
             
         end
-
+        
         
         
         function setexcitation(this, excitation, varargin)
@@ -527,7 +558,7 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
-
+        
         
         
         function output = getexcitation(this, varargin)
@@ -540,7 +571,7 @@ classdef SR830 < voltagesource & freqgenerator
             output = fscanf(this.instr, '%f');
             
         end
-
+        
         
         
         function setinputconfig(this, inputconfig, varargin)
@@ -548,7 +579,7 @@ classdef SR830 < voltagesource & freqgenerator
             % SETINPUTCONFIG('A-B')
             %
             % Sets the input configuration
-            % Choice between A, A-B, I (1MOhm), I (100 MOhm)  
+            % Choice between A, A-B, I (1MOhm), I (100 MOhm)
             % Input is numeric (0, 1, 2, 3) or text
             % 'A', 'A-B', 'I (10MOhm)','I (100MOhm)'
             
@@ -578,7 +609,7 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
-
+        
         
         
         function [output, humanreadable] = getinputconfig(this, varargin)
@@ -596,7 +627,7 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
-
+        
         
         
         function setshieldgrounding(this, shieldground, varargin)
@@ -632,7 +663,7 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
-
+        
         
         
         function [output, humanreadable] = getshieldgrounding(this, varargin)
@@ -651,7 +682,7 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
-
+        
         
         
         function setnotchfilter(this, notchfilter, varargin)
@@ -687,7 +718,7 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
-
+        
         
         
         function [output, humanreadable] = getnotchfilter(this, varargin)
@@ -705,7 +736,7 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
-
+        
         
         
         function setsensitivity(this, sensitivity, varargin)
@@ -716,7 +747,7 @@ classdef SR830 < voltagesource & freqgenerator
             % Accepts numeric argument (0-26)
             % also accepts text input, e.g. '5 nV', '1 mV'
             %
-            % The input                 
+            % The input
             % is an integer that corresponds to a sensitivity listed below
             % 0       2 nV/fA             13          50 uV/pA
             % 1       5 nV/fA             14          100 uV/pA
@@ -730,7 +761,7 @@ classdef SR830 < voltagesource & freqgenerator
             % 9       2 uV/pA             22          50 mV/nA
             % 10      5 uV/pA             23          100 mV/nA
             % 11      10 uV/pA            24          200 mV/nA
-            %                             26          1 V/uA     
+            %                             26          1 V/uA
             
             % if empty or nonexistent then return an error
             if( nargin == 1 || isempty(sensitivity) )
@@ -761,7 +792,7 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
-
+        
         
         
         function [output, humanreadable] = getsensitivity(this, varargin)
@@ -771,7 +802,7 @@ classdef SR830 < voltagesource & freqgenerator
             % Returns current sensitivity
             % Second variable is human readable text
             %
-            % The output                 
+            % The output
             % is an integer that corresponds to a sensitivity listed below
             % 0       2 nV/fA             13          50 uV/pA
             % 1       5 nV/fA             14          100 uV/pA
@@ -800,7 +831,7 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
-
+        
         
         
         function setreserve(this, reserve, varargin)
@@ -834,7 +865,7 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
-
+        
         
         
         function [output, humanreadable] = getreserve(this, varargin)
@@ -852,7 +883,7 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
-
+        
         
         
         function settc(this, tc, varargin)
@@ -864,7 +895,7 @@ classdef SR830 < voltagesource & freqgenerator
             % Text input should be in seconds, i.e. '1 s', '30 ms', etc.
             % see SR830 manual for full details
             % NOTE: Measurement settling time is typically 5 times the tc time
-            % 
+            %
             % The input
             % is an integer that corresponds to a time constant listed below
             %
@@ -906,7 +937,7 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
-
+        
         
         
         function [output, humanreadable] = gettc(this, varargin)
@@ -916,7 +947,7 @@ classdef SR830 < voltagesource & freqgenerator
             % Returns current time constant
             % Output is numeric (see SR830 manual)
             % Second variable returns human readable text
-            % 
+            %
             % The output
             % is an integer that corresponds to a time constant listed below
             %
@@ -943,7 +974,7 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
-
+        
         
         
         function setlpfilterslope(this, lpfilterslope, varargin)
@@ -978,7 +1009,7 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
-
+        
         
         
         function output = getlpfilterslope(this, varargin)
@@ -999,7 +1030,7 @@ classdef SR830 < voltagesource & freqgenerator
             humanreadable = inputconfig_text{output+1};
             
         end
-
+        
         
         
         function setsyncfilter(this, syncfilter, varargin)
@@ -1030,7 +1061,7 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
-
+        
         
         
         function output = getsyncfilter(this, varargin)
@@ -1044,7 +1075,7 @@ classdef SR830 < voltagesource & freqgenerator
             
             
         end
-
+        
         
         
         function setinputcoupling(this, inputcoupling, varargin)
@@ -1073,7 +1104,7 @@ classdef SR830 < voltagesource & freqgenerator
             end
             
         end
-
+        
         
         
         function output = getinputcoupling(this, varargin)
@@ -1087,7 +1118,7 @@ classdef SR830 < voltagesource & freqgenerator
             output = fscanf(this.instr, '%d');
             
         end
-
+        
         
         
         function [r, x, y, phase] = getmeas(this, varargin)
@@ -1112,7 +1143,7 @@ classdef SR830 < voltagesource & freqgenerator
             phase   = tmp_output(4);
             
         end
-
+        
         
         
         function getsettings(this, varargin)
@@ -1160,7 +1191,7 @@ classdef SR830 < voltagesource & freqgenerator
             
             
         end
-
+        
         
         
         function rst(this, varargin)
@@ -1169,7 +1200,7 @@ classdef SR830 < voltagesource & freqgenerator
             % Sends SCPI *RST command
             fprintf(this.instr, '*RST');
         end
-
+        
         
         
         function output = idn(this, varargin)

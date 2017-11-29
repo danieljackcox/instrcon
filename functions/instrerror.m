@@ -1,7 +1,7 @@
 % instrerror.m
 %     Created 2017 Daniel Cox
 %     Part of instrcon
-
+%
 %     instrcon is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
 %     the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +22,6 @@
 
 function outputstring = instrerror(this, objname, stackinfo)
 
-outputstring = sprintf('\nCalling ''%s''\nDevice ''%s'', type ''%s'' at address ''%s''', stackinfo.name, objname, class(this), this.instr.RsrcName);
-
+outputstring = sprintf('\nCalling ''%s''\nDevice ''%s'', type ''%s'' at address ''%s''', stackinfo.name, objname, class(this), this.instr.Name);
+logmessage(0, this, ['ERROR: ' outputstring]);
 end

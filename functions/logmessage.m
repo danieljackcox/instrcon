@@ -34,8 +34,8 @@ function logmessage(message_level, this, message)
 
 % check if the message should be displayed or not
 if( message_level <= this.verbose )
-    time_of_day = datestr(now, 'yyyy.mm.dd HH:MM:SS.FFF');
-    fprintf(1, sprintf('%s > %s\n', time_of_day, message));
+    time_of_day = datestr(now, 'yyyy-mm-dd HH:MM:SS.FFF');
+    fprintf(1, sprintf('|%s| > %s\n', time_of_day, message));
     
     % handle the logging part
     if( this.logging == 1 )
@@ -46,7 +46,7 @@ if( message_level <= this.verbose )
             current_date = datestr(now, 'yyyy-mm-dd');
             
             % first check if the folder exists and make it if it doesn't
-            if( ~exist(sprintf('%s/%s', settings.data_path, current_date), 'file') == 7)
+            if( exist(sprintf('%s/%s', settings.data_path, current_date), 'file') == 0)
                 try
                     mkdir(sprintf('%s/%s', settings.data_path, current_date));
                 catch
@@ -63,11 +63,11 @@ if( message_level <= this.verbose )
                 error('Unable to open log file'); % n.b. fix this to be more like other errors
             end
             
-            fprintf(fid, sprintf('%s > %s\n', time_of_day, message));
+            fprintf(fid, sprintf('|%s| > %s\r\n', time_of_day, message));
             fclose(fid);
         else
             % first check if the folder exists and make it if it doesn't
-            if( ~exist(settings.log_path, 'file') == 7)
+            if( exist(settings.log_path, 'file') == 0)
                 try
                     mkdir(settings.log_path);
                 catch
@@ -84,7 +84,7 @@ if( message_level <= this.verbose )
                 error('Unable to open log file'); % n.b. fix this to be more like other errors
             end
             
-            fprintf(fid, sprintf('%s > %s\n', time_of_day, message));
+            fprintf(fid, sprintf('%s > %s\r\n', time_of_day, message));
             fclose(fid);
         end
     end

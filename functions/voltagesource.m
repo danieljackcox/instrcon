@@ -140,6 +140,7 @@ classdef voltagesource < handle
             if(outputstatus == 0)
                 this.setoutputvoltage(0, 'channel', channel);
                 this.setoutputstatus(1, 'channel', channel);
+                logmessage(2, this, sprintf('%s ''%s'' at %s SETOUTPUTSTATUS on channel %d ON', class(this), inputname(1), this.instr.Name, channel));
             end
             
             
@@ -156,6 +157,7 @@ classdef voltagesource < handle
                         this.setoutputvoltage(rampvoltage(i), 'channel', channel);
                         java.lang.Thread.sleep(1000*steptime);
                     end
+                    logmessage(2, this, sprintf('%s ''%s'' at %s RAMPVOLTAGE on channel %d from %2.3f V to %2.3f V\n                            stepsize: %2.3f V\tsteptime: %2.3f s\timm: %d', class(this), inputname(1), this.instr.Name, channel, current_voltage, rampvoltage(end), stepsize, steptime, imm));
                 end
             end
         end
