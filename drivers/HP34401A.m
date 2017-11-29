@@ -41,7 +41,8 @@ classdef HP34401A < multimeter	%generate new class for HP34401A and make it a su
     %declare some basic properties (variables) for use later
     % UNFINISHED
     properties
-        instr
+        instr;
+        verbose;
     end
     
     
@@ -52,6 +53,9 @@ classdef HP34401A < multimeter	%generate new class for HP34401A and make it a su
             %a gpib object is passed when creating the object, so make it
             %part of the object here
             obj.instr = instr;
+            
+            % read the settings file and set the verbose level
+            obj.verbose = getsettings('verbose');
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

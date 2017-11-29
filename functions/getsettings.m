@@ -1,4 +1,4 @@
-%voltagesource.m
+% getsettings.m
 %     Created 2017 Daniel Cox
 %     Part of instrcon
 
@@ -17,32 +17,14 @@
 %
 %
 %
-% this file contains high level functions used with multimeters (this can
-% range from simple voltage meters to complicated multimeters) and
-% defines the minimum functions a multimeter driver should expose
+% This function is used to read the settings file
 
-% minimum functions:
-% getmeas
-
-classdef multimeter < handle
+function output = getsettings(field)
+    jsontext = fileread('settings.json');
     
-    properties (Abstract)
-        instr;
+    output = jsondecode(jsontext);
+    
+    if( exist('field', 'var') )
+        output = output.(field);
     end
-    
-    methods
-        % constructor object
-        function obj = multimeter
-
-        end
-        
-        
-    end
-    
-    methods (Abstract)
-        
-        getmeas(this)
-        
-    end
-    
 end

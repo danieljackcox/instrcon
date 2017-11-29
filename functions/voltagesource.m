@@ -30,10 +30,14 @@
 % rampvoltage: safely ramps the DC output voltage of the generator
 classdef voltagesource < handle
     
+    properties (Abstract)
+        instr;
+    end
+    
     methods
         % constructor object
         function obj = voltagesource
-            
+
         end
         
     end
@@ -60,7 +64,7 @@ classdef voltagesource < handle
             if( ~exist('this', 'var') || isempty(this) )
                 error('A device object must be passed%s', instrerror(this, inputname(1), dbstack));
             end
-            
+                        
             
             %    if( ~exists(range_change) || isempty(range_change) )
             %        if( ~ismember(range_change, 0:1) )

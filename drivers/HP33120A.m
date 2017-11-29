@@ -44,7 +44,7 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
     % UNFINISHED
     properties
         instr
-        V
+        verbose;
     end
     
     
@@ -55,6 +55,9 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
             %a gpib object is passed when creating the object, so make it
             %part of the object here
             obj.instr = instr;
+            
+            % read the settings file and set the verbose level
+            obj.verbose = getsettings('verbose');
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

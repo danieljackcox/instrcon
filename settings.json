@@ -1,0 +1,8 @@
+{
+    "verbose": 1,
+    "logging": true,
+    "data_path": "/home/daniel/Documents/MATLAB/data",
+    "log_path": "/home/daniel/Documents/MATLAB/instrcon/log.log",
+    "dynamic_log_path": false,
+    "combined_logs": 0
+}

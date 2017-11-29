@@ -30,8 +30,8 @@
 
 classdef freqgenerator < handle
     
-    properties
-        verb = 0; % verbosity, off by default
+    properties (Abstract)
+        instr;
     end
     
     methods

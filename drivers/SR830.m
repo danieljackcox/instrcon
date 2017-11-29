@@ -94,6 +94,8 @@ classdef SR830 < voltagesource & freqgenerator
         filterslope;
         syncfilter;
         inputcoupling;
+        verbose;
+        logging;
     end
     
     
@@ -126,11 +128,19 @@ classdef SR830 < voltagesource & freqgenerator
             % measurements that were not terminated properly can persist
             % in the buffers
 
-            flushinput(instr); %software buffers
-            flushoutput(instr); 
-            clrdevice(instr); %hardware buffers
+%             flushinput(instr); %software buffers
+%             flushoutput(instr); 
+%             clrdevice(instr); %hardware buffers
+%             
+%             
+%             
+%             obj.getsettings;
             
-            obj.getsettings;
+            % read the settings file and set the verbose level
+            obj.verbose = getsettings('verbose');
+            obj.logging = getsettings('logging');
+            
+            logmessage(1, obj, sprintf('SR830 connected at %s', obj.instr.RsrcName));
             
         end
         
@@ -142,6 +152,7 @@ classdef SR830 < voltagesource & freqgenerator
             % needed before that
             
             fclose(this.instr);
+            logmessage(1, obj, sprintf('SR830 disconnected at %s', obj.instr.RsrcName));
         end
 
         
@@ -190,6 +201,9 @@ classdef SR830 < voltagesource & freqgenerator
                 
                 fprintf(this.instr, sprintf('AUX V %d, %f', channel, V));
                 
+                if( length( dbstack < 2 ) )
+                    logmessage(2, this, sprintf('SR830 ''%s'' at %s setting voltage on channel %d to %f', inputname(1), this.instr.RsrcName, channel, V));
+                end
             end
         end
 

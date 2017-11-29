@@ -38,8 +38,8 @@ classdef K2400 < voltagesource	%generate new class for K2400 and make it a subcl
     %declare some basic properties (variables) for use later
     % UNFINISHED
     properties
-        instr
-        V
+        instr;
+        verbose;
     end
     
     
@@ -50,6 +50,9 @@ classdef K2400 < voltagesource	%generate new class for K2400 and make it a subcl
             %a gpib object is passed when creating the object, so make it
             %part of the object here
             obj.instr = instr;
+            
+            % read the settings file and set the verbose level
+            obj.verbose = getsettings('verbose');
         end
         
         

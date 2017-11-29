@@ -29,6 +29,7 @@ Higher level functions use these driver files to implement more complex operatio
 * Add other agilent/keysight devices
 * Requested for implementation: Rohde & Schwarz SMY 01
 * In general retest every instrument because they probably dont work anymore
+* check visa.Name for errors instead of rsrcname, consider setting name
 
 
 # Contents

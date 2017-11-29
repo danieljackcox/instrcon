@@ -38,8 +38,8 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it a subcl
     %declare some basic properties (variables) for use later
     % UNFINISHED
     properties
-        instr
-        V
+        instr;
+        verbose;
     end
     
     
@@ -54,6 +54,9 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it a subcl
             fprintf(obj.instr, 'SOUR:VOLT:READ:BACK ON');
             fprintf(obj.instr, 'SOUR:VOLT 0');
             fprintf(obj.instr, 'OUTP ON');
+            
+            % read the settings file and set the verbose level
+            obj.verbose = getsettings('verbose');
             
         end
         

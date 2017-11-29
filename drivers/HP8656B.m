@@ -44,8 +44,8 @@ classdef HP8656B < freqgenerator	%generate new class for HP8656B and
     %declare some basic properties (variables) for use later
     % UNFINISHED
     properties
-        instr
-        V
+        instr;
+        verbose;
     end
     
     
@@ -56,6 +56,9 @@ classdef HP8656B < freqgenerator	%generate new class for HP8656B and
             %a gpib object is passed when creating the object, so make it
             %part of the object here
             obj.instr = instr;
+            
+            % read the settings file and set the verbose level
+            obj.verbose = getsettings('verbose');
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
