@@ -45,28 +45,56 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
     properties
         instr
         verbose;
+        logging;
     end
     
     
     methods
         
-        %constructor (i.e. creator class, called by default)
         function obj = HP33120A(instr)
+            % object = HP33120A(instrumentObject)
+            % Creation object, called when HP33120A is created by opendevice
+            % handles any instrument-specific setup required
+            
             %a gpib object is passed when creating the object, so make it
             %part of the object here
             obj.instr = instr;
             
+            % flush the input and output queue as sometimes previous
+            % measurements that were not terminated properly can persist
+            % in the buffers
+            
+                        flushinput(instr); %software buffers
+                        flushoutput(instr);
+                        clrdevice(instr); %hardware buffers
+            
             % read the settings file and set the verbose level
             obj.verbose = getsettings('verbose');
+            obj.logging = getsettings('logging');
+            
+            logmessage(1, obj, sprintf('%s connected at %s', class(obj), obj.instr.Name));
+            
+            
         end
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setconf: sets the output function type.                           %
-        % Choose from sine, square, triangle, ramp, noise, dc               %
-        % arbitrary waveforms not implemented
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        
+        function delete(this)
+            % delete(HP33120AObject)
+            % Destruction object, will close the instrument and handle anything
+            % needed before that
+            
+            fclose(this.instr);
+            logmessage(1, this, sprintf('%s disconnected at %s', class(this), this.instr.Name));
+        end
+
+        
         
         function setconf(this, type, varargin)
+            % SETCONF(type)
+            %
+            % Sets the output function type, choose from 'sine', 'square',
+            % 'triangle', 'ramp', 'noise', 'dc'
             
             % if no arguments provided then return the current config
             if( nargin == 1 )
@@ -103,28 +131,37 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
                         
                         error('Type ''%s'' not recognised, supported types are ''sine'', ''square'', ''triangle'', ''ramp'', ''noise'', ''dc''%s', type, instrerror(this, inputname(1), dbstack));
                 end
+                
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETCONF to %s', class(this), inputname(1), this.instr.Name, type));
+                end
             end
         end
+
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getconf: reads the output function type.                          %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = getconf(this, varargin)
+            % configuration = GETCONF
+            %
+            % Returns the currently set output function (text)
             
-            fprintf(this.instr, 'CONF?');
+            fprintf(this.instr, 'FUNC:SHAP?');
             output = fscanf(this.instr, '%s');
             
+            if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s GETCONF IS %S', class(this), inputname(1), this.instr.Name, output));
+                end
+            
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setoutputvoltage: sets a DC voltage                               %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setoutputvoltage(this, V, varargin)
+            % SETOUTPUTVOLTAGE(V)
+            % SETOUTPUTVOLTAGE(V, 'channel', channelnumber)
+            %
+            % Sets a DC voltage on the output
+            % If called with no channel defaults to channel 1
             
             % if voltage is empty or doesn't exist then we want to return
             % the voltage value
@@ -139,31 +176,40 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
                 
                 fprintf(this.instr, 'VOLT:OFFS %f', V);
                 
+                if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s SETOUTPUTVOLTAGE to %2.3f V', class(this), inputname(1), this.instr.Name, V));
+            end
+                
             end
         end
+
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getoutputvoltage: reads a DC voltage                              %
-        % IMPORTANT: getvoltage returns the *set* voltage value, it does    %
-        % not measure any voltage                                           %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = getoutputvoltage(this, varargin)
-            
+            % voltage = GETOUTPUTVOLTAGE
+            % voltage = GETOUTPUTVOLTAGE('channel', channelnumber)
+            %
+            % Returns the current set DC voltage, it does not measure real
+            % voltage
+            % If no channel is given defaults to channel 1
             
             fprintf(this.instr, 'VOLT:OFFS?');
             output = fscanf(this.instr, '%f');
             
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETOUTPUTVOLTAGE is %2.3f V', class(this), inputname(1), this.instr.Name, output));
+            end
+            
         end
+
         
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setfreq: sets internal frequency              %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setfreq(this, freq, varargin)
+            % SETFREQ(f)
+            % SETFREQ(f, 'channel', channelnumber)
+            %
+            % Sets the frequency of the output function
+            % If called with no channel defaults to channel 1
             
             % if nothing or empty variable is passed then read the value
             % and return it
@@ -177,32 +223,39 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
                 
                 fprintf(this.instr, 'FREQ %f', freq);
                 
+                if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s SETFREQ to %6.3f Hz', class(this), inputname(1), this.instr.Name, freq));
+            end
+                
             end
             
         end
+
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getfreq: reads internal frequency              %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function output = getfreq(this, varargin)
-            
+            % freq = GETFREQ
+            % freq = GETFREQ('channel', channelnumber)
+            %
+            % Returns the currently set frequency of the output
+            % If called with no channel then defaults to channel 1
             
             fprintf(this.instr, 'FREQ?');
             output = fscanf(this.instr, '%f');
             
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETFREQ is %6.3f Hz', class(this), inputname(1), this.instr.Name, output));
+            end
+            
             
         end
+
         
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setxcitation: sets the AC output sine wave voltage (in RMS) %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function setexcitation(this, excitation, varargin)
+            % SETEXCITATION(V)
+            %
+            % Sets the output excitation in V rms for ALL channels
             
             % if empty or nonexistent then read and return the value
             if( nargin == 1 || isempty(excitation) )
@@ -216,58 +269,73 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
                 %set the excitation
                 fprintf(this.instr, 'VOLT %f', excitation);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETEXCITATION to %2.3f V', class(this), inputname(1), this.instr.Name, excitation));
+                end
+                
+            end
+            
+        end
+
+        
+        
+        function output = getexcitation(this, varargin)
+            % excitation = GETEXCITATION
+            %
+            % Returns the AC excitation for current output function in V
+            % rms, all channels the same
+            
+            fprintf(this.instr, 'VOLT?');
+            output = fscanf(this.instr, '%f');
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETEXCITATION is %2.3f V', class(this), inputname(1), this.instr.Name, output));
+            end
+        end
+        
+        
+        
+        function output = getoutputstatus(this, varargin)
+            % outputstatus = GETOUTPUTSTATUS
+            %
+            % Returns if DC sources are energised
+            % Not an option on this instrument so returns 1 always
+            output = 1;
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETOUTPUTSTATUS is %d', class(this), inputname(1), this.instr.Name, output));
             end
             
         end
         
         
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getexcitation: returns the AC output sine wave voltage (in RMS)      %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        function output = getexcitation(this, varargin)
-            
-            
-            fprintf(this.instr, 'VOLT?');
-            output = fscanf(this.instr, '%f');
-            
-            
-        end
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % getoutputstatus: always returns 1                   %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        function output = getoutputstatus(this, varargin)
-            
-            output = 1;
-            
-        end
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % setoutputstatus: function does nothing but is required %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function setoutputstatus(this, status, varargin)
+            % SETOUTPUTSTATUS
+            %
+            % Not an option on this instrument so does nothing
             % this is meant to do nothing!
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s SETOUTPUTSTATUS to 1', class(this), inputname(1), this.instr.Name));
+            end
         end
+
         
-        
-        
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % rst: sends GPIB *RST command (i.e. resets the device)             %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         function rst(this, varargin)
+            % RST
+            %
+            % Sends SCPI *RST command
             fprintf(this.instr, '*RST');
         end
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % idn: gets GPIB identity                                           %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         
         function output = idn(this, varargin)
+            % IDN
+            %
+            % Returns SCPI *IDN results
             fprintf(this.instr, 'IDN?');
             output = fscanf(this.instr, '%s');
         end

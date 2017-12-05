@@ -1,7 +1,7 @@
-%voltagesource.m
+%% voltagesource.m
 %     Created 2017 Daniel Cox
 %     Part of instrcon
-
+%
 %     instrcon is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
 %     the Free Software Foundation, either version 3 of the License, or
@@ -14,19 +14,20 @@
 %
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%
 %
 %
 %
 % this file contains high level functions used with voltage sources and
 % defines the minimum functions a voltage source driver should expose
-
+%
 % minimum functions:
 % getoutputvoltage
 % setoutputvoltage
-
+%
 % high level functions
 % RAMPVOLTAGE
-
+%
 % rampvoltage: safely ramps the DC output voltage of the generator
 classdef voltagesource < handle
     

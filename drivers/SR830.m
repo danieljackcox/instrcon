@@ -338,6 +338,10 @@ classdef SR830 < voltagesource & freqgenerator
             % Not an option on this instrument so returns 1 always
             
             output = 1;
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETOUTPUTSTATUS is %d', class(this), inputname(1), this.instr.Name, output));
+            end
         end
         
         
@@ -348,6 +352,10 @@ classdef SR830 < voltagesource & freqgenerator
             % Not an option on this instrument so does nothing
             
             % this is meant to do nothing!
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s SETOUTPUTSTATUS to 1', class(this), inputname(1), this.instr.Name));
+            end
         end
         
         
@@ -473,6 +481,10 @@ classdef SR830 < voltagesource & freqgenerator
                 
                 fprintf(this.instr, 'RSLP %d', trigtype);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETREFTRIG to %d', class(this), inputname(1), this.instr.Name, trigtype));
+                end
+                
             end
             
         end
@@ -494,6 +506,10 @@ classdef SR830 < voltagesource & freqgenerator
             %make a human-readable list of settings
             rt_text = {'sine', 'rising', 'falling'};
             humanreadable = rt_text{output+1};
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETREFTRIG is %s (%d)', class(this), inputname(1), this.instr.Name, humanreadable, output));
+            end
             
         end
         
@@ -517,6 +533,10 @@ classdef SR830 < voltagesource & freqgenerator
                 
                 fprintf(this.instr, 'HARM %d', harmonic);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETHARMONIC to %d', class(this), inputname(1), this.instr.Name, harmonic));
+                end
+                
             end
             
         end
@@ -531,6 +551,10 @@ classdef SR830 < voltagesource & freqgenerator
             
             fprintf(this.instr, 'HARM?');
             output = fscanf(this.instr, '%d');
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETHARMONIC is %d', class(this), inputname(1), this.instr.Name, output));
+            end
             
         end
         
@@ -555,6 +579,10 @@ classdef SR830 < voltagesource & freqgenerator
                 %set the excitation
                 fprintf(this.instr, 'SLVL %f', excitation);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETEXCITATION to %1.3f V', class(this), inputname(1), this.instr.Name, excitation));
+                end
+                
             end
             
         end
@@ -569,6 +597,10 @@ classdef SR830 < voltagesource & freqgenerator
             
             fprintf(this.instr, 'SLVL?');
             output = fscanf(this.instr, '%f');
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETEXCITATION is %1.3f V', class(this), inputname(1), this.instr.Name, output));
+            end
             
         end
         
@@ -606,6 +638,10 @@ classdef SR830 < voltagesource & freqgenerator
                 % set the value
                 fprintf(this.instr, 'ISRC %d', inputconfig);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETINPUTCONFIG to %d', class(this), inputname(1), this.instr.Name, inputconfig));
+                end
+                
             end
             
         end
@@ -625,6 +661,10 @@ classdef SR830 < voltagesource & freqgenerator
             %make a human-readable list of settings
             inputconfig_text = {'A','A-B','I (10MOhm)','I (100MOhm)'};
             humanreadable = inputconfig_text{output+1};
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETINPUTCONFIG is %s (%d)', class(this), inputname(1), this.instr.Name, humanreadable, output));
+            end
             
         end
         
@@ -660,6 +700,10 @@ classdef SR830 < voltagesource & freqgenerator
                 % set the value
                 fprintf(this.instr, 'IGND %d', shieldground);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETSHIELDGROUNDING to %d', class(this), inputname(1), this.instr.Name, shieldground));
+                end
+                
             end
             
         end
@@ -680,6 +724,10 @@ classdef SR830 < voltagesource & freqgenerator
             %make a human-readable list of settings
             inputconfig_text = {'floating','grounded'};
             humanreadable = inputconfig_text{output+1};
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETSHIELDGROUNDING is %s (%d)', class(this), inputname(1), this.instr.Name, humanreadable, output));
+            end
             
         end
         
@@ -715,6 +763,10 @@ classdef SR830 < voltagesource & freqgenerator
                 % set the value
                 fprintf(this.instr, 'ILIN %d', notchfilter);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETNOTCHFILTER to %d', class(this), inputname(1), this.instr.Name, notchfilter));
+                end
+                
             end
             
         end
@@ -734,6 +786,10 @@ classdef SR830 < voltagesource & freqgenerator
             %make a human-readable list of settings
             inputconfig_text = {'none','1x','2x','1x & 2x'};
             humanreadable = inputconfig_text{output+1};
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETNOTCHFILTER is %s (%d)', class(this), inputname(1), this.instr.Name, humanreadable, output));
+            end
             
         end
         
@@ -789,6 +845,10 @@ classdef SR830 < voltagesource & freqgenerator
                 % set the value
                 fprintf(this.instr, 'SENS %d', sensitivity);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETSENSITIVITY is %d', class(this), inputname(1), this.instr.Name, sensitivity));
+                end
+                
             end
             
         end
@@ -830,6 +890,10 @@ classdef SR830 < voltagesource & freqgenerator
                 '20 mV', '50 mV', '100 mV', '200 mV', '500 mV', '1 V'};
             humanreadable = inputconfig_text{output+1};
             
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETSENSITIVITY is %s (%d)', class(this), inputname(1), this.instr.Name, humanreadable, output));
+            end
+            
         end
         
         
@@ -862,6 +926,10 @@ classdef SR830 < voltagesource & freqgenerator
                 % set the value
                 fprintf(this.instr, 'RMOD %d', reserve);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETRESERVE is %d', class(this), inputname(1), this.instr.Name, reserve));
+                end
+                
             end
             
         end
@@ -881,6 +949,10 @@ classdef SR830 < voltagesource & freqgenerator
             %make a human-readable list of settings
             inputconfig_text = {'high','normal','low noise'};
             humanreadable = inputconfig_text{output+1};
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETRESERVE is %s (%d)', class(this), inputname(1), this.instr.Name, humanreadable, output));
+            end
             
         end
         
@@ -934,6 +1006,10 @@ classdef SR830 < voltagesource & freqgenerator
                 % set the value
                 fprintf(this.instr, 'OFLT %d', tc);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETTC is %d', class(this), inputname(1), this.instr.Name, tc));
+                end
+                
             end
             
         end
@@ -973,6 +1049,10 @@ classdef SR830 < voltagesource & freqgenerator
                 '1 ks', '3 ks', '10 ks', '30 ks'};
             humanreadable = inputconfig_text{output+1};
             
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETTC is %s (%d)', class(this), inputname(1), this.instr.Name, humanreadable, output));
+            end
+            
         end
         
         
@@ -1006,6 +1086,10 @@ classdef SR830 < voltagesource & freqgenerator
                 % set the value
                 fprintf(this.instr, 'OFSL %d', lpfilterslope);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETLPFILTERSLOPE to %d', class(this), inputname(1), this.instr.Name, lpfilterslope));
+                end
+                
             end
             
         end
@@ -1028,6 +1112,10 @@ classdef SR830 < voltagesource & freqgenerator
             inputconfig_text = {'6 dB/oct', '12 dB/oct', '18 dB/oct', ...
                 '24 dB/oct'};
             humanreadable = inputconfig_text{output+1};
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETLPFILTERSLOPE is %s (%d)', class(this), inputname(1), this.instr.Name, humanreadable, output));
+            end
             
         end
         
@@ -1058,6 +1146,10 @@ classdef SR830 < voltagesource & freqgenerator
                 % set the value
                 fprintf(this.instr, 'SYNC %d', syncfilter);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETSYNCFILTER to %d', class(this), inputname(1), this.instr.Name, syncfilter));
+                end
+                
             end
             
         end
@@ -1072,6 +1164,10 @@ classdef SR830 < voltagesource & freqgenerator
             
             fprintf(this.instr, 'SYNC?');
             output = fscanf(this.instr, '%d');
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETSYNCFILTER is %d', class(this), inputname(1), this.instr.Name, output));
+            end
             
             
         end
@@ -1101,6 +1197,10 @@ classdef SR830 < voltagesource & freqgenerator
                 % set the value
                 fprintf(this.instr, 'ICPL %d', inputcoupling);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETINPUTCOUPLING to %d', class(this), inputname(1), this.instr.Name, inputcoupling));
+                end
+                
             end
             
         end
@@ -1116,6 +1216,10 @@ classdef SR830 < voltagesource & freqgenerator
             
             fprintf(this.instr, 'ICPL?');
             output = fscanf(this.instr, '%d');
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETINPUTCOUPLING is %d', class(this), inputname(1), this.instr.Name, output));
+            end
             
         end
         
@@ -1141,6 +1245,10 @@ classdef SR830 < voltagesource & freqgenerator
             Y       = tmp_output(2);
             R       = tmp_output(3);
             phase   = tmp_output(4);
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETMEAS is r: %e\tx: %e\ty: %e\tp: %e', class(this), inputname(1), this.instr.Name, r, x, y, phase));
+            end
             
         end
         
