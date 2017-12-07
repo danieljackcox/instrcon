@@ -15,6 +15,7 @@ Higher level functions use these driver files to implement more complex operatio
 * Agilent 33522A 30 MHz Function/Arbitrary Waveform Generator
 * Tenma 72-2550 power supply
 * HP8656B signal generator
+* Keysight 33510/33511B function generators
 
 # TODO
 * Write first prototype script
@@ -22,14 +23,13 @@ Higher level functions use these driver files to implement more complex operatio
 * Update K2400 and K2450 files to work
 * Check that A33522A actually works
 * Update main documentation (this)
-* Standardise comments in code, etc.
 * Check for any left over 'n.b.' comments in code and fix issues
-* Consider implementing slava logging
 * Test HP8656B frequency generator
 * Add other agilent/keysight devices
 * Requested for implementation: Rohde & Schwarz SMY 01
 * In general retest every instrument because they probably dont work anymore
-* check visa.Name for errors instead of rsrcname, consider setting name
+* Fix HP34401A - probably the most broken file
+* K2450 is also a bit broken and outdated, test on the actual device
 
 
 # Contents

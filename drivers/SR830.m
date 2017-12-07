@@ -1,36 +1,12 @@
 % SR830.m
-%     Created 2017 Daniel Cox
-%     Part of instrcon
 %
-%     instrcon is free software: you can redistribute it and/or modify
-%     it under the terms of the GNU General Public License as published by
-%     the Free Software Foundation, either version 3 of the License, or
-%     (at your option) any later version.
-%
-%     This program is distributed in the hope that it will be useful,
-%     but WITHOUT ANY WARRANTY; without even the implied warranty of
-%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%     GNU General Public License for more details.
-%
-%     You should have received a copy of the GNU General Public License
-%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%
-%------------------------------------------------------------------------------%
 % Stanford Research Systems SR830 Lock-in Amplifier driver file
 % This file is a matlab object that represents the SR830. It provides standard
 % methods that interface with the device so the specific code required for
 % communicating with the device over GPIB is not needed.
 %
 % Properties are variables that are part of this pseudo-device and represent
-% real-world setting and values such as the current voltage
-%
-% To use in measurement scripts first call the OPENDEVICE function
-% e.g. lia = OPENDEVICE(5, 'gpib')
-% This will create an SR830 object and assign it to lia variable
-% You can then call functions like SETOUTPUTVOLTAGE
-% lia.SETOUTPUTVOLTAGE(5)
-% or
-% SETOUTPUTVOLTAGE(lia, 5)
+% settings that effect how the device or matlab works
 %
 % Methods are functions used to access the abilities of the device
 % for example setting a voltage or reading in a resistance value
@@ -49,8 +25,8 @@
 % getreftrig: reads reference trigger type
 % setharmonic: set measurement harmonic
 % getharmonic: read measurement harmonic
-% setexcitation: set AC excitation voltage
-% getexcitation: read current set AC excitation voltage
+% setexc: set AC excitation voltage
+% getexc: read current set AC excitation voltage
 % setinputconfig: set the input configuration (A, A-B, I, etc.)
 % getinputconfig: read the input configuration
 % setshieldgrounding: set shield grounding configurationflushinput(instr); %software buffers
@@ -73,7 +49,22 @@
 % setoutputstatus: turns output on or off (does nothing here)
 % getoutputstatus: returns output status (always on)
 
-
+%     Created 2017 Daniel Cox
+%     Part of instrcon
+%
+%     instrcon is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
 
 %generate new class for SR830 and make it a subclass
 % of voltagesource and freqgenerator
@@ -128,9 +119,9 @@ classdef SR830 < voltagesource & freqgenerator
             % measurements that were not terminated properly can persist
             % in the buffers
             
-            %             flushinput(instr); %software buffers
-            %             flushoutput(instr);
-            %             clrdevice(instr); %hardware buffers
+                        flushinput(instr); %software buffers
+                        flushoutput(instr);
+                        clrdevice(instr); %hardware buffers
             %
             %
             %
@@ -560,8 +551,8 @@ classdef SR830 < voltagesource & freqgenerator
         
         
         
-        function setexcitation(this, excitation, varargin)
-            % SETEXCITATION(voltage)
+        function setexc(this, excitation, varargin)
+            % SETEXC(voltage)
             %
             % Sets the rms output voltage of the AC excitation
             % NOTE: the SR830 output voltage has a minimum step size of 2 mV
@@ -589,8 +580,8 @@ classdef SR830 < voltagesource & freqgenerator
         
         
         
-        function output = getexcitation(this, varargin)
-            % voltage = GETEXCITATION
+        function output = getexc(this, varargin)
+            % voltage = GETEXC
             %
             % Returns the AC excitation voltage in rms volts
             

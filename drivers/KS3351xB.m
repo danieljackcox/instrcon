@@ -1,34 +1,13 @@
 % KS3351xB.m
-%     Created 2017 Daniel Cox
-%     Part of instrcon
-
-%     instrcon is free software: you can redistribute it and/or modify
-%     it under the terms of the GNU General Public License as published by
-%     the Free Software Foundation, either version 3 of the License, or
-%     (at your option) any later version.
 %
-%     This program is distributed in the hope that it will be useful,
-%     but WITHOUT ANY WARRANTY; without even the implied warranty of
-%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%     GNU General Public License for more details.
-%
-%     You should have received a copy of the GNU General Public License
-%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%
-%------------------------------------------------------------------------------%
-% HKeysight 33510B/33511B function generator driver file
+% Keysight 33510B/33511B function generator driver file
 % This file is a matlab object that represents the 33510B/33511B.
 % It provides standard methods that interface with the
 % device so the specific code required for
 % communicating with the device over GPIB is not needed.
 %
-% To use in measurement scripts first call the OPENDEVICE function
-% e.g. lia = OPENDEVICE(5, 'gpib')
-% This will create an SR830 object and assign it to lia variable
-% You can then call functions like SETOUTPUTVOLTAGE
-% lia.SETOUTPUTVOLTAGE(5)
-% or
-% SETOUTPUTVOLTAGE(lia, 5)
+% Properties are variables that are part of this pseudo-device and represent
+% settings that effect how the device or matlab works
 %
 % Methods are functions used to access the abilities of the device
 % for example setting a voltage or reading in a resistance value
@@ -41,12 +20,26 @@
 % getoutputvoltage: returns the currently set DC offset voltage
 % setfreq: sets wave frequency for current configured type
 % getfreq: returns wave frequency for current configured type
-% setexcitation: sets wave amplitude (RMS) for current configured type
-% getexcitation: gets wave amplitude (RMS) for current configured type
+% setexc: sets wave amplitude (RMS) for current configured type
+% getexc: gets wave amplitude (RMS) for current configured type
 % getoutputstatus: returns if outputs are energised or not
 % setoutputstatus: Turns on or off the outputs
 
-
+%     Created 2017 Daniel Cox
+%     Part of instrcon
+%
+%     instrcon is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 classdef KS3351xB < voltagesource	%generate new class for KS3351xB and
     % make it a subclass of voltagesource
@@ -64,12 +57,37 @@ classdef KS3351xB < voltagesource	%generate new class for KS3351xB and
         
         %constructor (i.e. creator class, called by default)
         function obj = KS3351xB(instr)
+            % object = KS3351xB(instrumentObject, noresetFlag)
+            % Creation object, called when KS3351xB is created by opendevice
+            % handles any instrument-specific setup required
+            
             %a gpib object is passed when creating the object, so make it
             %part of the object here
             obj.instr = instr;
             
+            % flush the input and output queue as sometimes previous
+            % measurements that were not terminated properly can persist
+            % in the buffers
+            
+            flushinput(instr); %software buffers
+            flushoutput(instr);
+            clrdevice(instr); %hardware buffers
+            
             % read the settings file and set the verbose level
             obj.verbose = getsettings('verbose');
+            obj.logging = getsettings('logging');
+            
+            logmessage(1, obj, sprintf('%s connected at %s', class(obj), obj.instr.Name));
+        end
+        
+        
+        function delete(this)
+            % delete(KS3351xBObject)
+            % Destruction object, will close the instrument and handle anything
+            % needed before that
+            
+            fclose(this.instr);
+            logmessage(1, this, sprintf('%s disconnected at %s', class(this), this.instr.Name));
         end
         
         
@@ -141,6 +159,10 @@ classdef KS3351xB < voltagesource	%generate new class for KS3351xB and
                     otherwise
                         error('Unrecognised type%s', instrerror(this, inputname(1), dbstack));
                 end
+                
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETCONF on channel %d to %s', class(this), inputname(1), this.instr.Name, channel, type));
+                end
             end
         end
         
@@ -178,6 +200,10 @@ classdef KS3351xB < voltagesource	%generate new class for KS3351xB and
             
             fprintf(this.instr, 'SOUR%d:FUNC?', channel);
             output = fscanf(this.instr, '%s');
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETCONF on channel %d is %s', class(this), inputname(1), this.instr.Name, channel, output));
+            end
             
         end
         
@@ -227,6 +253,9 @@ classdef KS3351xB < voltagesource	%generate new class for KS3351xB and
                 
                 fprintf(this.instr, 'SOUR%d:VOLT:OFFS %f', channel, V);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETOUTPUTVOLTAGE on channel %d to %2.3f V', class(this), inputname(1), this.instr.Name, channel, V));
+                end
             end
         end
         
@@ -266,6 +295,9 @@ classdef KS3351xB < voltagesource	%generate new class for KS3351xB and
             fprintf(this.instr, 'SOUR%d:VOLT:OFFS?', channel);
             output = fscanf(this.instr, '%f');
             
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETOUTPUTVOLTAGE on channel %d is %2.3f V', class(this), inputname(1), this.instr.Name, channel, output));
+            end
         end
         
         
@@ -315,6 +347,10 @@ classdef KS3351xB < voltagesource	%generate new class for KS3351xB and
                 
                 fprintf(this.instr, 'SOUR%d:FREQ %f', channel, freq);
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETFREQ on channel %d to %f Hz', class(this), inputname(1), this.instr.Name, channel, freq));
+                end
+                
             end
             
         end
@@ -356,14 +392,16 @@ classdef KS3351xB < voltagesource	%generate new class for KS3351xB and
             fprintf(this.instr, 'SOUR%d:FREQ?', channel);
             output = fscanf(this.instr, '%f');
             
-            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETFREQ on channel %d is %f Hz', class(this), inputname(1), this.instr.Name, channel, output));
+            end
         end
         
         
         
-        function setexcitation(this, excitation, varargin)
-            % SETEXCITATION(voltage)
-            % SETEXCITATION(voltage, 'channel', channelnumber)
+        function setexc(this, excitation, varargin)
+            % SETEXC(voltage)
+            % SETEXC(voltage, 'channel', channelnumber)
             %
             % Sets the RMS output excitation voltage
             % NOTE: On the single channel device (33511B) the channel option is
@@ -404,15 +442,19 @@ classdef KS3351xB < voltagesource	%generate new class for KS3351xB and
                 %set the excitation
                 fprintf(this.instr, sprintf('SOUR%d:VOLT %f', channel, excitation));
                 
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETEXC on channel %d is %2.3f V', class(this), inputname(1), this.instr.Name, channel, excitation));
+                end
+                
             end
             
         end
         
         
         
-        function output = getexcitation(this, varargin)
-            % GETEXCITATION()
-            % GETEXCITATION('channel', channelnumber)
+        function output = getexc(this, varargin)
+            % GETEXC
+            % GETEXC('channel', channelnumber)
             %
             % Returns the set RMS output excitation voltage
             % NOTE: On the single channel device (33511B) the channel option is
@@ -444,13 +486,15 @@ classdef KS3351xB < voltagesource	%generate new class for KS3351xB and
             fprintf(this.instr, 'SOUR%d:VOLT?', channel);
             output = fscanf(this.instr, '%f');
             
-            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETEXC on channel %d is %f V', class(this), inputname(1), this.instr.Name, channel, output));
+            end
         end
         
         
         
         function output = getoutputstatus(this, varargin)
-            % GETOUTPUTSTATUS()
+            % GETOUTPUTSTATUS
             % GETOUTPUTSTATUS('channel', channelnumber)
             %
             % Returns the output status (if the front connector is energised
@@ -482,6 +526,10 @@ classdef KS3351xB < voltagesource	%generate new class for KS3351xB and
             
             fprintf(this.instr, 'OUTP%d?', channel);
             output = fscanf(this.instr, '%s');
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETOUTPUTSTATUS on channel %d is %u', class(this), inputname(1), this.instr.Name, channel, output));
+            end
             
         end
         
@@ -528,6 +576,10 @@ classdef KS3351xB < voltagesource	%generate new class for KS3351xB and
                 
                 %set the status
                 fprintf(this.instr, sprintf('OUTP%d %d', channel, status));
+                
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETOUTPUTSTATUS on channel %d to %u', class(this), inputname(1), this.instr.Name, channel, status));
+                end
                 
             end
         end

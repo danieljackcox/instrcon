@@ -1,4 +1,26 @@
 % HP33120A.m
+%
+% HP/Agilent/keysight 33120A function generator driver file
+% This file is a matlab object that represents the 33120A. It provides standard
+% methods that interface with the device so the specific code required for
+% communicating with the device over GPIB is not needed.
+%
+% Properties are variables that are part of this pseudo-device and represent
+% settings that effect how the device or matlab works
+%
+% Methods are functions used to access the abilities of the device
+% for example setting a voltage or reading in a resistance value
+% current methods (functions) are listed below:
+%
+% Methods:
+% setconf: configure the function generator to output the desired signal type
+% getconf: returns the current configuration of the generator
+% setoutputvoltage: sets the DC offset voltage
+% getoutputvoltage: returns the currently set DC offset voltage
+% freq: sets wave frequency for current configured type
+% setexc: sets wave amplitude (RMS) for current configured type
+% getexc: gets wave amplitude (RMS) for current configured type
+
 %     Created 2017 Daniel Cox
 %     Part of instrcon
 
@@ -14,27 +36,6 @@
 %
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%
-%
-%
-%
-%------------------------------------------------------------------------------%
-% HP/Agilent/keysight 33120A function generator driver file
-% This file is a matlab thisect that represents the 33120A. It provides standard
-% methods that interface with the device so the specific code required for
-% communicating with the device over GPIB is not needed.
-%
-% Methods:
-% setconf: configure the function generator to output the desired signal type
-% getconf: returns the current configuration of the generator
-% setoutputvoltage: sets the DC offset voltage
-% getoutputvoltage: returns the currently set DC offset voltage
-% freq: sets wave frequency for current configured type
-% setexcitation: sets wave amplitude (RMS) for current configured type
-% getexcitation: gets wave amplitude (RMS) for current configured type
-
-
-%------------------------------------------------------------------------------%
 
 classdef HP33120A < voltagesource & freqgenerator	%generate new class
     % for HP33120A and make it a subclass of voltagesource and freqgenerator
@@ -252,8 +253,8 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
 
         
         
-        function setexcitation(this, excitation, varargin)
-            % SETEXCITATION(V)
+        function setexc(this, excitation, varargin)
+            % SETEXC(V)
             %
             % Sets the output excitation in V rms for ALL channels
             
@@ -279,8 +280,8 @@ classdef HP33120A < voltagesource & freqgenerator	%generate new class
 
         
         
-        function output = getexcitation(this, varargin)
-            % excitation = GETEXCITATION
+        function output = getexc(this, varargin)
+            % excitation = GETEXC
             %
             % Returns the AC excitation for current output function in V
             % rms, all channels the same
