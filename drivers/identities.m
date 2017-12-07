@@ -1,4 +1,15 @@
 % identities.m
+%
+% This file contains the identities (SCPI *IDN command) of supported
+% devices in the variable obj.idns and the corresponding driver functions
+% in the obj.drivers variable.
+%
+% To add a driver you must select a unique part of the *IDN response that
+% does not contain device serial numbers and the like and then add the name
+% of the driver object in the same order as is listed in the idns variable.
+% If the device you want to add does not support IDN command then add a fake
+% entry to idns such as 'HP8656B'
+
 %     Created 2017 Daniel Cox
 %     Part of instrcon
 
@@ -14,18 +25,7 @@
 %
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%
-%
-%
-% This file contains the identities (SCPI *IDN command) of supported
-% devices in the variable obj.idns and the corresponding driver functions
-% in the obj.drivers variable.
-%
-% To add a driver you must select a unique part of the *IDN response that
-% does not contain device serial numbers and the like and then add the name
-% of the driver object in the same order as is listed in the idns variable.
-% If the device you want to add does not support IDN command then add a fake
-% entry to idns such as 'HP8656B'
+
 
 idns = {'Stanford_Research_Systems,SR830'; ...
     'HEWLETT-PACKARD,34401A'; ...
@@ -37,7 +37,8 @@ idns = {'Stanford_Research_Systems,SR830'; ...
     'HP8656B'; ...
     'KORADKA3005PV2.0'; ...
     'Keysight Technologies,33510B'; ...
-    'Keysight Technologies,33511B'};
+    'Keysight Technologies,33511B'; ...
+    'Agilent Technologies,N9310A'};
 
 
 drivers = {@SR830, ...
@@ -50,4 +51,5 @@ drivers = {@SR830, ...
     @HP8656B, ...
     @TENMA, ...
     @KS3351xB, ...
-    @KS3351xB};
+    @KS3351xB, ...
+    @AN9310A};

@@ -16,6 +16,7 @@ Higher level functions use these driver files to implement more complex operatio
 * Tenma 72-2550 power supply
 * HP8656B signal generator
 * Keysight 33510/33511B function generators
+* Agilent N9310A signal generator
 
 # TODO
 * Write first prototype script
@@ -30,6 +31,8 @@ Higher level functions use these driver files to implement more complex operatio
 * In general retest every instrument because they probably dont work anymore
 * Fix HP34401A - probably the most broken file
 * K2450 is also a bit broken and outdated, test on the actual device
+* on HP8656B and AN9310A the frequency and amplitude commands include units, expand support so user can input any unit they want
+* Check AN9310A IDN response
 
 
 # Contents
