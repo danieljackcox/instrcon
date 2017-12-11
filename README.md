@@ -27,12 +27,12 @@ Higher level functions use these driver files to implement more complex operatio
 * Check for any left over 'n.b.' comments in code and fix issues
 * Test HP8656B frequency generator
 * Add other agilent/keysight devices
-* Requested for implementation: Rohde & Schwarz SMY 01
 * In general retest every instrument because they probably dont work anymore
 * Fix HP34401A - probably the most broken file
 * K2450 is also a bit broken and outdated, test on the actual device
 * on HP8656B and AN9310A the frequency and amplitude commands include units, expand support so user can input any unit they want
 * Check AN9310A IDN response
+* Temperature measurement
 
 
 # Contents

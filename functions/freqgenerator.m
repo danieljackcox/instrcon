@@ -46,8 +46,8 @@ classdef freqgenerator < handle
         
         getfreq(this)
         setfreq(this)
-        setexcitation(this)
-        getexcitation(this)
+        setexc(this)
+        getexc(this)
         
     end
 end

@@ -97,7 +97,7 @@ classdef HP8656B < freqgenerator	%generate new class for HP8656B and
         
         
         
-        function setfreq(this, freq, ~)
+        function setfreq(this, freq, varargin)
             % SETFREQ(frequency)
             %
             % Sets the excitation frequency
@@ -111,7 +111,7 @@ classdef HP8656B < freqgenerator	%generate new class for HP8656B and
                 if( ~isnumeric(freq))
                     error('Provided frequency must be a real number%s', instrerror(this, inputname(1), dbstack));
                 end
-                
+
                 fprintf(this.instr, 'FR %8.0u HZ', freq);
                 
                 if( length( dbstack ) < 2  )
@@ -124,7 +124,7 @@ classdef HP8656B < freqgenerator	%generate new class for HP8656B and
         
         
         
-        function output = getfreq(this, ~)
+        function output = getfreq(this, varargin)
             % frequency = GETFREQ
             %
             % Returns NaN on this device
@@ -137,10 +137,15 @@ classdef HP8656B < freqgenerator	%generate new class for HP8656B and
         
         
         
-        function setexc(this, excitation, ~)
+        function setexc(this, excitation, varargin)
             % SETEXC(excitation)
+            % SETEXC(excitation, 'unit', excunit)
             %
-            % Sets output excitation in dBm
+            % Sets output excitation
+            % Units can be 'dBm', 'dBmV', 'dBuV', 'mV', 'uV' (case
+            % insensitive)
+            % If no units are given then default is dbm
+            
             
             % if empty or nonexistent then return error
             if( nargin == 1 || isempty(excitation) )
@@ -151,11 +156,48 @@ classdef HP8656B < freqgenerator	%generate new class for HP8656B and
                     error('AC Sine Excitation must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
                 
+                % look to see if unit has been set
+                unitidx = find(strcmpi('unit', varargin));
+                
+                %if unit isnt set then we fallback to default 'dbm'
+                if(~any(unitidx))
+                    unit = 'dbm' ;
+                else
+                    
+                    %if a channel is not a number then throw an error
+                    if(~ischar(varargin{unitidx+1}))
+                        error('Unit needs to be a string input%s', instrerror(this, inputname(1), dbstack));
+                    end
+                    
+                    %otherwise everything ok
+                    unit = varargin{unitidx+1};
+                end
+                
+                % convert user input (dbm, etc.) to something the device
+                % understands
+                
+                %use if statements instead of switch to make it case
+                %insensitive
+                
+                if( strcmpi(unit, 'dbm') )
+                    unit_fprintf = 'DM';
+                elseif( strcmpi(unit, 'dbmv') )
+                    unit_fprintf = 'DB MV';
+                elseif( strcmpi(unit, 'dbuv') )
+                    unit_fprintf = 'DB UV';
+                elseif( strcmpi(unit, 'mv') )
+                    unit_fprintf = 'MV';
+                elseif( strcmpi(unit, 'uv') )
+                    unit_fprintf = 'UV';
+                else
+                    error('Unit must be ''dbm'', ''dbmv'', ''dbuv'', ''mv'', ''uv''%s', instrerror(this, inputname(1), dbstack));
+                end
+                
                 %set the excitation
-                fprintf(this.instr, 'AP %2.1f DM R3', excitation);
+                fprintf(this.instr, sprintf('AP %2.1f %s R3', excitation, unit_fprintf));
                 
                 if( length( dbstack ) < 2  )
-                    logmessage(2, this, sprintf('%s ''%s'' at %s SETEXC to %2.1f dBm', class(this), inputname(1), this.instr.Name, excitation));
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETEXC to %2.1f %s', class(this), inputname(1), this.instr.Name, excitation, unit));
                 end
                 
             end
@@ -164,7 +206,7 @@ classdef HP8656B < freqgenerator	%generate new class for HP8656B and
         
         
         
-        function output = getexc(this, ~)
+        function output = getexc(this, varargin)
             % excitation = GETEXC
             %
             % Not supported on this device, returns NaN
@@ -177,7 +219,7 @@ classdef HP8656B < freqgenerator	%generate new class for HP8656B and
         
         
         
-        function output = getoutputstatus(this, ~)
+        function output = getoutputstatus(this, varargin)
             % status = GETOUTPUTSTATUS
             %
             % Not supported on this device, returns 1
@@ -192,7 +234,7 @@ classdef HP8656B < freqgenerator	%generate new class for HP8656B and
         
         
         
-        function setoutputstatus(this, status, ~)
+        function setoutputstatus(this, status, varargin)
             % SETOUTPUTSTATUS(status)
             %
             % Turns the output on or off, 1 is on, 0 is off

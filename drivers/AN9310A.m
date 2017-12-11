@@ -47,7 +47,7 @@ classdef AN9310A < freqgenerator	%generate new class for AN9310A and
         verbose;
         logging;
     end
-
+    
     
     methods
         
@@ -67,11 +67,7 @@ classdef AN9310A < freqgenerator	%generate new class for AN9310A and
             flushinput(instr); %software buffers
             flushoutput(instr);
             clrdevice(instr); %hardware buffers
-            %
-            %
-            %
-            %             obj.getsettings;
-            
+
             % read the settings file and set the verbose level
             obj.verbose = getsettings('verbose');
             obj.logging = getsettings('logging');
@@ -140,7 +136,7 @@ classdef AN9310A < freqgenerator	%generate new class for AN9310A and
             else
                 error('Malformed output from device received%s', instrerror(this, inputname(1), dbstack));
             end
-                
+            
             
             if( length( dbstack ) < 2  )
                 logmessage(2, this, sprintf('%s ''%s'' at %s GETFREQ is %f Hz', class(this), inputname(1), this.instr.Name, output));
@@ -149,10 +145,14 @@ classdef AN9310A < freqgenerator	%generate new class for AN9310A and
         
         
         
-        function setexc(this, excitation, ~)
+        function setexc(this, excitation, varargin)
             % SETEXC(excitation)
+            % SETEXC(excitation, 'unit', excunits)
             %
-            % Sets output excitation in dBm
+            % Sets output excitation
+            % Units can be 'dBm', 'dBmV', 'dBuV', 'mV', 'uV' (case
+            % insensitive)
+            % If no units are given then default is dbm
             
             % if empty or nonexistent then return error
             if( nargin == 1 || isempty(excitation) )
@@ -163,11 +163,32 @@ classdef AN9310A < freqgenerator	%generate new class for AN9310A and
                     error('AC Sine Excitation must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
                 
+                % look to see if unit has been set
+                unitidx = find(strcmpi('unit', varargin));
+                
+                %if unit isnt set then we fallback to default 'dbm'
+                if(~any(unitidx))
+                    unit = 'dbm' ;
+                else
+                    
+                    %if a channel is not a number then throw an error
+                    if(~ischar(varargin{unitidx+1}))
+                        error('Unit needs to be a string input%s', instrerror(this, inputname(1), dbstack));
+                    end
+                    
+                    if( sum(strcmpi({'dbm', 'dbmv', 'dbuv', 'mv', 'uv'}, varargin{unitidx+1})) ~= 1 )
+                        error('Unit must be ''dbm'', ''dbmv'', ''dbuv'', ''mv'', ''uv''%s', instrerror(this, inputname(1), dbstack));
+                    end
+                    
+                    %otherwise everything ok
+                    unit = varargin{unitidx+1};
+                end
+
                 %set the excitation
-                fprintf(this.instr, ':AMPLitude:CW %f dBm', excitation);
+                fprintf(this.instr, sprintf(':AMPLitude:CW %f %s', excitation, unit));
                 
                 if( length( dbstack ) < 2  )
-                    logmessage(2, this, sprintf('%s ''%s'' at %s SETEXC to %2.1f dBm', class(this), inputname(1), this.instr.Name, excitation));
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETEXC to %2.1f %s', class(this), inputname(1), this.instr.Name, excitation, unit));
                 end
                 
             end
@@ -223,13 +244,13 @@ classdef AN9310A < freqgenerator	%generate new class for AN9310A and
                 if(~isnumeric(status))
                     error('Output status must be a number%s', instrerror(this, inputname(1), dbstack));
                 end
-
-                    fprintf(this.instr, ':RFOutput:STATe %u', status);
-
-                    if( length( dbstack ) < 2  )
-                        logmessage(2, this, sprintf('%s ''%s'' at %s SETOUTPUTSTATUS to %u', class(this), inputname(1), this.instr.Name, status));
-                    end
-                    
+                
+                fprintf(this.instr, ':RFOutput:STATe %u', status);
+                
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETOUTPUTSTATUS to %u', class(this), inputname(1), this.instr.Name, status));
+                end
+                
             end
             
         end

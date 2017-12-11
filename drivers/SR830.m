@@ -201,7 +201,7 @@ classdef SR830 < voltagesource & freqgenerator
         
         
         function output = getoutputvoltage(this, varargin)
-            % voltage = GETOUTPUTVOLTAGE()
+            % voltage = GETOUTPUTVOLTAGE
             % voltage = GETOUTPUTVOLTAGE('channel', channelnumber)
             %
             % Returns the user-set voltage on auxillary outputs
