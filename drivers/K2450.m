@@ -46,6 +46,7 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it
     properties
         instr;
         verbose;
+        logging;
     end
     
     
@@ -191,16 +192,74 @@ classdef K2450 < voltagesource	%generate new class for K2450 and make it
         
         
         
-        function output = getmeas(this, varargin)
+        function [voltage, current, resistance] = getmeas(this, varargin)
             % voltage = GETMEAS
             %
-            % Returns the real output voltage
-            fprintf(this.instr, 'READ?');
-            output = fscanf(this.instr, '%f');
+            % [voltage, current, resistance] = GETMEAS
+            %
+            % Returns the output of the device
+            % important: the K2400 returns a real measured resistance, here
+            % it is calculated from the voltage and current, it's included
+            % to maintain feature parity with the K2400
+            fprintf(this.instr, 'MEAS:VOLT:DC?');
+            voltage = fscanf(this.instr, '%f');
+            
+            fprintf(this.instr, 'MEAS:CURR:DC?');
+            current = fscanf(this.instr, '%f');
+            
+            resistance = voltage/current;
             
             if( length( dbstack ) < 2  )
-                logmessage(2, this, sprintf('%s ''%s'' at %s GETMEAS is %2.3f', class(this), inputname(1), this.instr.Name, output));
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETMEAS is volt: %2.3f\t curr: %2.3f\t res: %6.1f', class(this), inputname(1), this.instr.Name, voltage, current, resistance));
             end
+        end
+        
+        
+        function output = getoutputstatus(this, varargin)
+            % status = GETOUTPUTSTATUS
+            %
+            % Returns the value of the output, 1 is on, 0 is off
+            
+            fprintf(this.instr, 'OUTP1:STAT?');
+            output = fscanf(this.instr, '%u');
+            
+            if( length( dbstack ) < 2  )
+                logmessage(2, this, sprintf('%s ''%s'' at %s GETOUTPUTSTATUS is %u', class(this), inputname(1), this.instr.Name, output));
+            end
+            
+        end
+        
+        
+        
+        function setoutputstatus(this, status, varargin)
+            % SETOUTPUTSTATUS(status)
+            %
+            % Turns output on or off, 1 is on, 0 is off
+            
+            % if status is empty or doesn't exist then return error
+            if(nargin == 1 || ~exist('status', 'var') || isempty(status))
+                error('No arguments provided%s', instrerror(this, inputname(1), dbstack));
+            else
+                
+                % otherwise set the voltage
+                if(~isnumeric(status))
+                    error('Output status must be 0 or 1%s', instrerror(this, inputname(1), dbstack));
+                end
+                
+                if(status == 0)
+                    fprintf(this.instr, 'OUTP1 OFF');
+                elseif(status == 1)
+                    fprintf(this.instr, 'OUTP1 ON');
+                else
+                    error('Output status must be 0 or 1%s', instrerror(this, inputname(1), dbstack));
+                end
+                
+                if( length( dbstack ) < 2  )
+                    logmessage(2, this, sprintf('%s ''%s'' at %s SETOUTPUTSTATUS to %u', class(this), inputname(1), this.instr.Name, status));
+                end
+                
+            end
+            
         end
         
         

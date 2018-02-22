@@ -180,7 +180,7 @@ if(isempty(drivernumber))
     handle = instr;
 else
     %call that object and return the correct handle
-    handle = drivers{drivernumber}(instr);
+    handle = drivers{drivernumber(1)}(instr);
     
 end
 
